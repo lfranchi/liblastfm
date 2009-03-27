@@ -12,11 +12,11 @@ Mac OS X
 --------
 	sudo port selfupdate
 	sudo port upgrade installed
-	sudo port install taglib libsamplerate fftw-3 libmad
+	sudo port install libsamplerate fftw-3 libmad
 
 Linux
 -----
-	sudo apt-get install qt4-dev pkg-config libsamplerate libfftw3 libmad
+	sudo apt-get install qt4-dev pkg-config libsamplerate libfftw3f libmad
 
 Windows
 -------
