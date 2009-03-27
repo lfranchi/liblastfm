@@ -1,0 +1,40 @@
+liblastfm
+=========
+liblastfm is a collection of libraries to help you integrate Last.fm services 
+into your rich desktop software. It depends on Qt 4.4.
+
+Max Howell <max@last.fm>
+
+
+Dependencies
+============
+Mac OS X
+--------
+	sudo port selfupdate
+	sudo port upgrade installed
+	sudo port install taglib libsamplerate fftw-3 libmad
+
+Linux
+-----
+	sudo apt-get install qt4-dev pkg-config libsamplerate libfftw3 libmad
+
+Windows
+-------
+Best of luck to you.
+
+
+Development
+===========
+Public Headers
+--------------
+1. Header guards should be prefixed with LASTFM, eg. LASTFM_WS_REPLY_H
+2. #includes should be to the system path eg. #include <lastfm/Scrobbler>
+3. Don't make a header public unless it is absolutely required!
+4. To make the header public edit the headers.files line in the pro file
+
+Private Headers
+---------------
+1. For consistency and to make it more obvious it is a private header, don't
+   prefix the header guard with LASTFM
+2. #includes should be the full source tree path, eg.
+   #include "../ws/WsReply.h"

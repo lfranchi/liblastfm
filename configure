@@ -1,0 +1,129 @@
+#!/bin/bash
+
+source admin/utils.bash
+
+#################################################################### functions
+fix_sln()
+{
+    FIRST_BIT='
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "qmake", "qmake", "{780C13D3-8172-4EE0-8FD5-26ED6489851C}"
+	ProjectSection(SolutionItems) = preProject'
+    
+    for x in `admin/findmoose pro` .qmake.cache
+    do
+        FIRST_BIT="$FIRST_BIT
+		$x=$x"
+    done
+
+    LAST_BIT='
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{3FDD67B7-DF67-4F22-8545-755D722794BC}"
+	ProjectSection(SolutionItems) = preProject
+		common\qrc\common.qrc = common\qrc\common.qrc
+		lib\DllExportMacro.h = lib\DllExportMacro.h
+	EndProjectSection
+EndProject'
+
+    echo "$FIRST_BIT$LAST_BIT" >> Last.sln
+}
+
+
+######################################################################## usage
+header "Configuring Last.fm"
+
+test -z "$PREFIX" && PREFIX=/usr/local
+export PREFIX
+
+while [ $# -gt 0 ]
+do
+    case "$1" in
+        --debug)
+            echo "The default is --debug, but let's pretend you made a difference anyway.";;
+        --release)
+            echo 'Will optimise and strip binaries.'
+            RELEASE=1;;
+        --bundle)
+            STATIC_LINK_3RDPARTIES_ON_MAC=1;;
+    esac
+    shift
+done
+
+QMAKE=`ruby admin/which_qmake.rb`
+
+if [[ $QMAKE == 'toolow' ]]
+then
+	      ##########################################################################80-->
+	echo "Your version of Qt seems to be too old, we require Qt 4.$min or above."
+	echo
+	echo "It is possible you have Qt3 and Qt4 both installed. Locate your Qt4 installation"
+	echo "and ensure it is placed first in the path, eg:"
+	echo
+	echo "	PATH=/opt/qt4/bin:\$PATH ./configure"
+	echo
+	echo "However this configure script is very basic, perhaps we got it wrong.."
+	echo "Try typing the following, perhaps it will build for you :)"
+	echo
+	echo "	qmake -config release && make"
+	exit 1
+elif [[ $QMAKE == '' ]]
+then
+    echo "Sorry, qmake was not found, is Qt4 installed?"
+    exit 2
+fi
+
+echo 'Using '`which $QMAKE`
+
+
+header 'Generating Build System'
+middle "Running qpp..."
+    cd src
+    ../admin/qpp lastfm.pro || die "Ruby not installed?"
+    cd ..
+    
+
+middle "Generating Makefile..."
+    test -d _include && rm -r _include
+    admin/Makefile.rb `admin/findsrc pro src` > Makefile || die 'Makefile.rb failure :('
+
+middle "Running qmake..."
+    if [ $RELEASE ]
+    then
+        other_args="CONFIG -= debug debug_and_release app_bundle"
+        config=release
+    else
+        config=debug
+    
+        case `uname` in
+            Darwin)
+                [ $STATIC_LINK_3RDPARTIES_ON_MAC ] || other_args="CONFIG -= app_bundle";;
+            Linux)
+                other_args="CONFIG += warn_off";;
+            *) 
+                #Windows, hopefullly
+                svn co svn+ssh://svn.last.fm/svn/clientside/bin/win _bin
+                other_args="-tp vc"
+                fix_sln
+        esac
+    fi
+
+    cd src
+    qmake -config $config "$other_args" lastfm.pro || die "Configure failed."
+    cd ../tests
+    qmake -config debug tests.pro "CONFIG -= app_bundle"
+    cd ..
+
+
+middle "Generating _configure.h"
+    touch _include/_configure.h
+    case `uname` in
+        Linux)
+            lsb_release -d | grep 'Ubuntu 8.10$' && echo '#define UBUNTU_8_10' >> _include/_configure.h
+            ;;
+    esac
+
+
+echo
+echo 'Good, your configure is finished!'
+
+exit 0
