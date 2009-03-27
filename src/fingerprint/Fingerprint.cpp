@@ -273,17 +273,20 @@ lastfm::Fingerprint::decode( QNetworkReply* reply, bool* complete_fingerprint_re
     if (list.count() != 2)
         qWarning() << "Response looks bad but continuing anyway:" << response;
 
-    bool b;
-    uint fpid_as_uint = fpid.toUInt( &b );
-    if (!b) goto bad_response;
+    { // so variables go out of scope before jump to label
+        bool b;
+        uint fpid_as_uint = fpid.toUInt( &b );
+        if (!b) goto bad_response;
     
-    Collection::instance().setFingerprintId( m_track.url().toLocalFile(), fpid );
+        Collection::instance().setFingerprintId( m_track.url().toLocalFile(), fpid );
     
-    if (complete_fingerprint_requested)
-        *complete_fingerprint_requested = (status == "NEW");
+        if (complete_fingerprint_requested)
+            *complete_fingerprint_requested = (status == "NEW");
 
-    m_id = (int)fpid_as_uint;
+        m_id = (int)fpid_as_uint;
+    }
     return;
+	
 
 bad_response:
     qWarning() << "Response is bad:" << response;
