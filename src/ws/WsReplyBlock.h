@@ -22,28 +22,28 @@
 
 #include <lastfm/global.h>
 #include <QObject>
-class QEventLoop;
-class WsReply;
 
 
 /** @brief Makes it easy to block on a WsReply
-  * NOTE we're not sure if it is safe to do this in the GUI thread
+  * NOTE you'll get strange crashes if you do this in a thread with an event
+  * loop. And yes that includes the main GUI thread!
   */
 class LASTFM_WS_DLLEXPORT WsReplyBlock : public QObject
 {
     Q_OBJECT
 
     WsReply* m_reply;
-    QEventLoop* m_eventloop;
+    class QEventLoop* m_eventloop;
 
     WsReplyBlock( WsReply* reply = 0 );
     WsReply* waitForFinished( int timeout );
 
-public:
-    static WsReply* wait(WsReply*, int timeout);
-
 private slots:
     void onFinished( WsReply* reply = 0 );
+
+public:
+    /** we'll timeout after timeout milliseconds even if not yet done */
+    static WsReply* wait( WsReply*, int timeout = 10*1000 );
 };
 
 #endif

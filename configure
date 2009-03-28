@@ -108,20 +108,11 @@ middle "Running qmake..."
     fi
 
     cd src
-    qmake -config $config "$other_args" lastfm.pro || die "Configure failed."
+    qmake -config $config "$other_args" || die "Configure failed."
     cd ../tests
-    qmake -config debug tests.pro "CONFIG -= app_bundle"
-    cd ..
-
-
-middle "Generating _configure.h"
-    touch _include/_configure.h
-    case `uname` in
-        Linux)
-            lsb_release -d | grep 'Ubuntu 8.10$' && echo '#define UBUNTU_8_10' >> _include/_configure.h
-            ;;
-    esac
-
+    qmake -config debug "CONFIG -= app_bundle"
+    cd ../demos
+    qmake -config debug "CONFIG -= app_bundle"
 
 echo
 echo 'Good, your configure is finished!'

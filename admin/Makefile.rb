@@ -11,9 +11,9 @@ require "#{cwd}/platform.rb"
 
 def step3( path, classname )
 puts <<-EOS
-_include/lastfm/#{classname}: #{path}
-	cp #{path} $@
-$(DESTDIR)#{$install_prefix}/include/lastfm/#{classname}: #{path}
+_include/lastfm/#{classname}: #{path} | _include/lastfm
+	ln #{path} $@
+$(DESTDIR)#{$install_prefix}/include/lastfm/#{classname}: #{path} | $(DESTDIR)#{$install_prefix}/include/lastfm
 	cp #{path} $@
 
 EOS
@@ -54,14 +54,12 @@ rescue SystemCallError
   # as an additional rant, the Ruby File/Dir classes are a poo design
 end
 
-mkdir( '_include' )
-mkdir( '_include/lastfm' )
-
 puts <<-EOS
 .PHONY: all
 all: headers
 	cd src && $(MAKE)
 	cd tests && $(MAKE)
+	cd demos && $(MAKE)
 
 EOS
 
@@ -72,25 +70,31 @@ while arg = ARGV.shift do
   end
 end
 
+rubystring = %q[ruby -e 'Dir["_include/lastfm/*"].each { |h| puts %Q{#include "lastfm/#{File.basename h}"\n} }']
+
 puts <<-EOS
+_include/lastfm:
+	mkdir -p $@
+$(DESTDIR)#{$install_prefix}/include/lastfm:
+	mkdir -p $@
+
 _include/lastfm/global.h: src/global.h
 	cp src/global.h $@
 $(DESTDIR)#{$install_prefix}/include/lastfm/global.h: src/global.h
 	cp src/global.h $@
-	
+
+_include/lastfm.h: | _include/lastfm
+	#{rubystring} > $@
+$(DESTDIR)#{$install_prefix}/include/lastfm.h:
+	mkdir $(dir $@)
+
 .PHONY: headers
-headers: #{$headers.join(' ')} _include/lastfm/global.h
-
-.PHONY: installheaders
-installheaders: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastfm/global.h
-
-$(DESTDIR)#{$install_prefix}:
-	mkdir -p $@
+headers: #{$headers.join(' ')} _include/lastfm/global.h _include/lastfm.h
 
 .PHONY: install
-install: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastfm/global.h | $(DESTDIR)#{$install_prefix}
+install: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastfm/global.h
 	cd src && make install "INSTALL_ROOT=$(DESTDIR)#{$install_prefix}"
-	
+
 .PHONY: clean
 clean:
 	rm -r _include

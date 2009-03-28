@@ -85,13 +85,18 @@ namespace lastfm
     public:
         /** the authenticated User */
         AuthenticatedUser() : User( Ws::Username )
-        {}
+        {}    
 
     	/** you can only get information about the autheticated user */
     	static WsReply* getInfo();
 	
     	/** a verbose string, eg. "A man with 36,153 scrobbles" */
         static QString getInfoString( WsReply* );
+        
+        // pass the result to Artist::list(), if you want the other data 
+        // you have to parse the lfm() yourself members
+        // http://www.last.fm/api/show?service=388
+        static WsReply* getRecommendedArtists();
     };
 }
 

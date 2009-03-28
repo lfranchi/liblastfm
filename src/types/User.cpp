@@ -98,10 +98,17 @@ User::list( WsReply* r )
 }
 
 
-WsReply*
+WsReply* //static
 AuthenticatedUser::getInfo()
 {
 	return WsRequestBuilder( "user.getInfo" ).get();
+}
+
+
+WsReply* //static
+AuthenticatedUser::getRecommendedArtists()
+{
+	return WsRequestBuilder( "user.getRecommendedArtists" ).get();
 }
 
 

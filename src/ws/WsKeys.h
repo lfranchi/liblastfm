@@ -55,7 +55,6 @@ namespace Ws
     LASTFM_WS_DLLEXPORT extern QString SessionKey;
 }
 
-
 #define LASTFM_WS_HOSTNAME "ws.audioscrobbler.com"
 
 

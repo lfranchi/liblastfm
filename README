@@ -4,10 +4,14 @@ liblastfm is a collection of libraries to help you integrate Last.fm services
 into your rich desktop software. It depends on Qt 4.4.
 
 Max Howell <max@last.fm>
+http://twitter.com/mxcl (questions/whatever to Twitter welcome)
 
 
 Dependencies
 ============
+The build process requires ruby, perl and GNU make. Pls to remove perl dep.
+Pls to fork http://github.com/mxcl/liblastfm
+
 Mac OS X
 --------
 	sudo port selfupdate
