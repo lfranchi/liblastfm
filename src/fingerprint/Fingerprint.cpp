@@ -273,7 +273,9 @@ lastfm::Fingerprint::decode( QNetworkReply* reply, bool* complete_fingerprint_re
     if (list.count() != 2)
         qWarning() << "Response looks bad but continuing anyway:" << response;
 
-    { // so variables go out of scope before jump to label
+    {
+        // so variables go out of scope before jump to label
+        // otherwise compiler error on GCC 4.2
         bool b;
         uint fpid_as_uint = fpid.toUInt( &b );
         if (!b) goto bad_response;
@@ -284,9 +286,8 @@ lastfm::Fingerprint::decode( QNetworkReply* reply, bool* complete_fingerprint_re
             *complete_fingerprint_requested = (status == "NEW");
 
         m_id = (int)fpid_as_uint;
+        return;
     }
-    return;
-	
 
 bad_response:
     qWarning() << "Response is bad:" << response;
