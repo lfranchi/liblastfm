@@ -25,6 +25,8 @@
 
 struct MyCoreApp : QCoreApplication
 {
+    Q_OBJECT
+    
     MyCoreApp( int& argc, char**& argv ) : QCoreApplication( argc, argv )
     {}
     
@@ -113,3 +115,6 @@ int main( int argc, char** argv )
         return 1;
     }
 }
+
+
+#include "demo2.moc"

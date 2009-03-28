@@ -99,4 +99,4 @@ int main( int argc, char** argv )
 }
 
 
-#include "lesson1.moc"
+#include "demo1.moc"

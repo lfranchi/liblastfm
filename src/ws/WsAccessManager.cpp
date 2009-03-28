@@ -127,9 +127,14 @@ WsAccessManager::createRequest( Operation op, const QNetworkRequest& request_, Q
     QNetworkRequest request = request_;
 
     request.setRawHeader( "User-Agent", Ws::UserAgent );
+    
+#ifdef WIN32
+    // PAC proxies can vary by domain, so we have to check everytime :(
     QNetworkProxy proxy = this->proxy( request );
     if (proxy.type() != QNetworkProxy::NoProxy)
         QNetworkAccessManager::setProxy( proxy );
+#endif
+
 	return QNetworkAccessManager::createRequest( op, request, outgoingData );
 }
 

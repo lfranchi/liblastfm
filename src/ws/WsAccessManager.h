@@ -26,11 +26,7 @@
 #include <QNetworkProxy>
 
 
-/** Sets useragent and correctly sets the proxy stuff, all beautifully and 
-  * perfectly ;)
-  *
-  * TODO KDE/Gnome settings
-  */
+/** Sets useragent and proxy. Auto detecting the proxy where possible. */
 class LASTFM_WS_DLLEXPORT WsAccessManager : public QNetworkAccessManager
 {
     Q_OBJECT
@@ -45,7 +41,9 @@ public:
     ~WsAccessManager();
 
     /** PAC allows different proxy configurations depending on the request
-      * URL and even UserAgent! Thus we allow you to pass that in */
+      * URL and even UserAgent! Thus we allow you to pass that in, we
+      * automatically configure the proxy for every request through 
+      * WsAccessManager */
     QNetworkProxy proxy( const QNetworkRequest& = QNetworkRequest() );
 
 protected:

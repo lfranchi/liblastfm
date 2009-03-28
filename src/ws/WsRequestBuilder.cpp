@@ -28,7 +28,6 @@
 #include <QMutexLocker>
 #include <QThread>
 
-
 QThreadStorage<WsAccessManager*> WsRequestBuilder::nam_store;
 
 
@@ -88,9 +87,9 @@ WsRequestBuilder::start( RequestMethod method )
 			foreach (Pair param, params)
 			{
 				query += QUrl::toPercentEncoding( param.first )
-					  + "="
-					  + QUrl::toPercentEncoding( param.second )
-					  + "&";
+					   + "="
+					   + QUrl::toPercentEncoding( param.second )
+					   + "&";
 			}
 			return new WsReply( nam()->post( QNetworkRequest( url ), query ) );
 		}
