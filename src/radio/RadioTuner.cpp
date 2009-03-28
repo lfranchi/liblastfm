@@ -40,7 +40,7 @@ lastfm::RadioTuner::RadioTuner( const RadioStation& station )
     WsReply* reply = WsRequestBuilder( "radio.tune" )
 			.add( "station", station.url() )
 			.post();
-	connect( reply, SIGNAL(finished( WsReply* )), SLOT(onRadioTunereturn( WsReply* )) );
+	connect( reply, SIGNAL(finished( WsReply* )), SLOT(onTuneReturn( WsReply* )) );
 }
 
 
