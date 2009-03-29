@@ -12,6 +12,8 @@ Dependencies
 The build process requires ruby, perl and GNU make. Pls to remove perl dep.
 Pls to fork http://github.com/mxcl/liblastfm
 
+The command-line program lsb_release may also be required to configure.
+
 Mac OS X
 --------
 	sudo port selfupdate
