@@ -3,8 +3,9 @@ liblastfm
 liblastfm is a collection of libraries to help you integrate Last.fm services 
 into your rich desktop software. It depends on Qt 4.4.
 
-Max Howell <max@last.fm>
-http://twitter.com/mxcl (questions/whatever to Twitter welcome)
+Max Howell   http://twitter.com/mxcl
+Jono Cole    http://twitter.com/jonocole
+Doug Mansell http://twitter.com/dougma
 
 
 Dependencies
