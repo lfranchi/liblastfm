@@ -24,18 +24,12 @@
 #include "WsAccessManager.h"
 #include <QCoreApplication>
 #include <QEventLoop>
-#include <QMutex>
-#include <QMutexLocker>
-#include <QThread>
 
-QThreadStorage<WsAccessManager*> WsRequestBuilder::nam_store;
+QNetworkAccessManager* WsRequestBuilder::s_nam = 0;
 
 
 WsRequestBuilder::WsRequestBuilder( const QString& method )
 {
-    static QMutex lock;
-    QMutexLocker locker( &lock );
-
     params["method"] = method;
 }
 
@@ -98,13 +92,18 @@ WsRequestBuilder::start( RequestMethod method )
 }
 
 
-WsAccessManager* //static private
+QNetworkAccessManager* //static private
 WsRequestBuilder::nam()
 {
-    if (!nam_store.hasLocalData())
-        // WsAccessManager will be unparented, but it
-        // does gets cleaned up when this thread ends
-        nam_store.setLocalData( new WsAccessManager );
+    if (!s_nam)
+        s_nam = new WsAccessManager( qApp );
+    return s_nam;
+}
 
-    return nam_store.localData();
+
+void //static
+WsRequestBuilder::setNetworkAccessManager( QNetworkAccessManager* nam )
+{
+    delete s_nam;
+    s_nam = nam;
 }

@@ -22,17 +22,17 @@
 
 #include <lastfm/WsReply> //for your convenience <3 x
 #include <QMap>
-#include <QThreadStorage>
 
 
 /** A convenience class to create a WsReply for Last.fm webservices.
-  * We add the session key, api signature and session key to every request */
+  * We add the session key, api signature and session key to every request
+  * This class is not thread-safe because QNetworkAccessManager is not 
+  * thread-safe. If you make one that is, you're safe. */
 class LASTFM_WS_DLLEXPORT WsRequestBuilder
 {
-    static QThreadStorage<class WsAccessManager*> nam_store; // one per thread
     QMap<QString, QString> params;
-
-    static WsAccessManager* nam();
+    static QNetworkAccessManager* s_nam;
+    static QNetworkAccessManager* nam();
 
     enum RequestMethod { Get, Post };
     /** starts the request, connect to finished() to get the results */
@@ -43,6 +43,8 @@ class LASTFM_WS_DLLEXPORT WsRequestBuilder
 
 public:
     WsRequestBuilder( const QString& methodName );
+    
+    static void setNetworkAccessManager( QNetworkAccessManager* nam );
 
     WsReply* get() { return start( Get ); }
     WsReply* post() { return start( Post ); }

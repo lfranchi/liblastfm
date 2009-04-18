@@ -20,7 +20,7 @@
 #ifdef WIN32
 // WsAccessManager needs special init (on Windows), and it needs to be done
 // early, so be careful about moving this
-#include "win/ComSetup.h" //,ust be first header or compile fail results!
+#include "win/ComSetup.h" //must be first header or compile fail results!
 static ComSetup com_setup;
 #endif
 

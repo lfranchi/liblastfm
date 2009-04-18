@@ -27,6 +27,24 @@ Windows
 Best of luck to you.
 
 
+Using liblastfm
+===============
+The demos directory shows some basic usage.
+
+You need an API key from http://last.fm/api.
+
+Radio
+-----
+Please set an identifiable UserAgent on your HTTP requests for the actual MP3s,
+in extreme cases we'll contact you directly and demand you do so :P
+
+HTTP & Networking
+-----------------
+You can specify your own QNetworkAccessManager derived class for liblastfm to 
+use with WsRequestBuilder::setNetworkAccessManager(). Our default is pretty good
+though, auto-determining proxy settings on Windows and OS X for instance.
+
+
 Development
 ===========
 Public Headers

@@ -23,8 +23,8 @@
 #include "MP3_Source_Qt.h"
 #include "fplib/include/FingerprintExtractor.h"
 #include "../ws/WsRequestBuilder.h"
-#include "../ws/WsAccessManager.h"
 #include <QFileInfo>
+#include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QStringList>
