@@ -3,8 +3,9 @@ liblastfm
 liblastfm is a collection of libraries to help you integrate Last.fm services 
 into your rich desktop software. It depends on Qt 4.4.
 
-Max Howell <max@last.fm>
-http://twitter.com/mxcl (questions/whatever to Twitter welcome)
+Max Howell   http://twitter.com/mxcl
+Jono Cole    http://twitter.com/jonocole
+Doug Mansell http://twitter.com/dougma
 
 
 Dependencies
@@ -16,11 +17,17 @@ Mac OS X
 --------
 	sudo port selfupdate
 	sudo port upgrade installed
-	sudo port install libsamplerate fftw-3 libmad
+	sudo port install libsamplerate fftw-3 libmad qt4-mac-devel
+
+qt4-mac-devel will take a long time to build. So you may want to install the
+Trolltech binary package instead.
 
 Linux
 -----
 	sudo apt-get install qt4-dev pkg-config libsamplerate libfftw3f libmad
+
+The configure process also requires lsb_release on Linux. This is usually 
+already installed (correct me if I'm wrong).
 
 Windows
 -------
