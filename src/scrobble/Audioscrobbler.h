@@ -31,7 +31,7 @@
   * version 1.2.1 for a single Last.fm user
   * http://www.audioscrobbler.net/development/protocol/
   */
-class LASTFM_SCROBBLE_DLLEXPORT Scrobbler : public QObject
+class LASTFM_SCROBBLE_DLLEXPORT Audioscrobbler : public QObject
 {
     Q_OBJECT
 
@@ -39,8 +39,8 @@ public:
 	/** You will need to do QCoreApplication::setVersion and 
 	  * QCoreApplication::setApplicationName for this to work, also you will 
 	  * need to have set all the keys in the Ws namespace in WsKeys.h */
-    Scrobbler( const QString& clientId );
-    ~Scrobbler();
+    Audioscrobbler( const QString& clientId );
+    ~Audioscrobbler();
 
 public slots:
 #ifndef LASTFM_COLLAPSE_NAMESPACE
@@ -100,7 +100,7 @@ private slots:
 
 private:
     void handshake();
-    void onError( Scrobbler::Error );
+    void onError( Error );
 
 private:
 	const QString m_clientId;
@@ -113,13 +113,13 @@ private:
 
 
 #include <QDebug>
-static inline QDebug operator<<( QDebug d, Scrobbler::Status status )
+static inline QDebug operator<<( QDebug d, Audioscrobbler::Status status )
 {
-    return d << lastfm::qMetaEnumString<Scrobbler>( status, "Status" );
+    return d << lastfm::qMetaEnumString<Audioscrobbler>( status, "Status" );
 }
-static inline QDebug operator<<( QDebug d, Scrobbler::Error error )
+static inline QDebug operator<<( QDebug d, Audioscrobbler::Error error )
 {
-    return d << lastfm::qMetaEnumString<Scrobbler>( error, "Status" );
+    return d << lastfm::qMetaEnumString<Audioscrobbler>( error, "Status" );
 }
 
 

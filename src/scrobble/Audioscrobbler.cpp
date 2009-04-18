@@ -27,7 +27,7 @@
 using lastfm::Track;
 
 
-Scrobbler::Scrobbler( const QString& clientId )
+Audioscrobbler::Audioscrobbler( const QString& clientId )
         : m_clientId( clientId ),
           m_handshake( 0 ), 
           m_np( 0 ), 
@@ -41,7 +41,7 @@ Scrobbler::Scrobbler( const QString& clientId )
 }
 
 
-Scrobbler::~Scrobbler()
+Audioscrobbler::~Audioscrobbler()
 {
     delete m_cache;
     delete m_handshake;
@@ -51,7 +51,7 @@ Scrobbler::~Scrobbler()
 
 
 void
-Scrobbler::handshake() //private
+Audioscrobbler::handshake() //private
 {
     m_hard_failures = 0;
 
@@ -81,7 +81,7 @@ Scrobbler::handshake() //private
 
 
 void
-Scrobbler::rehandshake() //public
+Audioscrobbler::rehandshake() //public
 {
     if (!m_submitter->hasSession())
     {
@@ -95,28 +95,28 @@ Scrobbler::rehandshake() //public
 
 
 void
-Scrobbler::nowPlaying( const Track& track )
+Audioscrobbler::nowPlaying( const Track& track )
 {
     m_np->submit( track );
 }
 
 
 void
-Scrobbler::cache( const Track& track )
+Audioscrobbler::cache( const Track& track )
 {
     m_cache->add( track );
 }
 
 
 void
-Scrobbler::cache( const QList<Track>& tracks )
+Audioscrobbler::cache( const QList<Track>& tracks )
 {
     m_cache->add( tracks );
 }
 
 
 void
-Scrobbler::submit()
+Audioscrobbler::submit()
 {
     m_submitter->setTracks( m_cache->tracks() );
     m_submitter->submitNextBatch();
@@ -124,15 +124,15 @@ Scrobbler::submit()
 
 
 void
-Scrobbler::onError( Scrobbler::Error code )
+Audioscrobbler::onError( Audioscrobbler::Error code )
 {
     qDebug() << code; //TODO error text
 
     switch (code)
     {
-        case Scrobbler::ErrorBannedClientVersion:
-        case Scrobbler::ErrorInvalidSessionKey:
-        case Scrobbler::ErrorBadTime:
+        case Audioscrobbler::ErrorBannedClientVersion:
+        case Audioscrobbler::ErrorInvalidSessionKey:
+        case Audioscrobbler::ErrorBadTime:
             // np and submitter are in invalid state and won't send any requests
             // the app has to tell the user and let them decide what to do
             break;
@@ -140,8 +140,8 @@ Scrobbler::onError( Scrobbler::Error code )
         default:
             Q_ASSERT( false ); // you (yes you!) have missed an enum value out
 
-        case Scrobbler::ErrorThreeHardFailures:
-        case Scrobbler::ErrorBadSession:
+        case Audioscrobbler::ErrorThreeHardFailures:
+        case Audioscrobbler::ErrorBadSession:
             handshake();
             break;
     }
@@ -154,7 +154,7 @@ Scrobbler::onError( Scrobbler::Error code )
 
 
 void
-Scrobbler::onHandshakeReturn( const QByteArray& result ) //TODO trim before passing here
+Audioscrobbler::onHandshakeReturn( const QByteArray& result ) //TODO trim before passing here
 {
     SPLIT( result )
 
@@ -165,7 +165,7 @@ Scrobbler::onHandshakeReturn( const QByteArray& result ) //TODO trim before pass
         m_submitter->setSession( results[1] );
         m_submitter->setUrl( QString::fromUtf8( results[3] ) );
 
-        emit status( Scrobbler::Handshaken );
+        emit status( Audioscrobbler::Handshaken );
 
         // submit any queued work
         m_np->request();
@@ -173,15 +173,15 @@ Scrobbler::onHandshakeReturn( const QByteArray& result ) //TODO trim before pass
     }
     else if (code == "BANNED")
     {
-        onError( Scrobbler::ErrorBannedClientVersion );
+        onError( Audioscrobbler::ErrorBannedClientVersion );
     }
     else if (code == "BADAUTH")
     {
-        onError( Scrobbler::ErrorInvalidSessionKey );
+        onError( Audioscrobbler::ErrorInvalidSessionKey );
     }
     else if (code == "BADTIME")
     {
-        onError( Scrobbler::ErrorBadTime );
+        onError( Audioscrobbler::ErrorBadTime );
     }
     else
         m_handshake->retry(); //TODO increasing time up to 2 hours
@@ -189,7 +189,7 @@ Scrobbler::onHandshakeReturn( const QByteArray& result ) //TODO trim before pass
 
 
 void
-Scrobbler::onNowPlayingReturn( const QByteArray& result )
+Audioscrobbler::onNowPlayingReturn( const QByteArray& result )
 {
     SPLIT( result )
 
@@ -204,7 +204,7 @@ Scrobbler::onNowPlayingReturn( const QByteArray& result )
             // if scrobbling is happening then there is no way I'm causing
             // duplicate scrobbles! We'll fail next time we try to contact 
             // Last.fm instead
-            onError( Scrobbler::ErrorBadSession );
+            onError( Audioscrobbler::ErrorBadSession );
         }
     }
     // yep, no else. The protocol says hard fail, I say, don't:
@@ -218,7 +218,7 @@ Scrobbler::onNowPlayingReturn( const QByteArray& result )
 
 
 void
-Scrobbler::onSubmissionReturn( const QByteArray& result )
+Audioscrobbler::onSubmissionReturn( const QByteArray& result )
 {
     SPLIT( result )
 
@@ -230,12 +230,12 @@ Scrobbler::onSubmissionReturn( const QByteArray& result )
 
         if (m_submitter->batch().isEmpty())
         {
-            emit status( Scrobbler::TracksScrobbled );
+            emit status( Audioscrobbler::TracksScrobbled );
         }
     }
     else if (code == "BADSESSION")
     {
-        onError( Scrobbler::ErrorBadSession );
+        onError( Audioscrobbler::ErrorBadSession );
     }
 	else if (code.startsWith( "FAILED Plugin bug" ))
 	{
@@ -244,7 +244,7 @@ Scrobbler::onSubmissionReturn( const QByteArray& result )
 	}
 	else if (++m_hard_failures >= 3)
     {
-        onError( Scrobbler::ErrorThreeHardFailures );
+        onError( Audioscrobbler::ErrorThreeHardFailures );
     }
     else
         m_submitter->retry();
@@ -252,7 +252,7 @@ Scrobbler::onSubmissionReturn( const QByteArray& result )
 
 
 void
-Scrobbler::onHandshakeHeaderReceived( const QHttpResponseHeader& header )
+Audioscrobbler::onHandshakeHeaderReceived( const QHttpResponseHeader& header )
 {
     if (header.statusCode() != 200)
     {
@@ -263,7 +263,7 @@ Scrobbler::onHandshakeHeaderReceived( const QHttpResponseHeader& header )
 
 
 void
-Scrobbler::onSubmissionStarted( int id )
+Audioscrobbler::onSubmissionStarted( int id )
 {
     if (id == m_submitter->requestId())
         emit status( Scrobbling );
