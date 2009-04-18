@@ -34,6 +34,13 @@ Windows
 Best of luck to you.
 
 
+Installing liblastfm
+====================
+    PREFIX=/usr/local ./configure && make && sudo make install
+
+Packagers will be relieved to know that DESTDIR is supported.
+
+
 Using liblastfm
 ===============
 The demos directory shows some basic usage.
