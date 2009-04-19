@@ -39,7 +39,7 @@ namespace lastfm
     	  * automatically fetches the first 5 tracks for the station */
         explicit RadioTuner( const RadioStation& );
 
-        lastfm::Track takeNextTrack();
+        Track takeNextTrack();
 
     signals:
     	void title( const QString& );
@@ -65,7 +65,7 @@ namespace lastfm
           */
         bool fetchFiveMoreTracks();
 
-        QList<lastfm::Track> m_queue;
+        QList<Track> m_queue;
     	uint m_retry_counter;
     };
 }

@@ -24,7 +24,7 @@
 #include <QList>
 #include <QString>
 #include <QVariant>
-class ScrobblerHandshake;
+class ScrobblerHandshake; //TODO pimpl
 class NowPlaying;
 class ScrobblerSubmission;
 class ScrobbleCache;

@@ -104,32 +104,34 @@ namespace lastfm
 	
 	
 	//convenience
-    class Track;
     class Album;
     class Artist;
-    class User;
-    class Tag;
+    class Audioscrobbler;
     class AuthenticatedUser;
-    class Xspf;
-    class Playlist;
     class Fingerprint;
     class FingerprintId;
     class Mbid;
+    class Playlist;
+    class User;
+    class Tag;
+    class Track;
+    class Xspf;
 }
 
 
 #ifdef LASTFM_COLLAPSE_NAMESPACE
-using lastfm::Track;
 using lastfm::Album;
 using lastfm::Artist;
-using lastfm::User;
+using lastfm::Audioscrobbler;
 using lastfm::AuthenticatedUser;
-using lastfm::Tag;
-using lastfm::Xspf;
-using lastfm::Playlist;
 using lastfm::Fingerprint;
 using lastfm::FingerprintId;
 using lastfm::Mbid;
+using lastfm::Playlist;
+using lastfm::User;
+using lastfm::Tag;
+using lastfm::Track;
+using lastfm::Xspf;
 #endif
 
 
