@@ -48,7 +48,7 @@ public:
     /** will throw std::runtime_error if the e.isNull() */
     WsDomElement( const QDomElement& e, const char* name = "" ) : e( e )
     {
-        if (e.isNull()) throw std::runtime_error( "Expected node absent." + std::string(name) );
+        if (e.isNull()) throw std::runtime_error( "Expected node absent: " + std::string(name) );
     }
 
     /** returns a null element unless the node @p name exists */
