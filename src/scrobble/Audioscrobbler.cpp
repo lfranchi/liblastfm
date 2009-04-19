@@ -24,10 +24,8 @@
 #include "ScrobblerSubmission.h"
 #include "../ws/WsKeys.h"
 
-using lastfm::Track;
 
-
-Audioscrobbler::Audioscrobbler( const QString& clientId )
+lastfm::Audioscrobbler::Audioscrobbler( const QString& clientId )
         : m_clientId( clientId ),
           m_handshake( 0 ), 
           m_np( 0 ), 
@@ -41,7 +39,7 @@ Audioscrobbler::Audioscrobbler( const QString& clientId )
 }
 
 
-Audioscrobbler::~Audioscrobbler()
+lastfm::Audioscrobbler::~Audioscrobbler()
 {
     delete m_cache;
     delete m_handshake;
@@ -51,7 +49,7 @@ Audioscrobbler::~Audioscrobbler()
 
 
 void
-Audioscrobbler::handshake() //private
+lastfm::Audioscrobbler::handshake() //private
 {
     m_hard_failures = 0;
 
@@ -80,7 +78,7 @@ Audioscrobbler::handshake() //private
 
 
 void
-Audioscrobbler::rehandshake() //public
+lastfm::Audioscrobbler::rehandshake() //public
 {
     if (!m_submitter->hasSession())
     {
@@ -94,28 +92,28 @@ Audioscrobbler::rehandshake() //public
 
 
 void
-Audioscrobbler::nowPlaying( const Track& track )
+lastfm::Audioscrobbler::nowPlaying( const Track& track )
 {
     m_np->submit( track );
 }
 
 
 void
-Audioscrobbler::cache( const Track& track )
+lastfm::Audioscrobbler::cache( const Track& track )
 {
     m_cache->add( track );
 }
 
 
 void
-Audioscrobbler::cache( const QList<Track>& tracks )
+lastfm::Audioscrobbler::cache( const QList<Track>& tracks )
 {
     m_cache->add( tracks );
 }
 
 
 void
-Audioscrobbler::submit()
+lastfm::Audioscrobbler::submit()
 {
     m_submitter->setTracks( m_cache->tracks() );
     m_submitter->submitNextBatch();
@@ -126,7 +124,7 @@ Audioscrobbler::submit()
 
 
 void
-Audioscrobbler::onError( Audioscrobbler::Error code )
+lastfm::Audioscrobbler::onError( Audioscrobbler::Error code )
 {
     qDebug() << code; //TODO error text
 
@@ -156,7 +154,7 @@ Audioscrobbler::onError( Audioscrobbler::Error code )
 
 
 void
-Audioscrobbler::onHandshakeReturn( const QByteArray& result ) //TODO trim before passing here
+lastfm::Audioscrobbler::onHandshakeReturn( const QByteArray& result ) //TODO trim before passing here
 {
     SPLIT( result )
 
@@ -191,7 +189,7 @@ Audioscrobbler::onHandshakeReturn( const QByteArray& result ) //TODO trim before
 
 
 void
-Audioscrobbler::onNowPlayingReturn( const QByteArray& result )
+lastfm::Audioscrobbler::onNowPlayingReturn( const QByteArray& result )
 {
     SPLIT( result )
 
@@ -220,7 +218,7 @@ Audioscrobbler::onNowPlayingReturn( const QByteArray& result )
 
 
 void
-Audioscrobbler::onSubmissionReturn( const QByteArray& result )
+lastfm::Audioscrobbler::onSubmissionReturn( const QByteArray& result )
 {
     SPLIT( result )
 
