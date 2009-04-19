@@ -39,7 +39,7 @@ namespace lastfm
         explicit RadioStation( const QUrl& u ) : m_url( u.toString() )
         {}
 	
-        static RadioStation library( const lastfm::User& user )         { return "lastfm://user/" + QString(user) + "/personal"; }
+        static RadioStation library( const lastfm::User& user )         { return "lastfm://user/" + user + "/personal"; }
         static RadioStation recommendations( const lastfm::User& user ) { return "lastfm://user/" + user + "/recommended"; }
         static RadioStation neighbourhood( const lastfm::User& user )   { return "lastfm://user/" + user + "/neighbours"; }
         static RadioStation lovedTracks( const lastfm::User& user )     { return "lastfm://user/" + user + "/loved"; }
@@ -50,7 +50,7 @@ namespace lastfm
         {
             RadioStation station;
             station.m_rql = rql;
-            station.m_url = "lastfm://rql/" + QString( rql.toUtf8().toBase64());
+            station.m_url = "lastfm://rql/" + QString(rql.toUtf8().toBase64());
             return station;
         }
 

@@ -20,15 +20,16 @@
 #include "Handshake.h"
 #include "common/qt/md5.cpp"
 #include "../ws/WsKeys.h"
+#include "../ws/WsRequestBuilder.h"
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QDebug>
+#include <QNetworkAccessManager>
 
 
 ScrobblerHandshake::ScrobblerHandshake( const QString& clientId )
                   : m_clientId( clientId )
 {
-    setHost( "post.audioscrobbler.com" );
     request();
 }
 
@@ -52,7 +53,9 @@ ScrobblerHandshake::request()
         "&api_key=" + Ws::ApiKey +
         "&sk=" + Ws::SessionKey;
 
-    m_id = get( '/' + query_string );
+    QUrl url = "http://post.audioscrobbler.com:80/" + query_string;
+    rp = WsRequestBuilder::nam()->get( QNetworkRequest(url) );
+    connect( rp, SIGNAL(finished()), SLOT(onRequestFinished()) );
 
-    qDebug() << "HTTP GET" << host() + '/' + query_string;
+    qDebug() << "HTTP GET" << url;
 }

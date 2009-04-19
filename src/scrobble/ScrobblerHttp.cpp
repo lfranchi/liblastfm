@@ -20,57 +20,46 @@
 #include "ScrobblerHttp.h"
 #include <QDebug>
 #include <QTimer>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include "../ws/WsRequestBuilder.h"
 
 
 ScrobblerHttp::ScrobblerHttp( QObject* parent )
-             : QHttp( parent ),
-               m_id( -1 )
+             : QObject( parent )
 {
     m_retry_timer = new QTimer( this );
     m_retry_timer->setSingleShot( true );
     connect( m_retry_timer, SIGNAL(timeout()), SLOT(request()) );
     resetRetryTimer();
-
-    connect( this, SIGNAL(requestFinished( int, bool )), SLOT(onRequestFinished( int, bool )) );
 }
 
 
 void
-ScrobblerHttp::onRequestFinished( int id, bool error )
-{
-    if (id != m_id) return;
-
-    // set not active for signal handlers
-    m_id = -1;
-    
-    if (error && this->error() == QHttp::Aborted)
-        return;
-    
-    if (error)
+ScrobblerHttp::onRequestFinished()
+{    
+    if (rp->error() == QNetworkReply::OperationCanceledError)
+        ; //we aborted it
+    if (rp->error())
     {
-        qWarning() << "ERROR!" << this;
+        qWarning() << "ERROR!" << rp->error();
         emit done( QByteArray() );
     }
     else
     {
-        emit done( readAll() );
+        emit done( rp->readAll() );
 
-        // if it is running then we called retry(), so don't reset it, init
+        // if it is running then someone called retry() in the slot connected to 
+        // the done() signal above, so don't reset it, init
         if (!m_retry_timer->isActive())
             resetRetryTimer();
     }
+    
+    rp->deleteLater();
 }
 
 
 void
-ScrobblerPostHttp::setUrl( const QUrl& url )
-{
-    m_path = url.path();
-    setHost( url.host(), url.port() );
-}
-
-
-void 
 ScrobblerHttp::retry()
 {
     if (!m_retry_timer->isActive())
@@ -99,11 +88,12 @@ ScrobblerPostHttp::request()
     if (m_data.isEmpty() || m_session.isEmpty())
         return;
 
-    QHttpRequestHeader header( "POST", m_path );
-    header.setValue( "Host", host() ); //dumb but necessary
-    header.setContentType( "application/x-www-form-urlencoded" );
+    rp->deleteLater();
 
-    qDebug() << "HTTP POST:" << host() + m_path + m_data;
+    QNetworkRequest rq( m_url );
+    rq.setRawHeader( "Content-Type", "application/x-www-form-urlencoded" );
+    rp = WsRequestBuilder::nam()->post( rq, m_data );
+    connect( rp, SIGNAL(finished()), SLOT(onRequestFinished()) );
 
-    m_id = QHttp::request( header, "s=" + m_session + m_data );
+    qDebug() << "HTTP POST:" << m_url << m_data;
 }

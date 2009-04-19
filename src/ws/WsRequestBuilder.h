@@ -40,6 +40,8 @@ class LASTFM_WS_DLLEXPORT WsRequestBuilder
 
     friend class lastfm::FingerprintId;
     friend class lastfm::Fingerprint;
+    friend class ScrobblerPostHttp;
+    friend class ScrobblerHandshake;
 
 public:
     WsRequestBuilder( const QString& methodName );

@@ -20,26 +20,23 @@
 #ifndef SCROBBLER_HTTP_H
 #define SCROBBLER_HTTP_H
 
-#include <QDebug> // leave first, due to QtOverrides
-#include <QtNetwork/QHttp>
+#include <QPointer>
 #include <QUrl>
+class QNetworkReply;
 
 
-/** facade pattern base class for QHttp for Scrobbler usage */
-class ScrobblerHttp : public QHttp
+/** This was a QHttp class, but then we realised QNetworkAccessManager and that
+  * is oodles better. So we chnaged it to use that. */
+class ScrobblerHttp : public QObject
 {
     Q_OBJECT
 
 public:
     void retry();
-    int requestId() const { return m_id; }
-    bool isActive() const { return m_id != -1; }
-    QString host() const { return m_host; }
+    bool isActive() const { return !rp.isNull(); }
 
 protected:
     ScrobblerHttp( QObject* parent = 0 );
-
-    void setHost( QString s, int i=80 ) { m_host = s; QHttp::setHost( s, i ); }
 
 protected slots:
     virtual void request() = 0;
@@ -48,22 +45,20 @@ signals:
     void done( const QByteArray& data );
 
 protected:
-    int m_id;
     class QTimer *m_retry_timer;
+    QPointer<QNetworkReply> rp;
 
 private slots:
-    void onRequestFinished( int id, bool error );
+    void onRequestFinished();
 
 private:
     void resetRetryTimer();
-
-    QString m_host;
 };
 
 
 class ScrobblerPostHttp : public ScrobblerHttp
 {
-    QString m_path;
+    QUrl m_url;
     QByteArray m_session;
 
 protected:
@@ -77,26 +72,11 @@ public:
     virtual void request();
 
     void setSession( const QByteArray& id ) { m_session = id; }
-    void setUrl( const QUrl& );
+    void setUrl( const QUrl& url ) { m_url = url; }
 
     QByteArray postData() const { return m_data; }
     
     bool hasSession() const { return m_session.size(); }
 };
-
-
-inline QDebug operator<<( QDebug d, ScrobblerHttp* http )
-{
-#ifdef QT_TESTLIB_LIB
-    return d;
-#else
-    d << "  Http response: " << http->lastResponse().statusCode() << "\n"
-  	  << "  QHttp error code: " << http->error() << "\n"
-	  << "  QHttp error text: " << http->errorString() << "\n"
-	  << "  Request: " << http->host() + http->currentRequest().path() << "\n"
-	  << "  Bytes returned: " << http->bytesAvailable();
-#endif
-    return d;
-}
 
 #endif

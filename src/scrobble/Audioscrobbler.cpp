@@ -76,7 +76,6 @@ Audioscrobbler::handshake() //private
     m_submitter = new ScrobblerSubmission;
     m_submitter->setTracks( tracks );
     connect( m_submitter, SIGNAL(done( QByteArray )), SLOT(onSubmissionReturn( QByteArray )), Qt::QueuedConnection );
-    connect( m_submitter, SIGNAL(requestStarted( int )), SLOT(onSubmissionStarted( int )) );
 }
 
 
@@ -120,6 +119,9 @@ Audioscrobbler::submit()
 {
     m_submitter->setTracks( m_cache->tracks() );
     m_submitter->submitNextBatch();
+    
+    if (m_submitter->isActive()) 
+        emit status( Scrobbling );
 }
 
 
@@ -199,7 +201,7 @@ Audioscrobbler::onNowPlayingReturn( const QByteArray& result )
     }
     else if (code == "BADSESSION")
     {
-        if (!m_submitter->hasPendingRequests())
+        if (!m_submitter->isActive())
         {
             // if scrobbling is happening then there is no way I'm causing
             // duplicate scrobbles! We'll fail next time we try to contact 
@@ -248,23 +250,4 @@ Audioscrobbler::onSubmissionReturn( const QByteArray& result )
     }
     else
         m_submitter->retry();
-}
-
-
-void
-Audioscrobbler::onHandshakeHeaderReceived( const QHttpResponseHeader& header )
-{
-    if (header.statusCode() != 200)
-    {
-        m_handshake->abort(); //TEST
-        m_handshake->retry();
-    }
-}
-
-
-void
-Audioscrobbler::onSubmissionStarted( int id )
-{
-    if (id == m_submitter->requestId())
-        emit status( Scrobbling );
 }

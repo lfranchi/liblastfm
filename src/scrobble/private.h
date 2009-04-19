@@ -17,5 +17,4 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
  
- #define SCROBBLE_EXCLUSION_DIRS "ExclusionDirs"
- 
+#define SCROBBLE_EXCLUSION_DIRS "ExclusionDirs"

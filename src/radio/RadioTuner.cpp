@@ -28,7 +28,6 @@
 using lastfm::Track;
 using lastfm::Xspf;
 
-//TODO discovery mode
 //TODO skips left
 //TODO multiple locations for the same track
 //TODO set rtp flag in getPlaylist (whether user is scrobbling this radio session or not)

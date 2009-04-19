@@ -41,15 +41,8 @@ struct LASTFM_SCROBBLE_DLLEXPORT Scrobble : lastfm::Track
     bool isLoved() const { return ratingCharacter() == QChar('L'); }
     bool isBanned() const { return ratingCharacter() == QChar('B'); }
     bool isSkipped() const { return ratingCharacter() == QChar('S'); }
-    
-#if 0
-    bool isNotLovedSkippedOrBanned() const
-    {
-        return ratingCharacter() == "";
-    }
-#endif
 
-    /** if isValid() returns false, Scrobbler will not scrobble the track */
+    /** if isValid() returns false, we will not scrobble the track */
     enum Invalidity
     {
         TooShort,
