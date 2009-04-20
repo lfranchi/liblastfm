@@ -9,7 +9,7 @@ include(_files.qmake)
 TEMPLATE = lib
 TARGET = lastfm
 QT = core network xml sql
-VERSION = 0.2
+VERSION = 0.2.1
 INSTALLS = target
 target.path = /lib
 
