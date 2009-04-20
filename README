@@ -24,7 +24,9 @@ Trolltech binary package instead.
 
 Linux
 -----
-	sudo apt-get install qt4-dev pkg-config libsamplerate libfftw3f libmad
+For Ubuntu 9.04 (some are build deps, eg. Ruby is used during configure):
+
+	sudo apt-get install qt4-qmake pkg-config libsamplerate-dev libfftw3-dev libmad0-dev ruby g++ libqt4-dev
 
 The configure process also requires lsb_release on Linux. This is usually 
 already installed (correct me if I'm wrong).
