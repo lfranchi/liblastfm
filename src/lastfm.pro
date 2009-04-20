@@ -22,5 +22,5 @@ unix{
     linux*{
         QMAKE_CXXFLAGS_RELEASE += -freorder-blocks -fno-reorder-functions -w
     }    
-    release:QMAKE_POST_LINK=strip $(DESTDIR)/make$(TARGET)
+    release:QMAKE_POST_LINK=strip $(DESTDIR)/$(TARGET)
 }
