@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby -W0
 # Usage examples:
 #   qpp foo.pro         => ./_file.qmake
 #   qpp foo/bar/        => ./_file.qmake
@@ -41,27 +41,27 @@ end
 
 def find_sources( dir )
   Find.find( dir ) do |path|
-    if File.directory?( path )
-      excludes = ['.svn', 'tests', '_build', 'EXAMPLE.cpp']
+    if File.directory? path
+      excludes = ['.svn', 'tests', '_build']
       case Platform::IMPL
         when :macosx then excludes << 'win'
         when :mswin, :cygwin then excludes << 'mac'
-	else excludes << 'win' << 'mac'
+        else excludes << 'win' << 'mac'
       end
-      Find.prune if excludes.include?( File.basename( path ) )
-    elsif File.file?( path )
+      Find.prune if excludes.include? File.basename path
+    elsif File.file? path
       case Platform::IMPL
-        when :macosx then next if /_mac\.cpp$/.match( path )
-        when :mswin, :cygwin then next if /_win\.cpp$/.match( path )
+        when :macosx then next if /_mac\.cpp$/.match path
+        when :mswin, :cygwin then next if /_win\.cpp$/.match path
       end
-      yield( path, File.extname( path ) )
+      yield( path, File.extname( path ) ) unless File.basename(path) == 'EXAMPLE.cpp'
     end
   end
 end
 
 
-find_sources( dir ) do |path, ext|
-  path.sub!( /^.\//, '' )
+find_sources dir do |path, ext|
+  path.sub! /^.\//, ''
   case ext
     when ".h"   then headers   << path
     when ".ui"  then forms     << path
