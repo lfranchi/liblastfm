@@ -26,8 +26,9 @@
     #define LASTFM_EXPORT __declspec(dllLASTFM_EXPORT)
     #define LASTFM_IMPORT __declspec(dllLASTFM_IMPORT)
 #elif __GNUC__ >= 4
+    // GCC is just annoying, yes both should be default
     #define LASTFM_EXPORT __attribute__ ((visibility("default")))
-    #define LASTFM_IMPORT  __attribute__ ((visibility("hidden")))
+    #define LASTFM_IMPORT __attribute__ ((visibility("default")))
 #else
     #define LASTFM_EXPORT
     #define LASTFM_IMPORT
