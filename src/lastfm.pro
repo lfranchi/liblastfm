@@ -19,7 +19,8 @@ macx*:SOURCES -= core/mac/Growl.cpp core/mac/Applescript.cpp
 unix{
     QMAKE_CXXFLAGS_RELEASE -= -O2 -Os
     QMAKE_CXXFLAGS_RELEASE += -fvisibility-inlines-hidden -fvisibility=hidden -O3 -fomit-frame-pointer
-    linux*:QMAKE_CXXFLAGS_RELEASE += -freorder-blocks -fno-reorder-functions
-    
-    release:QMAKE_POST_LINK=strip $(TARGET)
+    linux*{
+        QMAKE_CXXFLAGS_RELEASE += -freorder-blocks -fno-reorder-functions -w
+    }    
+    release:QMAKE_POST_LINK=strip $(DESTDIR)/make$(TARGET)
 }
