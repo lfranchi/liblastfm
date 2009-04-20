@@ -20,55 +20,54 @@
 #ifndef LASTFM_GLOBAL_H
 #define LASTFM_GLOBAL_H
 
-/** Exports symbols when compiled as part of the lib
-  * Imports when included from some other target */
+/** LASTFM_EXPORTs symbols when compiled as part of the lib
+  * LASTFM_IMPORTs when included from some other target */
 #if defined(_WIN32) || defined(WIN32)
-    #ifdef _RADIO_DLLEXPORT
-        #define LASTFM_RADIO_DLLEXPORT __declspec(dllexport)
-    #else
-        #define LASTFM_RADIO_DLLEXPORT __declspec(dllimport)
-    #endif
-
-    #ifdef _FINGERPRINT_DLLEXPORT
-        #define LASTFM_FINGERPRINT_DLLEXPORT __declspec(dllexport)
-    #else
-        #define LASTFM_FINGERPRINT_DLLEXPORT __declspec(dllimport)
-    #endif
-
-    #ifdef _WS_DLLEXPORT
-        #define LASTFM_WS_DLLEXPORT __declspec(dllexport)
-    #else
-        #define LASTFM_WS_DLLEXPORT __declspec(dllimport)
-    #endif
-
-    #ifdef _TYPES_DLLEXPORT
-        #define LASTFM_TYPES_DLLEXPORT __declspec(dllexport)
-    #else
-        #define LASTFM_TYPES_DLLEXPORT __declspec(dllimport)
-    #endif
-    
-    #ifdef _CORE_DLLEXPORT
-        #define LASTFM_CORE_DLLEXPORT __declspec(dllexport)
-    #else
-        #define LASTFM_CORE_DLLEXPORT __declspec(dllimport)
-    #endif
-
-    #ifdef _SCROBBLE_DLLEXPORT
-        #define LASTFM_SCROBBLE_DLLEXPORT __declspec(dllexport)
-    #else
-        #define LASTFM_SCROBBLE_DLLEXPORT __declspec(dllimport)
-    #endif
-
-
+    #define LASTFM_EXPORT __declspec(dllLASTFM_EXPORT)
+    #define LASTFM_IMPORT __declspec(dllLASTFM_IMPORT)
+#elif __GNUC__ >= 4
+    #define LASTFM_EXPORT __attribute__ ((visibility("default")))
+    #define LASTFM_IMPORT  __attribute__ ((visibility("hidden")))
 #else
-    #define LASTFM_RADIO_DLLEXPORT
-    #define LASTFM_FINGERPRINT_DLLEXPORT
-    #define LASTFM_WS_DLLEXPORT
-    #define LASTFM_CORE_DLLEXPORT
-    #define LASTFM_TYPES_DLLEXPORT
-    #define LASTFM_SCROBBLE_DLLEXPORT
+    #define LASTFM_EXPORT
+    #define LASTFM_IMPORT
 #endif
 
+#ifdef _RADIO_DLLEXPORT
+    #define LASTFM_RADIO_DLLEXPORT LASTFM_EXPORT
+#else
+    #define LASTFM_RADIO_DLLEXPORT LASTFM_IMPORT
+#endif
+
+#ifdef _FINGERPRINT_DLLEXPORT
+    #define LASTFM_FINGERPRINT_DLLEXPORT LASTFM_EXPORT
+#else
+    #define LASTFM_FINGERPRINT_DLLEXPORT LASTFM_IMPORT
+#endif
+
+#ifdef _WS_DLLEXPORT
+    #define LASTFM_WS_DLLEXPORT LASTFM_EXPORT
+#else
+    #define LASTFM_WS_DLLEXPORT LASTFM_IMPORT
+#endif
+
+#ifdef _TYPES_DLLEXPORT
+    #define LASTFM_TYPES_DLLEXPORT LASTFM_EXPORT
+#else
+    #define LASTFM_TYPES_DLLEXPORT LASTFM_IMPORT
+#endif
+
+#ifdef _CORE_DLLEXPORT
+    #define LASTFM_CORE_DLLEXPORT LASTFM_EXPORT
+#else
+    #define LASTFM_CORE_DLLEXPORT LASTFM_IMPORT
+#endif
+
+#ifdef _SCROBBLE_DLLEXPORT
+    #define LASTFM_SCROBBLE_DLLEXPORT LASTFM_EXPORT
+#else
+    #define LASTFM_SCROBBLE_DLLEXPORT LASTFM_IMPORT
+#endif
 
 
 #include <QMetaEnum>
@@ -90,7 +89,7 @@ namespace lastfm
             if (m.name() == QLatin1String(enum_name))
                 return QLatin1String(m.valueToKey(enum_value));
         }
-        return "Unknown enum value: " + QString::number( enum_value );
+        return QString("Unknown enum value for \"%1\": %2").arg( enum_name ).arg( enum_value );
     }
 
 
