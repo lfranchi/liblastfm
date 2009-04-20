@@ -19,7 +19,6 @@
 
 #include "Growl.h"
 #include "AppleScript.h"
-#include "../CoreProcess.h"
 #include <QCoreApplication>
 #include <QFileInfo>
 
@@ -37,6 +36,7 @@ Growl::notify()
 
     AppleScript script;
     script << "tell application 'GrowlHelperApp'"
+           << "if running"
            <<     "register as application '" + qApp->applicationName() + "'"
                           " all notifications {'" + m_name + "'}"
                           " default notifications {'" + m_name + "'}"
@@ -45,6 +45,7 @@ Growl::notify()
                           " title " + AppleScript::asUnicodeText( m_title ) +
                           " description " + AppleScript::asUnicodeText( m_description ) + 
                           " application name '" + qApp->applicationName() + "'"
+           << "end if"
            << "end tell";
     script.exec();
 }
