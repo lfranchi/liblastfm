@@ -45,12 +45,15 @@ private slots:
 int main( int argc, char** argv )
 {
     MyCoreApp app( argc, argv );
+    // this is used to generate the UserAgent for webservice requests
+    // please set it to something sensible in your application
+    app.setApplicationName( "liblastfm" );
     
 ////// you'll need to fill these in for this demo to work
-    Ws::Username = "2girls1cup";
-    Ws::ApiKey = "e57a776f8279e546e2aa00e132e5ae2d";
-    Ws::SharedSecret = "be955c47b4390be5992696595c0abc34"; //ssssh!
-    QString password = "TESTarse1";
+    Ws::Username = "";
+    Ws::ApiKey = "";
+    Ws::SharedSecret = "";
+    QString password = "";
 
 ////// Usually you never have to construct an Last.fm WS API call manually
     // eg. Track.getTopTags() just returns a WsReply* but authentication is

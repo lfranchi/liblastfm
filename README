@@ -40,6 +40,7 @@ Installing liblastfm
 
 Packagers will be relieved to know that DESTDIR is supported.
 Packagers should also build using: ./configure --release
+FIXME! we would like to support the normal --prefix route pls.
 
 
 Using liblastfm
@@ -75,3 +76,8 @@ Private Headers
    prefix the header guard with LASTFM
 2. #includes should be the full source tree path, eg.
    #include "../ws/WsReply.h"
+
+
+Release History
+===============
+0.2 -- 20th April 2009

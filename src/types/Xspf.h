@@ -30,7 +30,7 @@ namespace lastfm
     {
     public:
         /** pass in the playlist node! */
-    	Xspf( const class QDomElement& playlist_node, Track::Source src = Track::LastFmRadio );
+    	Xspf( const class QDomElement& playlist_node );
 
     	QList<Track> tracks() const { return m_tracks; }
     	QString title() const{ return m_title; }

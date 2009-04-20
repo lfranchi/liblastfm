@@ -42,7 +42,7 @@ end
 def find_sources( dir )
   Find.find( dir ) do |path|
     if File.directory?( path )
-      excludes = ['.svn', 'tests', '_build']
+      excludes = ['.svn', 'tests', '_build', 'EXAMPLE.cpp']
       case Platform::IMPL
         when :macosx then excludes << 'win'
         when :mswin, :cygwin then excludes << 'mac'

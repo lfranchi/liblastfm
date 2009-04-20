@@ -23,7 +23,7 @@
 #include <QUrl>
 
 
-lastfm::Xspf::Xspf( const QDomElement& playlist_node, Track::Source src )
+lastfm::Xspf::Xspf( const QDomElement& playlist_node )
 {
     try
     {
@@ -49,14 +49,13 @@ lastfm::Xspf::Xspf( const QDomElement& playlist_node, Track::Source src )
                 t.setArtist( e.optional( "creator" ).text() );
                 t.setAlbum( e.optional( "album" ).text() );
                 t.setDuration( e.optional( "duration" ).text().toInt() / 1000 );
-                t.setSource( src );
             }
             catch (std::runtime_error& exception)
             {
                 qWarning() << exception.what() << e;
             }
             
-            m_tracks += t; // outside since location is enough basically
+            m_tracks += t; // outside try block since location is enough basically
         }
     }
     catch (std::runtime_error& e)

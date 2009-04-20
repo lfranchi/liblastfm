@@ -120,6 +120,8 @@ lastfm::RadioTuner::onGetPlaylistReturn( WsReply* reply )
         }
         else {
             m_retry_counter = 0;
+            foreach (Track t, tracks)
+                MutableTrack( t ).setSource( Track::LastFmRadio );
             m_queue += tracks;
             emit trackAvailable();
         }

@@ -87,6 +87,7 @@ private slots:
 int main( int argc, char** argv )
 {
     QApplication app( argc, argv );
+    app.setApplicationName( "liblastfm" ); // used to generate UserAgent
     
     // all you need for non-authenticated webservices is your API key
     // this one is a public one, it can only do artist.getSimilar calls, so

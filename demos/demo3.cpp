@@ -42,10 +42,10 @@ public slots:
 int main( int argc, char** argv )
 {
     // all these are REQUIRED in order to scrobble
-    Ws::Username = "2girls1cup";
-    Ws::ApiKey = "e57a776f8279e546e2aa00e132e5ae2d";
-    Ws::SharedSecret = "be955c47b4390be5992696595c0abc34"; //ssssh!
-    Ws::SessionKey = "a4c5c9359057870fdcad844dba982fd0"; // you need to auth to get this
+    Ws::Username = "";
+    Ws::ApiKey = "";
+    Ws::SharedSecret = "";
+    Ws::SessionKey = ""; // you need to auth to get this... try demo2
     QCoreApplication::setApplicationName( "liblastfm" );
     QCoreApplication::setApplicationVersion( VERSION );
 
@@ -63,6 +63,8 @@ int main( int argc, char** argv )
     // And the cache is persistent between sessions. So you should cache at the
     // scrobble point usually, not before
     as.cache( t );
+    
+    //FIXME I don't get it, but the timer never triggers! pls fork and fix!
     QTimer::singleShot( 31*1000, &as, SLOT(submit()) );
     
     app.connect( &as, SIGNAL(status(int)), SLOT(onStatus(int)) );
