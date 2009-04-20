@@ -108,11 +108,11 @@ middle "Running qmake..."
     fi
 
     cd src
-    qmake -config $config "$other_args" || die "Configure failed."
+    $QMAKE -config $config "$other_args" || die "Configure failed."
     cd ../tests
-    qmake -config debug "CONFIG -= app_bundle"
+    $QMAKE -config debug "CONFIG -= app_bundle"
     cd ../demos
-    qmake -config debug "CONFIG -= app_bundle"
+    $QMAKE -config debug "CONFIG -= app_bundle"
 
 echo
 echo 'Good, your configure is finished!'

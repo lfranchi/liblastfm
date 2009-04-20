@@ -97,6 +97,6 @@ install: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastf
 
 .PHONY: clean
 clean:
-	rm -r _include
+	rm -rf _include
 	cd src && make clean
 EOS
