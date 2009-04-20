@@ -30,9 +30,6 @@ class ScrobblerSubmission : public ScrobblerPostHttp
     QList<lastfm::Track> m_tracks;
     QList<lastfm::Track> m_batch;
 
-signals:
-    void started();
-
 public:    
 	/** tracks will be submitted in batches of 50 */
     void setTracks( const QList<lastfm::Track>& );

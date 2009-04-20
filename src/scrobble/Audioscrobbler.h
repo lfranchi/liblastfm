@@ -23,11 +23,8 @@
 #include <QByteArray>
 #include <QList>
 #include <QString>
+#include <QObject>
 #include <QVariant>
-class ScrobblerHandshake; //TODO pimpl
-class NowPlaying;
-class ScrobblerSubmission;
-class ScrobbleCache;
 
 namespace lastfm
 {
@@ -79,7 +76,7 @@ namespace lastfm
         enum Error
         {
             /** the following will show via the status signal, the scrobbler will
-            * not submit this session (np too), however caching will continue */
+              * not submit this session (np too), however caching will continue */
             ErrorBadSession = StatusMax,
             ErrorBannedClientVersion,
             ErrorInvalidSessionKey,
@@ -101,12 +98,7 @@ namespace lastfm
         void onError( Error );
 
     private:
-    	const QString m_clientId;
-        ScrobblerHandshake* m_handshake;
-        NowPlaying* m_np;
-        ScrobblerSubmission* m_submitter;
-        ScrobbleCache* m_cache;
-        uint m_hard_failures;
+        class AudioscrobblerPrivate* d;
     };
 }
 

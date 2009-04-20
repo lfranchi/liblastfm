@@ -25,15 +25,36 @@
 #include "../ws/WsKeys.h"
 
 
-lastfm::Audioscrobbler::Audioscrobbler( const QString& clientId )
-        : m_clientId( clientId ),
-          m_handshake( 0 ), 
-          m_np( 0 ), 
-          m_submitter( 0 ),
-          m_hard_failures( 0 )
+namespace lastfm
 {
-    m_cache = new ScrobbleCache( Ws::Username );
+    struct AudioscrobblerPrivate
+    {
+        AudioscrobblerPrivate(const QString& id)
+                : id( id )
+                , cache( Ws::Username )
+                , hard_failures( 0 )
+        {}
+        
+        ~AudioscrobblerPrivate()
+        {
+            delete handshake;
+            delete np;
+            delete submitter;
+        }
 
+    	const QString id;
+        QPointer<ScrobblerHandshake> handshake;
+        QPointer<NowPlaying> np;
+        QPointer<ScrobblerSubmission> submitter;
+        ScrobbleCache cache;
+        uint hard_failures;
+    };
+}
+
+
+lastfm::Audioscrobbler::Audioscrobbler( const QString& id )
+        : d( new AudioscrobblerPrivate(id) )
+{
     handshake();
     submit(); // will submit what's there once the handshake completes
 }
@@ -41,84 +62,80 @@ lastfm::Audioscrobbler::Audioscrobbler( const QString& clientId )
 
 lastfm::Audioscrobbler::~Audioscrobbler()
 {
-    delete m_cache;
-    delete m_handshake;
-    delete m_np;
-    delete m_submitter;
+    delete d;
 }
 
 
 void
 lastfm::Audioscrobbler::handshake() //private
 {
-    m_hard_failures = 0;
+    d->hard_failures = 0;
 
     // if we are here due to hard failure then we need to save what we were 
     // doing and load it back into the new requests
     QByteArray np_data;
     QList<Track> tracks;
-    if (m_np) np_data = m_np->postData();
-    if (m_submitter) tracks = m_submitter->unsubmittedTracks();
+    if (d->np) np_data = d->np->postData();
+    if (d->submitter) tracks = d->submitter->unsubmittedTracks();
 
     // we delete to be sure of the state of the QHttp objects, as they are 
     // rather black box
-    delete m_handshake;
-    delete m_np;
-    delete m_submitter;
+    delete d->handshake;
+    delete d->np;
+    delete d->submitter;
     
-    m_handshake = new ScrobblerHandshake( m_clientId );
-    connect( m_handshake, SIGNAL(done( QByteArray )), SLOT(onHandshakeReturn( QByteArray )), Qt::QueuedConnection );
-    connect( m_handshake, SIGNAL(responseHeaderReceived( QHttpResponseHeader )), SLOT(onHandshakeHeaderReceived( QHttpResponseHeader )) );
-    m_np = new NowPlaying( np_data );
-    connect( m_np, SIGNAL(done( QByteArray )), SLOT(onNowPlayingReturn( QByteArray )), Qt::QueuedConnection );
-    m_submitter = new ScrobblerSubmission;
-    m_submitter->setTracks( tracks );
-    connect( m_submitter, SIGNAL(done( QByteArray )), SLOT(onSubmissionReturn( QByteArray )), Qt::QueuedConnection );
+    d->handshake = new ScrobblerHandshake( d->id );
+    connect( d->handshake, SIGNAL(done( QByteArray )), SLOT(onHandshakeReturn( QByteArray )), Qt::QueuedConnection );
+    d->np = new NowPlaying( np_data );
+    connect( d->np, SIGNAL(done( QByteArray )), SLOT(onNowPlayingReturn( QByteArray )), Qt::QueuedConnection );
+    d->submitter = new ScrobblerSubmission;
+    d->submitter->setTracks( tracks );
+    connect( d->submitter, SIGNAL(done( QByteArray )), SLOT(onSubmissionReturn( QByteArray )), Qt::QueuedConnection );
 }
 
 
 void
 lastfm::Audioscrobbler::rehandshake() //public
 {
-    if (!m_submitter->hasSession())
+    if (!d->submitter->hasSession())
     {
-        m_handshake->request();
+        d->handshake->request();
     }
     else
         // if we still have a valid session, np may have been failing, so just
         // send it as it doesn't hurt
-        m_np->request();
+        d->np->request();
 }
 
 
 void
 lastfm::Audioscrobbler::nowPlaying( const Track& track )
 {
-    m_np->submit( track );
+    d->np->submit( track );
 }
 
 
 void
 lastfm::Audioscrobbler::cache( const Track& track )
 {
-    m_cache->add( track );
+    d->cache.add( track );
 }
 
 
 void
 lastfm::Audioscrobbler::cache( const QList<Track>& tracks )
 {
-    m_cache->add( tracks );
+    d->cache.add( tracks );
 }
 
 
 void
 lastfm::Audioscrobbler::submit()
 {
-    m_submitter->setTracks( m_cache->tracks() );
-    m_submitter->submitNextBatch();
+    d->submitter->setTracks( d->cache.tracks() );
+    d->submitter->submitNextBatch();
     
-    if (m_submitter->isActive()) 
+    if (d->submitter->isActive()) 
         emit status( Scrobbling );
 }
 
@@ -160,16 +177,16 @@ lastfm::Audioscrobbler::onHandshakeReturn( const QByteArray& result ) //TODO tri
 
     if (code == "OK" && results.count() >= 4)
     {
-        m_np->setSession( results[1] );
-        m_np->setUrl( QString::fromUtf8( results[2] ) );
-        m_submitter->setSession( results[1] );
-        m_submitter->setUrl( QString::fromUtf8( results[3] ) );
+        d->np->setSession( results[1] );
+        d->np->setUrl( QString::fromUtf8( results[2] ) );
+        d->submitter->setSession( results[1] );
+        d->submitter->setUrl( QString::fromUtf8( results[3] ) );
 
         emit status( Audioscrobbler::Handshaken );
 
         // submit any queued work
-        m_np->request();
-        m_submitter->request();
+        d->np->request();
+        d->submitter->request();
     }
     else if (code == "BANNED")
     {
@@ -184,7 +201,7 @@ lastfm::Audioscrobbler::onHandshakeReturn( const QByteArray& result ) //TODO tri
         onError( Audioscrobbler::ErrorBadTime );
     }
     else
-        m_handshake->retry(); //TODO increasing time up to 2 hours
+        d->handshake->retry(); //TODO increasing time up to 2 hours
 }
 
 
@@ -195,17 +212,13 @@ lastfm::Audioscrobbler::onNowPlayingReturn( const QByteArray& result )
 
     if (code == "OK")
     {
-        m_np->reset();
+        d->np->reset();
     }
     else if (code == "BADSESSION")
     {
-        if (!m_submitter->isActive())
-        {
-            // if scrobbling is happening then there is no way I'm causing
-            // duplicate scrobbles! We'll fail next time we try to contact 
-            // Last.fm instead
-            onError( Audioscrobbler::ErrorBadSession );
-        }
+        // don't do anything, because we should use hard-failure route to ensure
+        // we don't do an infinitely fast np:BADSESSION->handshake() loop
+        // but we don't so we can't do anything
     }
     // yep, no else. The protocol says hard fail, I say, don't:
     //  1) if only np is down, then hard failing will just mean a lot of work for the handshake php script with no good reason
@@ -224,11 +237,11 @@ lastfm::Audioscrobbler::onSubmissionReturn( const QByteArray& result )
 
     if (code == "OK")
     {
-        m_hard_failures = 0;
-        m_cache->remove( m_submitter->batch() );
-        m_submitter->submitNextBatch();
+        d->hard_failures = 0;
+        d->cache.remove( d->submitter->batch() );
+        d->submitter->submitNextBatch();
 
-        if (m_submitter->batch().isEmpty())
+        if (d->submitter->batch().isEmpty())
         {
             emit status( Audioscrobbler::TracksScrobbled );
         }
@@ -240,12 +253,12 @@ lastfm::Audioscrobbler::onSubmissionReturn( const QByteArray& result )
 	else if (code.startsWith( "FAILED Plugin bug" ))
 	{
 		qWarning() << "YOU SUCK! Attempting reasonable error handling...";
-		m_cache->remove( m_submitter->batch() );
+		d->cache.remove( d->submitter->batch() );
 	}
-	else if (++m_hard_failures >= 3)
+	else if (++d->hard_failures >= 3)
     {
         onError( Audioscrobbler::ErrorThreeHardFailures );
     }
     else
-        m_submitter->retry();
+        d->submitter->retry();
 }

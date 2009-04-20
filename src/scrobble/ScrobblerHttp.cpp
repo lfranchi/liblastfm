@@ -88,12 +88,16 @@ ScrobblerPostHttp::request()
     if (m_data.isEmpty() || m_session.isEmpty())
         return;
 
-    rp->deleteLater();
+    if (rp) 
+        rp->deleteLater();
+    
+    QByteArray data = "s=" + m_session + m_data;
 
     QNetworkRequest rq( m_url );
     rq.setRawHeader( "Content-Type", "application/x-www-form-urlencoded" );
-    rp = WsRequestBuilder::nam()->post( rq, m_data );
+    rp = WsRequestBuilder::nam()->post( rq, data );
     connect( rp, SIGNAL(finished()), SLOT(onRequestFinished()) );
+    rp->setParent( this );
 
-    qDebug() << "HTTP POST:" << m_url << m_data;
+    qDebug() << "HTTP POST:" << m_url << data;
 }
