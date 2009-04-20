@@ -16,7 +16,8 @@ target.path = /lib
 # us at Last.fm want these but you prolly don't
 macx*:SOURCES -= core/mac/Growl.cpp core/mac/Applescript.cpp
 
-# allow g++ to super optimise us
-#release:SOURCES = _all.cpp
-
-unix:QMAKE_CXXFLAGS_RELEASE += -fvisibility-inlines-hidden -fvisibility=hidden
+unix{
+    QMAKE_CXXFLAGS_RELEASE -= -O2 -Os
+    QMAKE_CXXFLAGS_RELEASE += -fvisibility-inlines-hidden -fvisibility=hidden -O3
+    release:QMAKE_POST_LINK=strip $(TARGET)
+}

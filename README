@@ -39,6 +39,7 @@ Installing liblastfm
     PREFIX=/usr/local ./configure && make && sudo make install
 
 Packagers will be relieved to know that DESTDIR is supported.
+Packagers should also build using: ./configure --release
 
 
 Using liblastfm
