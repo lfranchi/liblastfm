@@ -88,13 +88,16 @@ int main( int argc, char** argv )
 {
     QApplication app( argc, argv );
     
+    // all you need for non-authenticated webservices is your API key
+    // this one is a public one, it can only do artist.getSimilar calls, so
+    // I suggest you don't use it :P
     Ws::ApiKey = "b25b959554ed76058ac220b7b2e0a026";
 
     ArtistList artists;
     artists.getSimilar( "nirvana" );
     artists.resize( 300, 400 ); // Qt picks truly asanine default sizes for its widgets
     artists.show();
-    
+
     return app.exec();
 }
 

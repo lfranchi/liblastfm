@@ -27,6 +27,7 @@ struct MyCoreApp : QCoreApplication
 {
     Q_OBJECT
     
+public:
     MyCoreApp( int& argc, char**& argv ) : QCoreApplication( argc, argv )
     {}
     
@@ -46,10 +47,10 @@ int main( int argc, char** argv )
     MyCoreApp app( argc, argv );
     
 ////// you'll need to fill these in for this demo to work
-    Ws::ApiKey       = "c8c7b163b11f92ef2d33ba6cd3c2c3c3";
-    Ws::SharedSecret = "73582dfc9e556d307aead069af110ab8";
-    Ws::Username     = "mxcl";
-    QString password = "wassagstdu";
+    Ws::Username = "2girls1cup";
+    Ws::ApiKey = "e57a776f8279e546e2aa00e132e5ae2d";
+    Ws::SharedSecret = "be955c47b4390be5992696595c0abc34"; //ssssh!
+    QString password = "TESTarse1";
 
 ////// Usually you never have to construct an Last.fm WS API call manually
     // eg. Track.getTopTags() just returns a WsReply* but authentication is
@@ -97,6 +98,7 @@ int main( int argc, char** argv )
         // see above.
         Ws::SessionKey = session["key"].nonEmptyText();
         
+        qDebug() << "sk:" << Ws::SessionKey;
         
     ////// because the Ws::SessionKey is now set, the AuthenticatedUser
         // class will work. And we can call authenticated calls
