@@ -62,7 +62,7 @@ begin
     hs = Array.new
     hs << 'global.h'
     hs << 'core/UrlBuilder.h' << 'core/XmlQuery.h' << 'core/misc.h'
-    hs << 'fingerprint/Fingerprint.h'
+    hs << 'fingerprint/Fingerprint.h' << 'fingerprint/FingerprintableSource.h'
     hs << 'radio/RadioStation.h' << 'radio/RadioTuner.h'
     hs << 'scrobble/Audioscrobbler.h' << 'scrobble/Scrobble.h' << 'scrobble/ScrobblePoint.h'
     hs << 'types/Track.h types/Mbid.h' << 'types/Artist.h' << 'types/Album.h' << 'types/FingerprintId.h' << 'types/Playlist.h' << 'types/Tag.h' << 'types/User.h types/Xspf.h'

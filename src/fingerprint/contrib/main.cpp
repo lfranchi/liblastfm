@@ -18,6 +18,10 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
 
+// ubuntu 9.04: sudo apt-get install libmad0-dev libvorbis-dev libflac-dev libfaac-dev
+// macports: sudo port install libmad libvorbis libflac
+// Windows: lol
+
 #include "MadSource.h"
 #include "VorbisSource.h"
 #include "FlacSource.h"

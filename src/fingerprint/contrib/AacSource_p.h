@@ -18,12 +18,12 @@
  ***************************************************************************/
 
 #include <faad.h>
-#include <mp4.h>
+#include <mp4ff.h>
 
 class AAC_File
 {
 public:
-    AAC_File(const QString& fileName, int headerType);
+    AAC_File(const QString&, int headerType);
     virtual ~AAC_File();
     virtual void getInfo( int& lengthSecs, int& samplerate, int& bitrate, int& nchannels ) = 0;
     virtual bool init() = 0;
@@ -52,7 +52,7 @@ public:
 class AAC_MP4_File : public AAC_File
 {
 public:
-    AAC_MP4_File( const QString& fileName, int headerType = AAC_MP4 );
+    AAC_MP4_File(const QString&, int headerType = AAC_MP4 );
     ~AAC_MP4_File();
     virtual void getInfo( int& lengthSecs, int& samplerate, int& bitrate, int& nchannels );
     virtual bool init();

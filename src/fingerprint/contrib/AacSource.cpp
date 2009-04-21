@@ -39,8 +39,9 @@
 // AAC_File
 //
 ////////////////////////////////////////////////////////////////////////
-AAC_File::AAC_File(int headerType)
-    : m_inBuf(NULL)
+AAC_File::AAC_File(const QString& fileName, int headerType)
+    : m_fileName(fileName)
+    , m_inBuf(NULL)
     , m_inBufSize(0)
     , m_decoder(0)
     , m_overflow(static_cast<unsigned char*>(malloc( sizeof(unsigned char) * 1024 )))
@@ -729,20 +730,10 @@ AAC_MP4_File::~AAC_MP4_File()
 //
 ////////////////////////////////////////////////////////////////////////
 
-AacSource::AacSource(const QString& fileName) :
-      m_fileName(fileName)
-    , m_eof( false )
+AacSource::AacSource()
+    : m_eof( false )
     , m_aacFile( NULL )
-{
-    int headerType = checkHeader();
-    if ( headerType != AAC_File::AAC_UNKNOWN )
-    {
-        if ( headerType == AAC_File::AAC_MP4 )
-            m_aacFile = new AAC_MP4_File(m_fileName, headerType);
-        else
-            m_aacFile = new AAC_ADTS_File( m_fileName, headerType );
-    }
-}
+{}
 
 
 AacSource::~AacSource()
@@ -814,6 +805,16 @@ void AacSource::getInfo( int& lengthSecs, int& samplerate, int& bitrate, int& nc
 void AacSource::init(const QString& fileName)
 {
     m_fileName = fileName;
+    
+    int headerType = checkHeader();
+    if ( headerType != AAC_File::AAC_UNKNOWN )
+    {
+        if ( headerType == AAC_File::AAC_MP4 )
+            m_aacFile = new AAC_MP4_File(m_fileName, headerType);
+        else
+            m_aacFile = new AAC_ADTS_File( m_fileName, headerType );
+    }    
+    
     if ( m_aacFile )
         m_aacFile->init();
     else

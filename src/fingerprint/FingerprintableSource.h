@@ -20,15 +20,14 @@
 #ifndef LASTFM_FINGERPRINTABLE_SOURCE_H
 #define LASTFM_FINGERPRINTABLE_SOURCE_H
 
+#include <lastfm/global.h>
 #include <QString>
 
 namespace lastfm
 {
-    class FingerprintableSource
+    class LASTFM_DLLEXPORT FingerprintableSource
     {
     public:
-        virtual ~FingerprintableSource() = 0;
-        
         /** do all initialisation here and throw if there is problems */
         virtual void init( const QString& path ) = 0;
 
