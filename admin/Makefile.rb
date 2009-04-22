@@ -50,7 +50,7 @@ $headers = Array.new
 def mkdir( path )
   Dir.mkdir( path )
 rescue SystemCallError
-  # braindead for this to throw an exception on failure
+  # braindead for this to throw an exception if the dir already exists!
   # as an additional rant, the Ruby File/Dir classes are a poo design
 end
 
@@ -80,23 +80,28 @@ $(DESTDIR)#{$install_prefix}/include/lastfm:
 
 _include/lastfm/global.h: src/global.h
 	cp src/global.h $@
-$(DESTDIR)#{$install_prefix}/include/lastfm/global.h: src/global.h
+$(DESTDIR)#{$install_prefix}/include/lastfm/global.h: src/global.h | $(DESTDIR)#{$install_prefix}/include/lastfm
 	cp src/global.h $@
 
-_include/lastfm.h: | _include/lastfm
+_include/lastfm.h: #{$headers.join(' ')} | _include/lastfm
 	#{rubystring} > $@
-$(DESTDIR)#{$install_prefix}/include/lastfm.h:
-	mkdir $(dir $@)
+$(DESTDIR)#{$install_prefix}/include/lastfm.h: _include/lastfm.h | $(DESTDIR)#{$install_prefix}/include/lastfm
+	cp _include/lastfm.h $@
 
 .PHONY: headers
 headers: #{$headers.join(' ')} _include/lastfm/global.h _include/lastfm.h
 
 .PHONY: install
-install: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastfm/global.h
+install: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastfm/global.h $(DESTDIR)#{$install_prefix}/include/lastfm.h
 	cd src && make install "INSTALL_ROOT=$(DESTDIR)#{$install_prefix}"
 
 .PHONY: clean
 clean:
 	rm -rf _include
-	cd src && make clean
+	cd src && make distclean
+	rmdir src/_build
+	rm src/_files.qmake
+	rm src/_version.h
+	rm -rf _bin
+	
 EOS
