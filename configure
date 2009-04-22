@@ -106,15 +106,15 @@ middle "Running qmake..."
                 fix_sln
         esac
     fi
-
-    cd src
-    $QMAKE -config $config "$other_args" || die "Configure failed."
-    cd ../tests
-    $QMAKE -config debug "CONFIG -= app_bundle"
-    cd ../demos
-    $QMAKE -config debug "CONFIG -= app_bundle"
+    
+    cat <<EOS>> Makefile
+src/Makefile:
+	cd src && $QMAKE -config $config "$other_args"
+tests/Makefile:
+	cd tests && $QMAKE -config debug "CONFIG -= app_bundle"
+demos/Makefile:
+	cd demos && $QMAKE -config debug "CONFIG -= app_bundle"
+EOS
 
 echo
-echo 'Good, your configure is finished!'
-
-exit 0
+echo 'Good, your configure is finished! Now type: make'

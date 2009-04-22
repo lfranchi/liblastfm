@@ -56,9 +56,16 @@ end
 
 puts <<-EOS
 .PHONY: all
-all: headers
+all: headers __src __demos __tests
+
+.PHONY: __src
+__src: src/Makefile
 	cd src && $(MAKE)
+.PHONY: __tests
+__tests: tests/Makefile
 	cd tests && $(MAKE)
+.PHONY: __demos
+__demos: demos/Makefile
 	cd demos && $(MAKE)
 
 EOS
@@ -98,10 +105,18 @@ install: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastf
 .PHONY: clean
 clean:
 	rm -rf _include
-	cd src && make distclean
-	rmdir src/_build
+	-rm -r src/_build
+	-rm -r demos/_build
+	-rm -r tests/_build
+	-rm src/Makefile
+	-rm tests/Makefile
+	-rm demos/Makefile
+	-rm -r _bin
+
+.PHONY: distclean
+distclean: clean
 	rm src/_files.qmake
 	rm src/_version.h
-	rm -rf _bin
-	
+	rm Makefile
+
 EOS
