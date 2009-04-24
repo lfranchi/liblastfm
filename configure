@@ -2,33 +2,6 @@
 
 source admin/utils.bash
 
-#################################################################### functions
-fix_sln()
-{
-    FIRST_BIT='
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "qmake", "qmake", "{780C13D3-8172-4EE0-8FD5-26ED6489851C}"
-	ProjectSection(SolutionItems) = preProject'
-    
-    for x in `admin/findmoose pro` .qmake.cache
-    do
-        FIRST_BIT="$FIRST_BIT
-		$x=$x"
-    done
-
-    LAST_BIT='
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{3FDD67B7-DF67-4F22-8545-755D722794BC}"
-	ProjectSection(SolutionItems) = preProject
-		common\qrc\common.qrc = common\qrc\common.qrc
-		lib\DllExportMacro.h = lib\DllExportMacro.h
-	EndProjectSection
-EndProject'
-
-    echo "$FIRST_BIT$LAST_BIT" >> Last.sln
-}
-
-
 ######################################################################## usage
 header "Configuring Last.fm"
 
@@ -54,7 +27,7 @@ QMAKE=`ruby admin/which_qmake.rb`
 if [[ $QMAKE == 'toolow' ]]
 then
 	      ##########################################################################80-->
-	echo "Your version of Qt seems to be too old, we require Qt 4.$min or above."
+	echo "Your version of Qt seems to be too old, we require Qt 4.4 or above."
 	echo
 	echo "It is possible you have Qt3 and Qt4 both installed. Locate your Qt4 installation"
 	echo "and ensure it is placed first in the path, eg:"
@@ -99,11 +72,8 @@ middle "Running qmake..."
                 [ $STATIC_LINK_3RDPARTIES_ON_MAC ] || other_args="CONFIG -= app_bundle";;
             Linux)
                 other_args="CONFIG += warn_off";;
-            *) 
-                #Windows, hopefullly
-                svn co svn+ssh://svn.last.fm/svn/clientside/bin/win _bin
-                other_args="-tp vc"
-                fix_sln
+            CYGWIN_NT-5.1) 
+                #other_args="-tp vc"
         esac
     fi
     
