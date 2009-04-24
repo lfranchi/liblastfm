@@ -74,6 +74,7 @@ middle "Running qmake..."
                 other_args="CONFIG += warn_off";;
             CYGWIN_NT-5.1) 
                 #other_args="-tp vc"
+                other_args="NOOP=''"
         esac
     fi
     
