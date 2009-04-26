@@ -47,10 +47,7 @@ namespace lastfm
         FingerprintId id() const { return m_id; }
 
         /** The actual data that is the fingerprint, this is about 70kB or so,
-          * there isn't anything in it until you call generate.
-          * HEY! The QByteArray returned is not valid if Fingerprint object is 
-          * deleted or falls off the stack. Seriously! Even if you copy it! Although
-          * you can of course *deep-copy* the data. */
+          * there isn't anything in it until you call generate. */
         QByteArray data() const { return m_data; }
 
         enum Error

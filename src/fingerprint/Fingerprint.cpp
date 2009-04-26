@@ -134,12 +134,13 @@ lastfm::Fingerprint::generate() throw( Error )
     
     // We succeeded
     std::pair<const char*, size_t> fpData = extractor->getFingerprint();
-    delete extractor;
     
     if (fpData.first == NULL || fpData.second == 0)
         throw InternalError;
     
-    m_data = QByteArray::fromRawData( fpData.first, fpData.second );
+    // Make a deep copy before extractor gets deleted
+    m_data = QByteArray( fpData.first, fpData.second );
+    delete extractor;
 }
 
 
