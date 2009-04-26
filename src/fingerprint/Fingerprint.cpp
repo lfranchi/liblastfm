@@ -127,6 +127,7 @@ lastfm::Fingerprint::generate() throw( Error )
         }
     }
     
+    ms.release();
     delete[] pPCMBuffer;
     
     if (!fpDone)

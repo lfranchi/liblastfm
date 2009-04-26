@@ -166,7 +166,7 @@ public:
 
 
    CircularArray()
-      : _headIdx(0), _pData(NULL)
+      : _headIdx(0), _pData(NULL), _size(0)
    { }
 
    CircularArray( size_type size )

@@ -265,6 +265,7 @@ void MP3_Source::getInfo( const QString& fileName, int& lengthSecs, int& sampler
    inputFile.close();
    mad_stream_finish(&madStream);
    mad_header_finish(&madHeader);
+   delete[] pMP3_Buffer;
 
 
    lengthSecs = static_cast<int>(madTimer.seconds);
