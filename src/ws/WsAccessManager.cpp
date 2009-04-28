@@ -20,7 +20,7 @@
 #include "WsAccessManager.h"
 #include "WsConnectionMonitor.h"
 #include "WsKeys.h"
-#include "../core/CoreSysInfo.h"
+#include <lastfm/misc.h>
 #include <QCoreApplication>
 #include <QNetworkRequest>
 #ifdef WIN32
@@ -86,7 +86,7 @@ WsAccessManager::WsAccessManager( QObject* parent )
         QByteArray name = QCoreApplication::applicationName().toUtf8();
         QByteArray version = QCoreApplication::applicationVersion().toUtf8();
         if (version.size()) version.prepend( ' ' );
-		Ws::UserAgent = qstrdup( name + version + " (" + CoreSysInfo::platform() + ")" );
+		Ws::UserAgent = qstrdup( name + version + " (" + lastfm::platform() + ")" );
 	}
 }
 

@@ -18,7 +18,7 @@
  ***************************************************************************/
 
 #include "ScrobbleCache.h"
-#include "../core/CoreDir.h"
+#include <lastfm/misc.h>
 #include <QCoreApplication>
 #include <QFile>
 #include <QDomElement>
@@ -30,7 +30,7 @@ ScrobbleCache::ScrobbleCache( const QString& username )
 {
     Q_ASSERT( username.length() );
 
-    m_path = CoreDir::data().filePath( username + "_subs_cache.xml" );
+    m_path = lastfm::dir::runtimeData().filePath( username + "_subs_cache.xml" );
     m_username = username;
 
     QDomDocument xml;

@@ -90,13 +90,18 @@ _include/lastfm/global.h: src/global.h
 $(DESTDIR)#{$install_prefix}/include/lastfm/global.h: src/global.h | $(DESTDIR)#{$install_prefix}/include/lastfm
 	cp src/global.h $@
 
+_include/lastfm/misc.h: src/core/misc.h
+	cp src/core/misc.h $@
+$(DESTDIR)#{$install_prefix}/include/lastfm/misc.h: src/misc.h | $(DESTDIR)#{$install_prefix}/include/lastfm
+	cp src/core/misc.h $@
+
 _include/lastfm.h: #{$headers.join(' ')} | _include/lastfm
 	#{rubystring} > $@
 $(DESTDIR)#{$install_prefix}/include/lastfm.h: _include/lastfm.h | $(DESTDIR)#{$install_prefix}/include/lastfm
 	cp _include/lastfm.h $@
 
 .PHONY: headers
-headers: #{$headers.join(' ')} _include/lastfm/global.h _include/lastfm.h
+headers: #{$headers.join(' ')} _include/lastfm/global.h _include/lastfm/misc.h _include/lastfm.h
 
 .PHONY: install
 install: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastfm/global.h $(DESTDIR)#{$install_prefix}/include/lastfm.h

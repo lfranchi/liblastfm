@@ -20,8 +20,6 @@
 #include "Scrobble.h"
 #include "ScrobblePoint.h"
 #include <QFSFileEngine>
-#include "../core/CoreSettings.h"
-#include "private.h"
 
 
 static inline QString dirToString( const QDir& d )
@@ -80,18 +78,6 @@ Scrobble::isValid( Invalidity* v ) const
                          << "[unknown]"
                          << "[unknown artist]").contains( d->artist.toLower() ), 
            ArtistInvalid );
-    
-    if (url().scheme() == "file")
-    {       
-        QString const path = dirToString( QFileInfo(url().path()).dir() );
 
-        foreach (QString const forbidden_path, CoreSettings().value( SCROBBLE_EXCLUSION_DIRS ).toStringList())
-        {
-            QDir d( forbidden_path );
-            if (!d.exists()) continue;
-            TEST( path.startsWith( dirToString( d ) ), ForbiddenPath );
-        }
-    }
-    
     return true;
 }

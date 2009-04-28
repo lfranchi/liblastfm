@@ -49,13 +49,6 @@ struct LASTFM_SCROBBLE_DLLEXPORT Scrobble : lastfm::Track
         ArtistNameMissing,
         TrackNameMissing,
         ArtistInvalid,
-        
-        // the user can setup rules that describe music that should never be
-        // scrobbled. We obey these rules even in your implementation :P
-        // it is also possible we may decide some paths are not sensible in the
-        // future and add them as well
-        ForbiddenPath,
-
         NoTimestamp,
         FromTheFuture,
         FromTheDistantPast

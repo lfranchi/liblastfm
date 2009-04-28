@@ -17,21 +17,20 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
 
-#include "CoreDir.h"
+#include "misc.h"
 #include <QDebug>
 #include <QDir>
 #ifdef WIN32
     #include <shlobj.h>
 #endif
 #ifdef Q_WS_MAC
-    #include "mac/CFStringToQString.h"
     #include <Carbon/Carbon.h>
 #endif
 
 
 #ifdef Q_WS_MAC
 QDir
-CoreDir::bundle()
+lastfm::dir::bundle()
 {
     // Trolltech provided example
     CFURLRef appUrlRef = CFBundleCopyBundleURL( CFBundleGetMainBundle() );
@@ -40,10 +39,6 @@ CoreDir::bundle()
     CFRelease(appUrlRef);
     CFRelease(macPath);
     return QDir( path );
-
-#if 0 // old code
-    return QDir( qApp->applicationDirPath() ).absoluteFilePath( "../.." );
-#endif
 }
 #endif
 
@@ -108,15 +103,37 @@ static QDir dataDotDot()
 
 
 QDir
-CoreDir::data()
+lastfm::dir::runtimeData()
 {
     return dataDotDot().filePath( "Last.fm" );
 }
 
 
+QDir
+lastfm::dir::logs()
+{
+#if __APPLE__
+    return QDir::home().filePath( "Library/Logs/Last.fm" );
+#else
+    return runtimeData();    
+#endif
+}
+
+
+QDir
+lastfm::dir::cache()
+{
+#if __APPLE__
+    return QDir::home().filePath( "Library/Cache/Last.fm" );
+#else
+    return runtimeData().filePath( "cache" );
+#endif
+}
+
+
 #ifdef WIN32
 QDir
-CoreDir::programFiles()
+lastfm::dir::programFiles()
 {
     char path[MAX_PATH];
 
@@ -136,5 +153,55 @@ CoreDir::programFiles()
     }
 
     return QString::fromLocal8Bit( path );
+}
+#endif
+
+
+CFStringRef
+lastfm::QStringToCFString( const QString &s )
+{
+    return CFStringCreateWithCharacters( 0, (UniChar*)s.unicode(), s.length() );
+}
+
+
+QByteArray
+lastfm::CFStringToUtf8( CFStringRef s )
+{
+    QByteArray result;
+
+    if (s != NULL) 
+    {
+        CFIndex length;
+        length = CFStringGetLength( s );
+        length = CFStringGetMaximumSizeForEncoding( length, kCFStringEncodingUTF8 ) + 1;
+        char* buffer = new char[length];
+
+        if (CFStringGetCString( s, buffer, length, kCFStringEncodingUTF8 ))
+            result = QByteArray( buffer );
+        else
+            qWarning() << "CFString conversion failed.";
+
+        delete[] buffer;
+    }
+
+    return result;
+}
+
+
+#if 0
+// this is a Qt implementation I found
+QString cfstring2qstring(CFStringRef str)
+{
+    if(!str)
+        return QString();
+    
+    CFIndex length = CFStringGetLength(str);
+    if(const UniChar *chars = CFStringGetCharactersPtr(str))
+        return QString((QChar *)chars, length);
+    UniChar *buffer = (UniChar*)malloc(length * sizeof(UniChar));
+    CFStringGetCharacters(str, CFRangeMake(0, length), buffer);
+    QString ret((QChar *)buffer, length);
+    free(buffer);
+    return ret;
 }
 #endif

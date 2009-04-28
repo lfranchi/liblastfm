@@ -18,7 +18,6 @@
  ***************************************************************************/
 
 #include <SystemConfiguration/SystemConfiguration.h>
-#include "../../core/mac/CFStringToQString.h"
 
 
 struct ProxyDict
@@ -58,7 +57,7 @@ inline ProxyDict::ProxyDict() : port( 0 )
         result = (hostStr != NULL) && (CFGetTypeID(hostStr) == CFStringGetTypeID());
     }
     if (result)
-        host = CFStringToQString( hostStr );
+        host = lastfm::CFStringToQString( hostStr );
 
     // get the proxy port
     CFNumberRef portNum;
