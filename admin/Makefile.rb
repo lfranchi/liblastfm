@@ -105,18 +105,18 @@ install: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastf
 .PHONY: clean
 clean:
 	rm -rf _include
-	-rm -r src/_build
-	-rm -r demos/_build
-	-rm -r tests/_build
-	-rm src/Makefile
-	-rm tests/Makefile
-	-rm demos/Makefile
-	-rm -r _bin
+	rm -rf src/_build
+	rm -rf demos/_build
+	rm -rf tests/_build
+	rm -f src/Makefile
+	rm -f tests/Makefile
+	rm -f demos/Makefile
+	rm -rf _bin
 
 .PHONY: distclean
 distclean: clean
-	rm src/_files.qmake
-	rm src/_version.h
-	rm Makefile
+	rm -f src/_files.qmake
+	rm -f src/_version.h
+	rm -f Makefile
 
 EOS
