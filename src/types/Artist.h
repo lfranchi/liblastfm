@@ -55,7 +55,7 @@ namespace lastfm
         {
             /** if no artist name is set, return the musicbrainz unknown identifier
               * in case some part of the GUI tries to display it anyway. Note isNull
-              * returns false still. So you should have queried this! */
+              * returns false still. So you should have queried that! */
             return m_name.isEmpty() ? "[unknown]" : m_name;
         }
         QString name() const { return QString(*this); }	

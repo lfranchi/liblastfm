@@ -40,9 +40,17 @@ Installing liblastfm
 ====================
     PREFIX=/usr/local ./configure --release && make && sudo make install
 
-Packagers will be relieved to know that DESTDIR is supported.
-Developers should build using: ./configure --debug
 FIXME! we would like to support the normal --prefix route pls.
+
+Packaging liblastfm
+===================
+
+DESTDIR is supported.
+
+The library is split into liblastfm and liblastfm_fingerprint. The 
+fingerprinting part is separate as it links to libfftw3. So if you want to 
+package it separately then you can. Sadly because there is simply no good
+configuration system in the world, you still have to build both…
 
 
 Using liblastfm

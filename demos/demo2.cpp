@@ -17,7 +17,6 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
  
-#include "common/qt/md5.cpp"     // we made this to ensure DRY
 #include <lastfm.h>
 #include <QtCore>
 
@@ -64,7 +63,7 @@ int main( int argc, char** argv )
     QMap<QString, QString> params;
     params["method"] = "auth.getMobileSession";
     params["username"] = lastfm::ws::Username;
-    params["authToken"] = Qt::md5( (lastfm::ws::Username + Qt::md5( password.toUtf8() )).toUtf8() );
+    params["authToken"] = lastfm::md5( (lastfm::ws::Username + lastfm::md5( password.toUtf8() )).toUtf8() );
     QNetworkReply* reply = lastfm::ws::post( params );
     
     // never do this when an event loop is running it's a real HACK
