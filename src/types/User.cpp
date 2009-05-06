@@ -18,79 +18,89 @@
  ***************************************************************************/
 
 #include "User.h"
-#include "../ws/WsRequestBuilder.h"
 #include "../core/UrlBuilder.h"
+#include "../core/XmlQuery.h"
+#include <QStringList>
+using lastfm::User;
+using lastfm::AuthenticatedUser;
 
 
-namespace lastfm {
+QMap<QString, QString>
+User::params(const QString& method) const
+{
+    QMap<QString, QString> map;
+    map["method"] = "user."+method;
+    map["user"] = m_name;
+    return map;
+}
 
 
-WsReply*
+QNetworkReply*
 User::getFriends() const
 {
-    return WsRequestBuilder( "user.getFriends" ).add( "user", m_name ).get();
+    return ws::get( params( "getFriends" ) );
 }
 
 
-WsReply*
+QNetworkReply*
 User::getTopTags() const
 {
-    return WsRequestBuilder( "user.getTopTags" ).add( "user", m_name ).get();
+    return ws::get( params( "getTopTags" ) );
 }
 
 
-WsReply* 
+QNetworkReply*
 User::getTopArtists() const
 {
-    return WsRequestBuilder( "user.getTopArtists" ).add( "user", m_name ).get();
+    return ws::get( params( "getTopArtists" ) );
 }
 
 
-WsReply* 
+QNetworkReply*
 User::getRecentArtists() const
 {
-    return WsRequestBuilder( "user.getRecentArtists" ).add( "user", m_name ).get();
+    return ws::get( params( "getRecentArtists" ) );
 }
 
 
-WsReply* 
+QNetworkReply*
 User::getRecentTracks() const
 {
-    return WsRequestBuilder( "user.getRecentTracks" ).add( "user", m_name ).get();
+    return ws::get( params( "getRecentTracks" ) );
 }
 
 
-WsReply* 
+QNetworkReply*
 User::getNeighbours() const
 {
-	return WsRequestBuilder( "user.getNeighbours" ).add( "user", m_name ).get();
+	return ws::get( params( "getNeighbours" ) );
 }
 
 
-WsReply*
+QNetworkReply*
 User::getPlaylists() const
 {
-    return WsRequestBuilder( "user.getPlaylists" ).add( "user", m_name ).get();
+    return ws::get( params( "getPlaylists" ) );
 }
 
 
 QList<User> //static
-User::list( WsReply* r )
+User::list( QNetworkReply* r )
 {
 	QList<User> users;
-    try
-    {
-        foreach (WsDomElement e, r->lfm().children( "user" ))
+    try {
+        XmlQuery lfm = ws::parse(r);
+        foreach (XmlQuery e, lfm.children( "user" ))
         {
             User u( e["name"].text() );
             u.m_smallImage = e["image size=small"].text();
             u.m_mediumImage = e["image size=medium"].text();
             u.m_largeImage = e["image size=large"].text();
-            u.m_realName = e.optional( "realname" ).text();
+            u.m_realName = e["realname"].text();
             users += u;
         }
     }
-    catch (std::runtime_error& e)
+    catch (ws::ParseError& e)
     {
         qWarning() << e.what();
     }    
@@ -98,29 +108,33 @@ User::list( WsReply* r )
 }
 
 
-WsReply* //static
+QNetworkReply* //static
 AuthenticatedUser::getInfo()
 {
-	return WsRequestBuilder( "user.getInfo" ).get();
+    QMap<QString, QString> map;
+    map["method"] = "user.getInfo";
+	return ws::post( map );
 }
 
 
-WsReply* //static
+QNetworkReply* //static
 AuthenticatedUser::getRecommendedArtists()
 {
-	return WsRequestBuilder( "user.getRecommendedArtists" ).get();
+    QMap<QString, QString> map;
+    map["method"] = "user.getRecommendedArtists";
+	return ws::post( map );
 }
 
 
 QUrl
 User::www() const
 { 
-    return lastfm::UrlBuilder( "user" ).slash( m_name ).url();
+    return UrlBuilder( "user" ).slash( m_name ).url();
 }
 
 
 QString //static
-AuthenticatedUser::getInfoString( WsReply* reply )
+AuthenticatedUser::getInfoString( QNetworkReply* reply )
 {
     #define tr QObject::tr
     
@@ -155,10 +169,10 @@ AuthenticatedUser::getInfoString( WsReply* reply )
     QString text;
 	try
 	{
-    	WsDomElement e = reply->lfm()["user"];
-    	Gender gender = e["gender"].text();
-    	QString age = e["age"].text();
-    	uint const scrobbles = e["playcount"].text().toUInt();
+    	XmlQuery user = XmlQuery(ws::parse(reply))["user"];
+    	Gender gender = user["gender"].text();
+    	QString age = user["age"].text();
+    	uint const scrobbles = user["playcount"].text().toUInt();
     	if (gender.known() && age.size() && scrobbles > 0)
     	{
     		text = tr("A %1, %2 years of age with %L3 scrobbles")
@@ -171,7 +185,7 @@ AuthenticatedUser::getInfoString( WsReply* reply )
             text = tr("%L1 scrobbles").arg( scrobbles );
     	}    
     }
-	catch (std::runtime_error& e)
+	catch (ws::ParseError& e)
 	{
         qWarning() << e.what();
 	}
@@ -179,6 +193,3 @@ AuthenticatedUser::getInfoString( WsReply* reply )
     
     #undef tr
 }
-
-
-} //namespace lastfm

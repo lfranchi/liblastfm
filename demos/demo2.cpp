@@ -17,7 +17,6 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
  
-#include "src/ws/WsReplyBlock.h" // it's naughty to use this
 #include "common/qt/md5.cpp"     // we made this to ensure DRY
 #include <lastfm.h>
 #include <QtCore>
@@ -32,9 +31,9 @@ public:
     {}
     
 private slots:
-    void onWsError( Ws::Error e )
+    void onWsError( lastfm::ws::Error e )
     {
-        // WsReply will invoke this slot on application level errors
+        // QNetworkReply will invoke this slot on application level errors
         // mostly this is only stuff like Ws::InvalidSessionKey and
         // Ws::InvalidApiKey    
         qWarning() << e;
@@ -50,25 +49,28 @@ int main( int argc, char** argv )
     app.setApplicationName( "liblastfm" );
     
 ////// you'll need to fill these in for this demo to work
-    Ws::Username = "";
-    Ws::ApiKey = "";
-    Ws::SharedSecret = "";
-    QString password = "";
+    lastfm::ws::Username = 
+    lastfm::ws::ApiKey = 
+    lastfm::ws::SharedSecret = 
+    QString password = 
 
 ////// Usually you never have to construct an Last.fm WS API call manually
-    // eg. Track.getTopTags() just returns a WsReply* but authentication is
+    // eg. Track.getTopTags() just returns a QNetworkReply* but authentication is
     // different.
     // We're using getMobileSession here as we're a console app, but you 
     // should use getToken if you can as the user will be presented with a
     // route that feels my trustworthy to them than entering their password
     // into some random app they just downloaded... ;)
-    WsReply* reply = WsRequestBuilder( "auth.getMobileSession" )
-            .add( "username", Ws::Username )
-            .add( "authToken", Qt::md5( (Ws::Username + Qt::md5( password.toUtf8() )).toUtf8() ) )
-            .get();
+    QMap<QString, QString> params;
+    params["method"] = "auth.getMobileSession";
+    params["username"] = lastfm::ws::Username;
+    params["authToken"] = Qt::md5( (lastfm::ws::Username + Qt::md5( password.toUtf8() )).toUtf8() );
+    QNetworkReply* reply = lastfm::ws::post( params );
     
-    // never do this when an event loop is running
-    WsReplyBlock::wait( reply );
+    // never do this when an event loop is running it's a real HACK
+    QEventLoop loop;
+    loop.connect( reply, SIGNAL(finished()), SLOT(quit()) );
+    loop.exec();
     
     try
     {
@@ -86,36 +88,38 @@ int main( int argc, char** argv )
         //   </session>
         // </lfm>
         //
-        // If status is not "ok" then WsReply::error() will return something 
-        // useful.
-        WsDomElement const session = reply->lfm()["session"];
+        // If status is not "ok" then this function throws
+        lastfm::XmlQuery const lfm = lastfm::ws::parse( reply );
         
         // replace username; because eg. perhaps the user typed their
         // username with the wrong case
-        Ws::Username = session["name"].text();
+        lastfm::ws::Username = lfm["session"]["name"].text();
         
         // we now have a session key, you should save this, forever! Really.
         // DO NOT AUTHENTICATE EVERY TIME THE APP STARTS! You only have to do
         // this once. Or again if the user deletes your key on the site. If 
         // that happens you'll get notification to your onWsError() function,
         // see above.
-        Ws::SessionKey = session["key"].nonEmptyText();
+        lastfm::ws::SessionKey = lfm["session"]["key"].text();
         
-        qDebug() << "sk:" << Ws::SessionKey;
+        qDebug() << "sk:" << lastfm::ws::SessionKey;
         
-    ////// because the Ws::SessionKey is now set, the AuthenticatedUser
-        // class will work. And we can call authenticated calls
-        WsReply* reply = lastfm::AuthenticatedUser().getRecommendedArtists();
+    ////// because the SessionKey is now set, the AuthenticatedUser class will
+        // work. And we can call authenticated calls
+        QNetworkReply* reply = lastfm::AuthenticatedUser().getRecommendedArtists();
 
-        // again, you shouldn't use these.. ;)
-        WsReplyBlock::wait( reply );
+        // again, you shouldn't do this.. ;)
+        QEventLoop loop;
+        loop.connect( reply, SIGNAL(finished()), SLOT(quit()) );
+        loop.exec();
         
         // yay, a list rec'd artists to stderr :)
         qDebug() << lastfm::Artist::list( reply );
     }
     catch (std::runtime_error& e)
     {
-        // some calls throw if the data we receive from Last.fm is malformed
+        // lastfm::ws::parse() can throw lastfm::ws::ParseError, this 
+        // exception derives std::runtime_error
         qWarning() << e.what();
         return 1;
     }

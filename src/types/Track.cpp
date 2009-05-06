@@ -20,9 +20,10 @@
 #include "Track.h"
 #include "User.h"
 #include "../core/UrlBuilder.h"
-#include "../ws/WsRequestBuilder.h"
-#include "../ws/WsReply.h"
+#include "../core/XmlQuery.h"
+#include "../ws/ws.h"
 #include <QFileInfo>
+#include <QStringList>
 
 
 lastfm::Track::Track()
@@ -126,42 +127,31 @@ lastfm::Track::durationString( int const duration )
 }
 
 
-WsReply*
+QNetworkReply*
 lastfm::Track::share( const User& recipient, const QString& message )
 {
-    return WsRequestBuilder( "track.share" )
-        .add( "recipient", recipient )
-        .add( "artist", d->artist )
-        .add( "track", d->title )
-        .addIfNotEmpty( "message", message )
-        .post();
+    QMap<QString, QString> map = params("share");
+    map["recipient"] = recipient;
+    if (message.size()) map["message"] = message;
+    return ws::post(map);
 }
 
 
-WsReply*
+QNetworkReply*
 lastfm::MutableTrack::love()
 {
     if (d->extras.value("rating").size())
         return 0;
-    
     d->extras["rating"] = "L";
-    
-	return WsRequestBuilder( "track.love" )
-		.add( "artist", d->artist )
-		.add( "track", d->title )
-		.post();
+	return ws::post(params("love"));
 }
 
 
-WsReply*
+QNetworkReply*
 lastfm::MutableTrack::ban()
 {
     d->extras["rating"] = "B";
-    
-	return WsRequestBuilder( "track.ban" )
-		.add( "artist", d->artist )
-		.add( "track", d->title )
-		.post();
+    return ws::post(params("ban"));
 }
 
 
@@ -173,72 +163,61 @@ lastfm::MutableTrack::unlove()
 }
 
 
-struct MbidFriendly_WsRequestBuilder : WsRequestBuilder
+QMap<QString, QString>
+lastfm::Track::params( const QString& method, bool use_mbid ) const
 {
-	MbidFriendly_WsRequestBuilder( const char* p ) : WsRequestBuilder( p )
-	{}
-	
-	MbidFriendly_WsRequestBuilder& add( lastfm::Track const * const t )
-	{
-		if (t->mbid().isNull()) 
-		{
-			WsRequestBuilder::add( "artist", t->artist() );
-			WsRequestBuilder::add( "track", t->title() );
-		}
-		else
-			WsRequestBuilder::add( "mbid", t->mbid() );
-
-		return *this;
-	}
-};
+    QMap<QString, QString> map;
+    map["method"] = "track."+method;
+    if (d->mbid.size() && use_mbid)
+        map["mbid"] = d->mbid;
+    else {
+		map["artist"] = d->artist;
+		map["track"] = d->title;
+    }
+    return map;
+}
 
 
-WsReply*
+QNetworkReply*
 lastfm::Track::getTopTags() const
 {
-	return MbidFriendly_WsRequestBuilder( "track.getTopTags" ).add( this ).get();
+	return ws::get( params("getTopTags", true) );
 }
 
 
-WsReply*
+QNetworkReply*
 lastfm::Track::getTags() const
 {
-	return MbidFriendly_WsRequestBuilder( "track.getTags" ).add( this ).get();
+	return ws::get( params("getTags", true) );
 }
 
 
-WsReply*
+QNetworkReply*
 lastfm::Track::addTags( const QStringList& tags ) const
 {
     if (tags.isEmpty())
         return 0;
-
-    return WsRequestBuilder( "track.addTags" )
-            .add( "artist", d->artist )
-            .add( "track", d->title )
-            .add( "tags", tags.join( QChar(',') ) )
-            .post();
+    QMap<QString, QString> map = params("addTags");
+    map["tags"] = tags.join( QChar(',') );
+    return ws::post(map);
 }
 
 
-WsReply*
+QNetworkReply*
 lastfm::Track::removeTag( const QString& tag ) const
 {
     if (tag.isEmpty())
         return 0;
-    
-    return WsRequestBuilder( "track.removeTag" )
-            .add( "artist", d->artist )
-            .add( "track", d->title )
-            .add( "tags", tag )
-            .post();
+    QMap<QString, QString> map = params( "removeTag" );
+    map["tags"] = tag;
+    return ws::post(map);
 }
 
 
 QUrl
 lastfm::Track::www() const
 {
-	return lastfm::UrlBuilder( "music" ).slash( d->artist ).slash( "_" ).slash( d->title ).url();
+	return UrlBuilder( "music" ).slash( d->artist ).slash( "_" ).slash( d->title ).url();
 }
 
 

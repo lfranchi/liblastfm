@@ -19,41 +19,45 @@
 
 #include "Playlist.h"
 #include "Track.h"
-#include "../ws/WsRequestBuilder.h"
+#include "../ws/ws.h"
 
 
-WsReply*
+QNetworkReply*
 lastfm::Playlist::addTrack( const Track& t ) const
 {
-	return WsRequestBuilder( "playlist.addTrack" )
-			.add( "playlistID", m_id )
-			.add( "artist", t.artist() )
-			.add( "track", t.title() )
-			.post();
+	QMap<QString, QString> map;
+    map["method"] = "playlist.addTrack";
+    map["playlistID"] = m_id;
+    map["artist"] = t.artist();
+    map["track"] = t.title();
+	return lastfm::ws::post(map);
 }
 
 
-WsReply*
+QNetworkReply*
 lastfm::Playlist::fetch() const
 {
 	return fetch( QUrl("lastfm://playlist/" + QString::number( m_id )) );
 }
 
 
-WsReply* //static
+QNetworkReply* //static
 lastfm::Playlist::fetch( const QUrl& url )
 {
-	return WsRequestBuilder( "playlist.fetch" )
-			.add( "playlistURL", url.toString() )
-			.get();
+    QMap<QString, QString> map;
+    map["method"] = "playlist.fetch";
+    map["playlistURL"] = url.toString();
+    return lastfm::ws::get(map);
 }
 
 
-WsReply* //static
+QNetworkReply* //static
 lastfm::Playlist::create( const QString& title, const QString& description /*=""*/ )
 {
-	return WsRequestBuilder( "playlist.create" )
-			.add( "title", title )
-			.addIfNotEmpty( "description", description )
-			.post();
+    QMap<QString, QString> map;
+    map["method"] = "playlist.create";
+    map["title"] = title;
+    if (description.size()) 
+        map["description"] = description;
+    return lastfm::ws::post(map);
 }

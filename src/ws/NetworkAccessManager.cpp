@@ -17,9 +17,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
-#include "WsAccessManager.h"
-#include "WsConnectionMonitor.h"
-#include "WsKeys.h"
+#include "NetworkAccessManager.h"
+#include "InternetConnectionMonitor.h"
+#include <lastfm/ws.h>
 #include <lastfm/misc.h>
 #include <QCoreApplication>
 #include <QNetworkRequest>
@@ -32,7 +32,7 @@
 #endif
 
 
-struct WsAccessManagerInit
+static struct NetworkAccessManagerInit
 {
     // We do this upfront because then our Firehose QTcpSocket will have a proxy 
     // set by default. As well as any plain QNetworkAcessManager stuff, and the
@@ -41,7 +41,7 @@ struct WsAccessManagerInit
     // changes but that is fairly unlikely use case, init? Maybe we should 
     // anyway..
 
-    WsAccessManagerInit()
+    NetworkAccessManagerInit()
     {
     #ifdef WIN32
         IeSettings s;
@@ -69,11 +69,16 @@ struct WsAccessManagerInit
         }
     #endif
     }
-};
-static WsAccessManagerInit init;    
+} init;    
 
 
-WsAccessManager::WsAccessManager( QObject* parent )
+namespace lastfm 
+{
+    QByteArray UserAgent;
+}
+
+
+lastfm::NetworkAccessManager::NetworkAccessManager( QObject* parent )
                : QNetworkAccessManager( parent )
             #ifdef WIN32
                , m_pac( 0 )
@@ -81,17 +86,17 @@ WsAccessManager::WsAccessManager( QObject* parent )
             #endif
 {
     // can't be done in above init, as applicationName() won't be set
-	if (!Ws::UserAgent) 
+	if (lastfm::UserAgent.isEmpty())
 	{
         QByteArray name = QCoreApplication::applicationName().toUtf8();
         QByteArray version = QCoreApplication::applicationVersion().toUtf8();
         if (version.size()) version.prepend( ' ' );
-		Ws::UserAgent = qstrdup( name + version + " (" + lastfm::platform() + ")" );
+		lastfm::UserAgent = name + version + " (" + lastfm::platform() + ")";
 	}
 }
 
 
-WsAccessManager::~WsAccessManager()
+lastfm::NetworkAccessManager::~NetworkAccessManager()
 {
 #ifdef WIN32
     delete m_pac;
@@ -100,7 +105,7 @@ WsAccessManager::~WsAccessManager()
 
 
 QNetworkProxy
-WsAccessManager::proxy( const QNetworkRequest& request )
+lastfm::NetworkAccessManager::proxy( const QNetworkRequest& request )
 {   
     Q_UNUSED( request );
     
@@ -122,11 +127,11 @@ WsAccessManager::proxy( const QNetworkRequest& request )
 
 
 QNetworkReply*
-WsAccessManager::createRequest( Operation op, const QNetworkRequest& request_, QIODevice* outgoingData )
+lastfm::NetworkAccessManager::createRequest( Operation op, const QNetworkRequest& request_, QIODevice* outgoingData )
 {
     QNetworkRequest request = request_;
 
-    request.setRawHeader( "User-Agent", Ws::UserAgent );
+    request.setRawHeader( "User-Agent", lastfm::UserAgent );
     
 #ifdef WIN32
     // PAC proxies can vary by domain, so we have to check everytime :(
@@ -140,7 +145,7 @@ WsAccessManager::createRequest( Operation op, const QNetworkRequest& request_, Q
 
 
 void
-WsAccessManager::onConnectivityChanged( bool up )
+lastfm::NetworkAccessManager::onConnectivityChanged( bool up )
 {
     Q_UNUSED( up );
     

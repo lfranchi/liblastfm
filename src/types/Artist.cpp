@@ -20,141 +20,148 @@
 #include "Artist.h"
 #include "User.h"
 #include "../core/UrlBuilder.h"
-#include "../ws/WsRequestBuilder.h"
+#include "../core/XmlQuery.h"
+#include "../ws/ws.h"
+#include <QStringList>
+using lastfm::Artist;
 
 
-namespace lastfm {
+QMap<QString, QString> //private
+Artist::params( const QString& method ) const
+{
+    QMap<QString, QString> map;
+    map["method"] = "artist."+method;
+    map["artist"] = m_name;
+    return map;
+}
 
-
-WsReply* 
+QNetworkReply* 
 Artist::share( const User& user, const QString& message )
 {
-    return WsRequestBuilder( "artist.share" )
-        .add( "recipient", user )
-        .add( "artist", m_name )
-        .addIfNotEmpty( "message", message )
-        //TODO this must be post! you're testing here
-        .get();
+    QMap<QString, QString> map = params("share");
+    map["recipient"] = user;
+    if (message.size()) map["message"] = message;
+    return lastfm::ws::post(map);
 }
 
 
 QUrl 
 Artist::www() const
 {
-    return lastfm::UrlBuilder( "music" ).slash( Artist::name() ).url();
+    return UrlBuilder( "music" ).slash( Artist::name() ).url();
 }
 
-
-WsReply* 
+QNetworkReply* 
 Artist::getInfo() const
 {
-	return WsRequestBuilder( "artist.getInfo" ).add( "artist", m_name ).get();
+	return ws::get( params("getInfo") );
 }
 
 
-WsReply* 
+QNetworkReply* 
 Artist::getTags() const
 {
-	return WsRequestBuilder( "artist.getTags" ).add( "artist", m_name ).get();
+	return ws::get( params("getTags") );
 }
 
-WsReply* 
+QNetworkReply* 
 Artist::getTopTags() const
 {
-	return WsRequestBuilder( "artist.getTopTags" ).add( "artist", m_name ).get();
+	return ws::get( params("getTopTags") );
 }
 
 
-WsReply* 
+QNetworkReply* 
 Artist::getSimilar() const
 {
-	return WsRequestBuilder( "artist.getSimilar" ).add( "artist", m_name ).get();
+	return ws::get( params("getSimilar") );
 }
 
 
-WsReply* 
+QNetworkReply* 
 Artist::search( int limit ) const
 {
-    WsRequestBuilder r( "artist.search" );
-    r.add( "artist", m_name );
-
-    if( limit > 0 ) r.add( "limit", limit );
-    
-    return r.get();
+    QMap<QString, QString> map = params("search");
+    if (limit > 0) map["limit"] = QString::number(limit);
+    return ws::get(map);
 }
 
 
 QMap<int, QString> /* static */
-Artist::getSimilar( WsReply* r )
+Artist::getSimilar( QNetworkReply* r )
 {
-	QMap<int, QString> artists;
-	foreach (WsDomElement e, r->lfm().children( "artist" ))
+    QMap<int, QString> artists;
+    try
 	{
-	    try
+        XmlQuery lfm = ws::parse(r);    	
+    	foreach (XmlQuery e, lfm.children( "artist" ))
     	{
     	    // convert floating percentage to int in range 0 to 10,000
     		int const match = e["match"].text().toFloat() * 100;
 		    artists.insertMulti( match, e["name"].text() );
-	    }
-    	catch (std::runtime_error& e)
-    	{
-    		qWarning() << e.what();
-    	}		
+    	}
+    }
+	catch (ws::ParseError& e)
+	{
+		qWarning() << e.what();
 	}
 	return artists;
 }
 
 
-static inline void images( QList<QUrl>& images, const WsDomElement& e )
+static inline QList<QUrl> images( const lastfm::XmlQuery& e )
 {
-    images.clear();
-    images += e.optional( "image size=small" ).text();
-    images += e.optional( "image size=medium" ).text();
-    images += e.optional( "image size=large" ).text();
+    QList<QUrl> images;
+    images += e["image size=small"].text();
+    images += e["image size=medium"].text();
+    images += e["image size=large"].text();
+    return images;
 }
 
 
 QList<Artist> /* static */
-Artist::list( WsReply* r )
+Artist::list( QNetworkReply* r )
 {
-	QList<Artist> artists;
-	foreach (WsDomElement e, r->lfm().children( "artist" ))
-	{
-    	try
-    	{    
-            Artist artist( e["name"].text());
-            images( artist.m_images, e );
+    QList<Artist> artists;
+    try {
+        XmlQuery lfm = ws::parse(r);
+    	foreach (XmlQuery xq, lfm.children( "artist" )) {
+            Artist artist = xq["name"].text();
+            artist.m_images = images( xq );
     		artists += artist;
-	    }
-    	catch (std::runtime_error& e)
-    	{
-    		qWarning() << e.what();
     	}
+    }
+    catch (ws::ParseError& e)
+	{
+		qWarning() << e.what();
 	}
 	return artists;
 }
 
 
 Artist
-Artist::getInfo( WsReply* r )
+Artist::getInfo( QNetworkReply* r )
 {
-    Artist artist( r->lfm()["artist"]["name"].text() );
-    images( artist.m_images, r->lfm()["artist"] );
-    return artist;
+    try {
+        XmlQuery lfm = ws::parse(r);
+        Artist artist = lfm["artist"]["name"].text();
+        artist.m_images = images( lfm["artist"] );
+        return artist;
+    }
+    catch (ws::ParseError& e)
+	{
+		qWarning() << e.what();
+        return Artist();
+    }
 }
 
 
-WsReply*
+QNetworkReply*
 Artist::addTags( const QStringList& tags ) const
 {
     if (tags.isEmpty())
         return 0;
-
-    return WsRequestBuilder( "artist.addTags" )
-            .add( "artist", m_name )
-            .add( "tags", tags.join( QChar(',') ) )
-            .post();
+    QMap<QString, QString> map = params("addTags");
+    map["tags"] = tags.join( QChar(',') );
+    return ws::post(map);
 }
-
-
-} //namespace lastfm

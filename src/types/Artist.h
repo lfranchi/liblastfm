@@ -60,28 +60,30 @@ namespace lastfm
         }
         QString name() const { return QString(*this); }	
     
-        WsReply* share( const class User& recipient, const QString& message = "" );
+        QNetworkReply* share( const class User& recipient, const QString& message = "" );
 
-    	WsReply* getInfo() const;
-        static Artist getInfo( WsReply* );
+    	QNetworkReply* getInfo() const;
+        static Artist getInfo( QNetworkReply* );
 	
-    	WsReply* getSimilar() const;
+    	QNetworkReply* getSimilar() const;
     	/** The match percentage is returned from last.fm as a 4 significant 
     	  * figure floating point value. So we multply it by 100 to make an 
     	  * integer in the range of 0 to 10,000. This is possible confusing 
     	  * for you, but I felt it best not to lose any precision, and floats 
     	  * aren't much fun. */
-    	static QMap<int, QString> getSimilar( WsReply* );
+    	static QMap<int, QString> getSimilar( QNetworkReply* );
     
         /** use Tag::list to get the tag list out of the finished reply */
-        WsReply* getTags() const;
-        WsReply* getTopTags() const;
+        QNetworkReply* getTags() const;
+        QNetworkReply* getTopTags() const;
     
         /** Last.fm dictates that you may submit at most 10 of these */
-        WsReply* addTags( const QStringList& ) const;
+        QNetworkReply* addTags( const QStringList& ) const;
 	
-    	WsReply* search( int limit = -1 ) const;
-    	static QList<Artist> list( WsReply* );
+    	QNetworkReply* search( int limit = -1 ) const;
+    	static QList<Artist> list( QNetworkReply* );
+    	
+        QMap<QString, QString> params( const QString& method ) const;
     };
 }
 

@@ -20,8 +20,10 @@
 #ifndef LASTFM_MISC_H
 #define LASTFM_MISC_H
 
+#include <QCryptographicHash>
 #include <QDir>
 #include <QString>
+
 typedef const struct __CFString* CFStringRef;
 
 namespace lastfm
@@ -82,6 +84,12 @@ namespace lastfm
         #else
             return "Unknown";
         #endif
+    }
+    
+    inline QString md5( const QByteArray& src )
+    {
+        QByteArray const digest = QCryptographicHash::hash( src, QCryptographicHash::Md5 );
+        return QString::fromLatin1( digest.toHex() ).rightJustified( 32, '0' ).toLower();
     }
 }
 

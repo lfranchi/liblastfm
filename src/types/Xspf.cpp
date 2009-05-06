@@ -18,48 +18,32 @@
  ***************************************************************************/
 
 #include "Xspf.h"
-#include "../ws/WsReply.h"
-#include "../ws/WsDomElement.h"
+#include "../core/XmlQuery.h"
 #include <QUrl>
 
 
 lastfm::Xspf::Xspf( const QDomElement& playlist_node )
 {
-    try
-    {
-        WsDomElement e( playlist_node );
+    XmlQuery e( playlist_node );
+    
+    m_title = e["title"].text();
         
-        m_title = e.optional( "title" ).text();
-            
-        //FIXME should we use UnicornUtils::urlDecode()?
-        //The title is url encoded, has + instead of space characters 
-        //and has a + at the begining. So it needs cleaning up:
-        m_title.replace( '+', ' ' );
-        m_title = QUrl::fromPercentEncoding( m_title.toAscii());
-        m_title = m_title.trimmed();
-        
-        foreach (WsDomElement e, e.optional( "trackList" ).children( "track" ))
-        {
-            MutableTrack t;
-            try
-            {
-                t.setUrl( e.optional( "location" ).text() );
-                t.setExtra( "trackauth", e.optional( "extension" ).optional( "trackauth" ).text() );
-                t.setTitle( e.optional( "title" ).text() );
-                t.setArtist( e.optional( "creator" ).text() );
-                t.setAlbum( e.optional( "album" ).text() );
-                t.setDuration( e.optional( "duration" ).text().toInt() / 1000 );
-            }
-            catch (std::runtime_error& exception)
-            {
-                qWarning() << exception.what() << e;
-            }
-            
-            m_tracks += t; // outside try block since location is enough basically
-        }
-    }
-    catch (std::runtime_error& e)
+    //FIXME should we use UnicornUtils::urlDecode()?
+    //The title is url encoded, has + instead of space characters 
+    //and has a + at the begining. So it needs cleaning up:
+    m_title.replace( '+', ' ' );
+    m_title = QUrl::fromPercentEncoding( m_title.toAscii());
+    m_title = m_title.trimmed();
+    
+    foreach (XmlQuery e, e["trackList"].children( "track" ))
     {
-        qWarning() << e.what();
+        MutableTrack t;
+        t.setUrl( e["location"].text() );
+        t.setExtra( "trackauth", e["extension"]["trackauth"].text() );
+        t.setTitle( e["title"].text() );
+        t.setArtist( e["creator"].text() );
+        t.setAlbum( e["album"].text() );
+        t.setDuration( e["duration"].text().toInt() / 1000 );        
+        m_tracks += t; // outside try block since location is enough basically
     }
 }

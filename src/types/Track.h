@@ -145,23 +145,24 @@ public:
 //////////// lastfm::Ws
     
 	/** See last.fm/api Track section */
-    WsReply* share( const class User& recipient, const QString& message = "" );
+    QNetworkReply* share( const class User& recipient, const QString& message = "" );
 
-    /** you can get any WsReply TagList using Tag::list( WsReply* ) */
-	WsReply* getTags() const; // for the logged in user
-	WsReply* getTopTags() const;
-    
+    /** you can get any QNetworkReply TagList using Tag::list( QNetworkReply* ) */
+	QNetworkReply* getTags() const; // for the logged in user
+	QNetworkReply* getTopTags() const;
+
     /** you can only add 10 tags, we submit everything you give us, but the
       * docs state 10 only. Will return 0 if the list is empty. */
-    WsReply* addTags( const QStringList& ) const;
+    QNetworkReply* addTags( const QStringList& ) const;
     /** will return 0 if the string is "" */
-    WsReply* removeTag( const QString& ) const;
-    
+    QNetworkReply* removeTag( const QString& ) const;
+
 	/** the url for this track's page at last.fm */
 	QUrl www() const;
-	
+
 protected:
     QExplicitlySharedDataPointer<TrackData> d;
+    QMap<QString, QString> params( const QString& method, bool use_mbid = false ) const;
     
 private:
     Track( TrackData* that_d ) : d( that_d )
@@ -207,8 +208,8 @@ public:
     void setFingerprintId( uint id ) { d->fpid = id; }
     
     /** you also must scrobble this track for the love to become permenant */
-    WsReply* love();
-    WsReply* ban();
+    QNetworkReply* love();
+    QNetworkReply* ban();
 
     /** currently doesn't work, as there is no webservice */
     void unlove();

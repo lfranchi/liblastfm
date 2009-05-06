@@ -41,11 +41,12 @@ public slots:
 
 int main( int argc, char** argv )
 {
-    // all these are REQUIRED in order to scrobble
-    Ws::Username = "";
-    Ws::ApiKey = "";
-    Ws::SharedSecret = "";
-    Ws::SessionKey = ""; // you need to auth to get this... try demo2
+    // all 6 of these lines are REQUIRED in order to scrobble
+    // this demo requires you to fill in the blanks as well...
+    lastfm::ws::Username = 
+    lastfm::ws::ApiKey =
+    lastfm::ws::SharedSecret =
+    lastfm::ws::SessionKey = // you need to auth to get this... try demo2
     QCoreApplication::setApplicationName( "liblastfm" );
     QCoreApplication::setApplicationVersion( VERSION );
 

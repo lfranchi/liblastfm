@@ -21,41 +21,45 @@
 #include "Artist.h"
 #include "User.h"
 #include "../core/UrlBuilder.h"
-#include "../ws/WsRequestBuilder.h"
+#include "../core/XmlQuery.h"
+#include "../ws/ws.h"
 #include <QFile>
+#include <QStringList>
 #include <QTimer>
 
 
-WsReply*
+QNetworkReply*
 lastfm::Album::getInfo() const
 {
-    return WsRequestBuilder( "album.getInfo" )
-            .add( "artist", m_artist )
-            .add( "album", m_title )
-            .get();
+    QMap<QString, QString> map;
+    map["method"] = "album.getInfo";
+    map["artist"] = m_artist;
+    map["album"] = m_title;
+    return lastfm::ws::get(map);
 }
 
 
-
-WsReply*
+QNetworkReply*
 lastfm::Album::getTags() const
 {
-	return WsRequestBuilder( "album.getTags" )
-            .add( "artist", m_artist )
-            .add( "album", m_title )
-            .get();
+    QMap<QString, QString> map;
+    map["method"] = "album.getTags";
+    map["artist"] = m_artist;
+    map["album"] = m_title;
+    return lastfm::ws::get(map);
 }
 
 
-WsReply*
+QNetworkReply*
 lastfm::Album::share( const User& recipient, const QString& message )
 {
-    return WsRequestBuilder( "album.share" )
-		.add( "recipient", recipient )
-		.add( "artist", m_artist )
-		.add( "album", m_title )
-		.addIfNotEmpty( "message", message )
-		.post();
+    QMap<QString, QString> map;
+    map["method"] = "album.share";
+    map["artist"] = m_artist;
+    map["album"] = m_title;
+    map["recipient"] = recipient;
+    if (message.size()) map["message"] = message;
+    return lastfm::ws::post(map);
 }
 
 
@@ -66,15 +70,16 @@ lastfm::Album::www() const
 }
 
 
-WsReply*
+QNetworkReply*
 lastfm::Album::addTags( const QStringList& tags ) const
 {
     if (tags.isEmpty())
         return 0;
 
-    return WsRequestBuilder( "album.addTags" )
-            .add( "artist", m_artist )
-            .add( "album", m_title )
-            .add( "tags", tags.join( QChar(',') ) )
-            .post();
+    QMap<QString, QString> map;
+    map["method"] = "album.addTags";
+    map["artist"] = m_artist;
+    map["album"] = m_title;
+    map["tags"] = tags.join( QChar(',') );
+    return lastfm::ws::post(map);
 }

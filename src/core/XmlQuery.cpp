@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright 2009 Last.fm Ltd.                                           *
+ *   Copyright 2005-2009 Last.fm Ltd.                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,43 +17,48 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
 
-#include "WsReplyBlock.h"
-#include "WsReply.h"
-#include <QEventLoop>
-#include <QTimer>
+#include "XmlQuery.h"
+#include <QStringList>
+using lastfm::XmlQuery;
 
 
-WsReply* //static
-WsReplyBlock::wait(WsReply* reply, int timeout)
+XmlQuery::XmlQuery( const QByteArray& bytes )
 {
-    return WsReplyBlock(reply).waitForFinished(timeout);
+    domdoc.setContent(bytes);
+    e = domdoc.documentElement();
 }
 
 
-WsReplyBlock::WsReplyBlock( WsReply* reply )
-    : m_reply( reply )
+XmlQuery
+XmlQuery::operator[]( const QString& name ) const
 {
-    if (reply) {
-        connect( reply, SIGNAL(finished( WsReply* )), SLOT(onFinished( WsReply* )) );
-    } 
-}
+    QStringList parts = name.split( ' ' );
+    if (parts.size() >= 2)
+    {
+        QString tagName = parts[0];
+        parts = parts[1].split( '=' );
+        QString attributeName = parts.value( 0 );
+        QString attributeValue = parts.value( 1 );
 
-
-WsReply*
-WsReplyBlock::waitForFinished( int timeoutMs )
-{
-    if (m_reply) {
-        QTimer::singleShot( timeoutMs, this, SLOT(onFinished()) );
-        m_eventloop = new QEventLoop( this );
-        m_eventloop->exec();
+        foreach (XmlQuery e, children( tagName ))
+            if (e.e.attribute( attributeName ) == attributeValue)
+                return e;
     }
-    return m_reply;
+    XmlQuery xq( e.firstChildElement( name ), name.toUtf8().data() );
+    xq.domdoc = this->domdoc;
+    return xq;
 }
 
 
-void
-WsReplyBlock::onFinished( WsReply* reply )
+QList<XmlQuery>
+XmlQuery::children( const QString& named ) const
 {
-    m_reply = reply;
-    m_eventloop->exit();
+    QList<XmlQuery> elements;
+    QDomNodeList nodes = e.elementsByTagName( named );
+    for (int x = 0; x < nodes.count(); ++x) {
+        XmlQuery xq( nodes.at( x ).toElement() );
+        xq.domdoc = this->domdoc;
+        elements += xq;
+    }
+    return elements;
 }

@@ -24,20 +24,20 @@
 static ComSetup com_setup;
 #endif
 
-#include "WsConnectionMonitor.h"
-#include "WsKeys.h"
+#include "InternetConnectionMonitor.h"
+#include "ws.h"
 #include <QDebug>
 
 #ifdef __APPLE__
 #include <QPointer>
 #include <SystemConfiguration/SCNetworkReachability.h>
-QList<QPointer<WsConnectionMonitor> > monitors;
+QList<QPointer<lastfm::InternetConnectionMonitor> > monitors;
 #endif
 
 
-WsConnectionMonitor::WsConnectionMonitor( QObject *parent )
-                   : QObject( parent )
-				   , m_up( true )
+lastfm::InternetConnectionMonitor::InternetConnectionMonitor( QObject *parent )
+                   				 : QObject( parent )
+				   				 , m_up( true )
 {
 #ifdef __APPLE__
     if (monitors.isEmpty())
@@ -48,7 +48,7 @@ WsConnectionMonitor::WsConnectionMonitor( QObject *parent )
         CFRelease( ref );
     }
     
-    QPointer<WsConnectionMonitor> p = this;
+    QPointer<InternetConnectionMonitor> p = this;
     monitors += p;
 #endif
 }
@@ -56,7 +56,7 @@ WsConnectionMonitor::WsConnectionMonitor( QObject *parent )
 
 #ifdef __APPLE__
 void
-WsConnectionMonitor::callback( SCNetworkReachabilityRef, SCNetworkConnectionFlags flags, void* )
+lastfm::InternetConnectionMonitor::callback( SCNetworkReachabilityRef, SCNetworkConnectionFlags flags, void* )
 {
     static bool up = true;
         
@@ -75,7 +75,7 @@ WsConnectionMonitor::callback( SCNetworkReachabilityRef, SCNetworkConnectionFlag
     if (up == b) return;
     up = b;
     
-    foreach (WsConnectionMonitor* monitor, monitors)
+    foreach (InternetConnectionMonitor* monitor, monitors)
 		if (monitor) 
 		{
 			monitor->m_up = b;

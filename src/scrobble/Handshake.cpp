@@ -18,9 +18,8 @@
  ***************************************************************************/
 
 #include "Handshake.h"
-#include "common/qt/md5.cpp"
-#include "../ws/WsKeys.h"
-#include "../ws/WsRequestBuilder.h"
+#include "../core/misc.h"
+#include "../ws/ws.h"
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QDebug>
@@ -40,21 +39,21 @@ ScrobblerHandshake::request()
     if (isActive()) return;
     
     QString timestamp = QString::number( QDateTime::currentDateTime().toTime_t() );
-    QString auth_token = Qt::md5( (Ws::SharedSecret + timestamp).toUtf8() );
+    QString auth_token = lastfm::md5( (lastfm::ws::SharedSecret + timestamp).toUtf8() );
 
     QString query_string = QString() +
         "?hs=true" +
         "&p=1.2.1"
         "&c=" + m_clientId +
         "&v=" + qApp->applicationVersion() +
-        "&u=" + QString(QUrl::toPercentEncoding( Ws::Username )) +
+        "&u=" + QString(QUrl::toPercentEncoding( lastfm::ws::Username )) +
         "&t=" + timestamp +
         "&a=" + auth_token +
-        "&api_key=" + Ws::ApiKey +
-        "&sk=" + Ws::SessionKey;
+        "&api_key=" + lastfm::ws::ApiKey +
+        "&sk=" + lastfm::ws::SessionKey;
 
     QUrl url = "http://post.audioscrobbler.com:80/" + query_string;
-    rp = WsRequestBuilder::nam()->get( QNetworkRequest(url) );
+    rp = lastfm::nam()->get( QNetworkRequest(url) );
     connect( rp, SIGNAL(finished()), SLOT(onRequestFinished()) );
 
     qDebug() << "HTTP GET" << url;

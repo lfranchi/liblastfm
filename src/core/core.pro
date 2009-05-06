@@ -2,7 +2,5 @@ TARGET = core
 TEMPLATE = lib
 DEFINES += _CORE_DLLEXPORT
 QT = core xml
-macx*:LIBS += -framework Carbon # for mac/AppleScript
-win32:LIBS += shell32.lib
-headers.files = UrlBuilder.h
+headers.files = UrlBuilder.h XmlQuery.h ../global.h misc.h
 include( _files.qmake )

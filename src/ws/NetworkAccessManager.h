@@ -26,19 +26,21 @@
 #include <QNetworkProxy>
 
 
+namespace lastfm {
+
 /** Sets useragent and proxy. Auto detecting the proxy where possible. */
-class LASTFM_WS_DLLEXPORT WsAccessManager : public QNetworkAccessManager
+class LASTFM_WS_DLLEXPORT NetworkAccessManager : public QNetworkAccessManager
 {
     Q_OBJECT
 
 #ifdef WIN32
 	class Pac *m_pac;
-    class WsConnectionMonitor* m_monitor;
+    class InternetConnectionMonitor* m_monitor;
 #endif
 
 public:
-	WsAccessManager( QObject *parent = 0 );
-    ~WsAccessManager();
+	NetworkAccessManager( QObject *parent = 0 );
+    ~NetworkAccessManager();
 
     /** PAC allows different proxy configurations depending on the request
       * URL and even UserAgent! Thus we allow you to pass that in, we
@@ -58,5 +60,7 @@ private:
       * createRequest. This is necessary due */
 	void applyProxy( const QNetworkRequest& );
 };
+
+} //namespace lastfm
 
 #endif

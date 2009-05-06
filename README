@@ -47,9 +47,17 @@ FIXME! we would like to support the normal --prefix route pls.
 
 Using liblastfm
 ===============
-The demos directory shows some basic usage.
+We have copied the API at http://last.fm/api onto C++, so like you find
+artist.getInfo there you will find an lastfm::Artist::getInfo function in our
+C++ API. lastfm is a namespace, Artist a class, getInfo a function.
 
-You need an API key from http://last.fm/api.
+Thus the API is quite easy to learn. We suggest installing and checking the 
+include/lastfm/* directory to find out all capabilities.
+
+The demos directory shows some further basic usage including Audioscrobbling
+and getting metadata for music via our fingerprinting technology.
+
+You need an API key from http://last.fm/api to use the webservice API.
 
 Radio
 -----
@@ -59,7 +67,7 @@ in extreme cases we'll contact you directly and demand you do so :P
 HTTP & Networking
 -----------------
 You can specify your own QNetworkAccessManager derived class for liblastfm to 
-use with WsRequestBuilder::setNetworkAccessManager(). Our default is pretty good
+use with lastfm::setNetworkAccessManager(). Our default is pretty good
 though, auto-determining proxy settings on Windows and OS X for instance.
 
 
@@ -77,7 +85,7 @@ Private Headers
 1. For consistency and to make it more obvious it is a private header, don't
    prefix the header guard with LASTFM
 2. #includes should be the full source tree path, eg.
-   #include "../ws/WsReply.h"
+   #include "../ws/QNetworkReply.h"
 
 
 Release History

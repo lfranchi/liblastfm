@@ -18,62 +18,57 @@
  ***************************************************************************/
 
 #include "RadioTuner.h"
+#include "../core/XmlQuery.h"
 #include "../types/Xspf.h"
-#include "../ws/WsRequestBuilder.h"
-#include "../ws/WsReply.h"
-#include <QBuffer>
-#include <QDebug>
-#include <QtXml>
-
-using lastfm::Track;
-using lastfm::Xspf;
+#include "../ws/ws.h"
+using namespace lastfm;
 
 //TODO skips left
 //TODO multiple locations for the same track
 //TODO set rtp flag in getPlaylist (whether user is scrobbling this radio session or not)
 
 
-lastfm::RadioTuner::RadioTuner( const RadioStation& station )
+RadioTuner::RadioTuner( const RadioStation& station )
      : m_retry_counter( 0 )
 {
-    WsReply* reply = WsRequestBuilder( "radio.tune" )
-			.add( "station", station.url() )
-			.post();
-	connect( reply, SIGNAL(finished( WsReply* )), SLOT(onTuneReturn( WsReply* )) );
+    QMap<QString, QString> map;
+    map["method"] = "radio.tune";
+    map["station"] = station.url();
+    QNetworkReply* reply = ws::post(map);
+	connect( reply, SIGNAL(finished()), SLOT(onTuneReturn()) );
 }
 
 
 void
-lastfm::RadioTuner::onTuneReturn( WsReply* reply )
+RadioTuner::onTuneReturn()
 {
-    qDebug() << reply;
-    
-    if (reply->error() != Ws::NoError) {
-		emit error( reply->error() );
-		return;
-	}
-
-	try {
-		emit title( reply->lfm()["station"]["name"].text() );
-	}
-	catch (std::runtime_error&)
-	{}
-	
-	fetchFiveMoreTracks();
+    try {
+        XmlQuery lfm = ws::parse( (QNetworkReply*)sender() );
+        emit title( lfm["station"]["name"].text() );
+        fetchFiveMoreTracks();
+    }
+    catch (ws::ParseError& e)
+    {
+        emit error( e.enumValue() );
+    }
 }
 
 
 bool
-lastfm::RadioTuner::fetchFiveMoreTracks()
+RadioTuner::fetchFiveMoreTracks()
 {
-    WsReply* reply = WsRequestBuilder( "radio.getPlaylist" ).add( "rtp", "1" ).get();
-	connect( reply, SIGNAL(finished( WsReply* )), SLOT(onGetPlaylistReturn( WsReply* )) );
+    //TODO check documentation, I figure this needs a session key
+    QMap<QString, QString> map;
+    map["method"] = "radio.getPlaylist";
+    map["rtp"] = "1"; // see above
+    QNetworkReply* reply = ws::post( map );
+	connect( reply, SIGNAL(finished()), SLOT(onGetPlaylistReturn()) );
     return true;
 }
 
 
 bool
-lastfm::RadioTuner::tryAgain()
+RadioTuner::tryAgain()
 {
     qDebug() << "Bad response count" << m_retry_counter;
     
@@ -85,58 +80,33 @@ lastfm::RadioTuner::tryAgain()
 
 
 void
-lastfm::RadioTuner::onGetPlaylistReturn( WsReply* reply )
+RadioTuner::onGetPlaylistReturn()
 {   
-	switch (reply->error())
-	{
-		case Ws::NoError:
-			break;
-
-		case Ws::TryAgainLater:
-			if (!tryAgain())
-				emit error( Ws::TryAgainLater );
-			return;
-
-		default:
-			emit error( reply->error() );
-			return;
-	}
-    
-    try
-    {
-        Xspf xspf( reply->lfm()["playlist"] );
-
+    try {
+        XmlQuery lfm = ws::parse( (QNetworkReply*)sender() );
+        Xspf xspf( lfm["playlist"] );
         QList<Track> tracks( xspf.tracks() );
-        if (tracks.isEmpty())
-        {
-            // sometimes the recs service craps out and gives us a blank playlist
-            
-            if (!tryAgain())
-            {
-                // an empty playlist is a bug, if there is no content
-                // NotEnoughContent should have been returned with the WsReply
-                emit error( Ws::MalformedResponse );
-            }
-        }
-        else {
-            m_retry_counter = 0;
-            foreach (Track t, tracks)
-                MutableTrack( t ).setSource( Track::LastFmRadio );
-            m_queue += tracks;
-            emit trackAvailable();
-        }
+        if (tracks.isEmpty()) //often we get empty playlists because php is shit
+            throw ws::TryAgainLater;
+
+        m_retry_counter = 0;
+        foreach (Track t, tracks)
+            MutableTrack( t ).setSource( Track::LastFmRadio );
+        m_queue += tracks;
+        emit trackAvailable();
     }
-    catch (std::runtime_error& e)
+    catch (ws::ParseError& e) 
     {
         qWarning() << e.what();
-        if (!tryAgain())
-            emit error( Ws::TryAgainLater );
+
+    	if (e.enumValue() != ws::TryAgainLater || !tryAgain())
+    		emit error( e.enumValue() );
     }
 }
 
 
 Track
-lastfm::RadioTuner::takeNextTrack()
+RadioTuner::takeNextTrack()
 {
     //TODO presumably, we should check if fetchMoreTracks is working?
     if (m_queue.isEmpty())

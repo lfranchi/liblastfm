@@ -22,7 +22,7 @@
 
 #include <lastfm/RadioStation>
 #include <lastfm/Track>
-#include <lastfm/WsError>
+#include <lastfm/ws.h>
 #include <QList>
 
 namespace lastfm
@@ -44,11 +44,11 @@ namespace lastfm
     signals:
     	void title( const QString& );
     	void trackAvailable();
-        void error( Ws::Error );
+        void error( lastfm::ws::Error );
 
     private slots:
-    	void onTuneReturn( WsReply* );
-    	void onGetPlaylistReturn( WsReply* );
+    	void onTuneReturn();
+    	void onGetPlaylistReturn();
 
     private:
     	/** Tries again up to 5 times 

@@ -20,55 +20,49 @@
 #include "Tag.h"
 #include "User.h"
 #include "../core/UrlBuilder.h"
-#include "../ws/WsRequestBuilder.h"
-
-
-namespace lastfm {
+#include "../core/XmlQuery.h"
+#include "../ws/ws.h"
+using lastfm::Tag;
 
 
 QUrl
 Tag::www() const
 {
-	return lastfm::UrlBuilder( "tag" ).slash( m_name ).url();
+	return UrlBuilder( "tag" ).slash( m_name ).url();
 }
 
 
 QUrl
 Tag::www( const User& user ) const
 {
-	return lastfm::UrlBuilder( "user" ).slash( user.name() ).slash( "tags" ).slash( Tag::name() ).url();
+	return UrlBuilder( "user" ).slash( user.name() ).slash( "tags" ).slash( Tag::name() ).url();
 }
 
 
-WsReply*
+QNetworkReply*
 Tag::search() const
 {
-	return WsRequestBuilder( "tag.search" ).add( "tag", m_name ).get();
+    QMap<QString, QString> map;
+    map["method"] = "tag.search";
+    map["tag"] = m_name;
+    return ws::get(map);
 }
 
 
 QMap<int, QString> //static
-Tag::list( WsReply* r )
+Tag::list( QNetworkReply* r )
 {
 	QMap<int, QString> tags;
-    try
-    {
-        foreach (WsDomElement e, r->lfm().children( "tag" ))
-        {
-            int const count = e.optional("count").text().toInt();
-            
+    try {
+        foreach (XmlQuery xq, XmlQuery(ws::parse(r)).children("tag"))
             // we toLower always as otherwise it is ugly mixed case, as first
             // ever tag decides case, and Last.fm is case insensitive about it 
             // anyway
-            tags.insertMulti( count, e["name"].text().toLower() );
-        }
+            tags.insertMulti( xq["count"].text().toInt(), xq["name"].text().toLower() );
     }
-    catch (std::runtime_error& e)
+    catch (ws::ParseError& e)
     {
         qWarning() << e.what();
     }
     return tags;
 }
-
-
-} //namespace lastfm

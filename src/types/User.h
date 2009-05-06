@@ -20,7 +20,7 @@
 #ifndef LASTFM_USER_H
 #define LASTFM_USER_H
 
-#include <lastfm/WsKeys>
+#include <lastfm/ws.h>
 #include <QString>
 #include <QUrl>
 
@@ -39,18 +39,18 @@ namespace lastfm
         QString name() const { return m_name; }
 	
         /** use Tag::list() on the response to get a WeightedStringList */
-    	WsReply* getTopTags() const;
+    	QNetworkReply* getTopTags() const;
 
         /** use User::list() on the response to get a QList<User> */
-        WsReply* getFriends() const;
-    	WsReply* getNeighbours() const;
+        QNetworkReply* getFriends() const;
+    	QNetworkReply* getNeighbours() const;
     
-        WsReply* getPlaylists() const;
-        WsReply* getTopArtists() const;
-        WsReply* getRecentArtists() const;
-        WsReply* getRecentTracks() const;
+        QNetworkReply* getPlaylists() const;
+        QNetworkReply* getTopArtists() const;
+        QNetworkReply* getRecentArtists() const;
+        QNetworkReply* getRecentTracks() const;
     
-        static QList<User> list( WsReply* );
+        static QList<User> list( QNetworkReply* );
     
     //////
     	QUrl smallImageUrl() const { return m_smallImage; }
@@ -74,6 +74,8 @@ namespace lastfm
     	float m_match;
     
         QString m_realName;
+        
+        QMap<QString, QString> params( const QString& method ) const;
     };
 
 
@@ -84,19 +86,19 @@ namespace lastfm
     
     public:
         /** the authenticated User */
-        AuthenticatedUser() : User( Ws::Username )
+        AuthenticatedUser() : User( lastfm::ws::Username )
         {}    
 
     	/** you can only get information about the autheticated user */
-    	static WsReply* getInfo();
+    	static QNetworkReply* getInfo();
 	
     	/** a verbose string, eg. "A man with 36,153 scrobbles" */
-        static QString getInfoString( WsReply* );
+        static QString getInfoString( QNetworkReply* );
         
         // pass the result to Artist::list(), if you want the other data 
         // you have to parse the lfm() yourself members
         // http://www.last.fm/api/show?service=388
-        static WsReply* getRecommendedArtists();
+        static QNetworkReply* getRecommendedArtists();
     };
 }
 

@@ -43,15 +43,15 @@ namespace lastfm
     	QUrl www() const;
     	/** the tag page for user @p user at www.last.fm */
     	QUrl www( const class User& user ) const;
-	    /** pass the finished WsReply to Tag::list() */
-    	class WsReply* search() const;
+	    /** pass the finished QNetworkReply to Tag::list() */
+    	class QNetworkReply* search() const;
     
         /** the integer is the weighting, not all list type return requests
           * have a weighting, so the int may just be zero, if you don't care
           * about the weight just do this: 
           * QStringList tags = Tag::list( reply ).values();
           */
-        static QMap<int, QString> list( WsReply* );
+        static QMap<int, QString> list( QNetworkReply* );
     };
 }
 

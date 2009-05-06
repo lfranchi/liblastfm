@@ -41,13 +41,13 @@ namespace lastfm
 	
     	int id() const { return m_id; }
 
-    	WsReply* addTrack( const Track& ) const;
-    	WsReply* fetch() const;
+    	QNetworkReply* addTrack( const Track& ) const;
+    	QNetworkReply* fetch() const;
 
-    	static WsReply* create( const QString& title, const QString& description = "" );
-    	static WsReply* fetch( const QUrl& url );
+    	static QNetworkReply* create( const QString& title, const QString& description = "" );
+    	static QNetworkReply* fetch( const QUrl& url );
 	
-    	static Xspf fetch( WsReply* );
+    	static Xspf fetch( QNetworkReply* );
     };
 }
 

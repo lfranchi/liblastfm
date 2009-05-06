@@ -31,7 +31,9 @@ typedef const struct __SCNetworkReachability * SCNetworkReachabilityRef;
 #endif
 
 
-class LASTFM_WS_DLLEXPORT WsConnectionMonitor
+namespace lastfm {
+
+class LASTFM_WS_DLLEXPORT InternetConnectionMonitor
         : public QObject
 #ifdef WIN32
         , NdisEvents
@@ -62,7 +64,7 @@ class LASTFM_WS_DLLEXPORT WsConnectionMonitor
 public:
     /** if internet is unavailable you will get a down() signal soon, otherwise
       * you won't get a signal until the net goes down */
-	WsConnectionMonitor( QObject *parent = 0 );
+	InternetConnectionMonitor( QObject *parent = 0 );
 
 	bool isDown() const { return !m_up; }
 	bool isUp() const { return m_up; }
@@ -78,5 +80,7 @@ signals:
     /** emitted after the above */
 	void connectivityChanged( bool );
 };
+
+} //namespace lastfm
 
 #endif

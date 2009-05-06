@@ -22,7 +22,7 @@
 #include "ScrobbleCache.h"
 #include "Handshake.h"
 #include "ScrobblerSubmission.h"
-#include "../ws/WsKeys.h"
+#include "../ws/ws.h"
 
 
 namespace lastfm
@@ -31,7 +31,7 @@ namespace lastfm
     {
         AudioscrobblerPrivate(const QString& id)
                 : id( id )
-                , cache( Ws::Username )
+                , cache( ws::Username )
                 , hard_failures( 0 )
         {}
         

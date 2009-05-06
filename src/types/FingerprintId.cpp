@@ -17,9 +17,8 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
 
-#include "../types/FingerprintId.h"
-#include "../ws/WsAccessManager.h"
-#include "../ws/WsRequestBuilder.h"
+#include "FingerprintId.h"
+#include "../ws/ws.h"
 #include <QtNetwork>
 #include <QtXml>
  
@@ -31,7 +30,7 @@ lastfm::FingerprintId::getSuggestions() const
     
     QUrl const url( "http://ws.audioscrobbler.com/fingerprint/" + QString(*this) + ".xml" );
     QNetworkRequest const request( url );
-    return WsRequestBuilder::nam()->get( request );
+    return lastfm::nam()->get( request );
 }
 
 

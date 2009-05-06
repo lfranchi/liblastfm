@@ -109,6 +109,7 @@ namespace lastfm
     class User;
     class Tag;
     class Track;
+    class XmlQuery;
     class Xspf;
 }
 
@@ -130,7 +131,8 @@ using lastfm::Xspf;
 
 
 //convenience
-class WsReply;
+class QDomDocument;
+class QNetworkAccessManager;
 class QNetworkReply;
 
 

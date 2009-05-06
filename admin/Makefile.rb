@@ -33,7 +33,7 @@ def step2( path )
   end
   # if no matches, then assume one thing and just copy it, this makes it work
   # for namespaces etc.
-  step3( path, File.basename( path, '.h' ) ) if b.nil?
+  step3( path, File.basename( path ) ) if b.nil?
 end
 ################################################################################
 
@@ -85,26 +85,16 @@ _include/lastfm:
 $(DESTDIR)#{$install_prefix}/include/lastfm:
 	mkdir -p $@
 
-_include/lastfm/global.h: src/global.h
-	cp src/global.h $@
-$(DESTDIR)#{$install_prefix}/include/lastfm/global.h: src/global.h | $(DESTDIR)#{$install_prefix}/include/lastfm
-	cp src/global.h $@
-
-_include/lastfm/misc.h: src/core/misc.h
-	cp src/core/misc.h $@
-$(DESTDIR)#{$install_prefix}/include/lastfm/misc.h: src/misc.h | $(DESTDIR)#{$install_prefix}/include/lastfm
-	cp src/core/misc.h $@
-
 _include/lastfm.h: #{$headers.join(' ')} | _include/lastfm
 	#{rubystring} > $@
 $(DESTDIR)#{$install_prefix}/include/lastfm.h: _include/lastfm.h | $(DESTDIR)#{$install_prefix}/include/lastfm
 	cp _include/lastfm.h $@
 
 .PHONY: headers
-headers: #{$headers.join(' ')} _include/lastfm/global.h _include/lastfm/misc.h _include/lastfm.h
+headers: #{$headers.join(' ')} _include/lastfm.h
 
 .PHONY: install
-install: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastfm/global.h $(DESTDIR)#{$install_prefix}/include/lastfm.h
+install: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastfm.h
 	cd src && make install "INSTALL_ROOT=$(DESTDIR)#{$install_prefix}"
 
 .PHONY: clean

@@ -22,7 +22,7 @@
 #include <QTimer>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include "../ws/WsRequestBuilder.h"
+#include "../ws/ws.h"
 
 
 ScrobblerHttp::ScrobblerHttp( QObject* parent )
@@ -95,7 +95,7 @@ ScrobblerPostHttp::request()
 
     QNetworkRequest rq( m_url );
     rq.setRawHeader( "Content-Type", "application/x-www-form-urlencoded" );
-    rp = WsRequestBuilder::nam()->post( rq, data );
+    rp = lastfm::nam()->post( rq, data );
     connect( rp, SIGNAL(finished()), SLOT(onRequestFinished()) );
     rp->setParent( this );
 

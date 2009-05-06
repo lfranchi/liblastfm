@@ -69,19 +69,19 @@ parsePacResult(const QString &pacResult)
 ////////////////
 
 
-Pac::Pac()
+lastfm::Pac::Pac()
     : m_bFailed( false )
     , m_hSession( 0 )
 {}
 
-Pac::~Pac()
+lastfm::Pac::~Pac()
 {
 	if (m_hSession)
 		WinHttpCloseHandle(m_hSession);
 }
 
 QNetworkProxy
-Pac::resolve(const QNetworkRequest &request, const wchar_t* pacUrl)
+lastfm::Pac::resolve(const QNetworkRequest &request, const wchar_t* pacUrl)
 {
     QNetworkProxy out;
     if (m_bFailed) return out;
