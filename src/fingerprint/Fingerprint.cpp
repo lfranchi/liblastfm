@@ -22,7 +22,7 @@
 #include "Sha256.h"
 #include "MP3_Source_Qt.h"
 #include "fplib/include/FingerprintExtractor.h"
-#include "../ws/WsRequestBuilder.h"
+#include "../ws/ws.h"
 #include <QFileInfo>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -249,7 +249,7 @@ lastfm::Fingerprint::submit() const
     qDebug() << url;
     qDebug() << "Fingerprint size:" << bytes.size() << "bytes";
 
-    return WsRequestBuilder::nam()->post( request, bytes );
+    return lastfm::nam()->post( request, bytes );
 }
 
 
