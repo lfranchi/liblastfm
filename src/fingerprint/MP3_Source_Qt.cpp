@@ -395,7 +395,7 @@ void MP3_Source::skipSilence(double silenceThreshold /* = 0.0001 */)
          break;
    }
 
-   mad_header_finish(&madHeader);
+   mad_frame_finish(&madFrame);
 }
 
 // -----------------------------------------------------------------------------
