@@ -28,7 +28,7 @@
 
 namespace lastfm
 {
-    class LASTFM_TYPES_DLLEXPORT Tag
+    class LASTFM_DLLEXPORT Tag
     {
     	QString m_name;
 	

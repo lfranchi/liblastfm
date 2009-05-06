@@ -23,7 +23,7 @@
 #include <lastfm/Track>
 
 
-struct LASTFM_SCROBBLE_DLLEXPORT Scrobble : lastfm::Track
+struct LASTFM_DLLEXPORT Scrobble : lastfm::Track
 {
     Scrobble()
     {}

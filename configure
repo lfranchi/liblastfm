@@ -48,16 +48,40 @@ fi
 echo 'Using '`which $QMAKE`
 
 
+
 header 'Generating Build System'
 middle "Running qpp..."
     cd src
     ../admin/qpp lastfm.pro || die "Ruby not installed?"
     cd ..
-    
 
 middle "Generating Makefile..."
-    test -d _include && rm -r _include
-    admin/Makefile.rb `admin/findsrc pro src` > Makefile || die 'Makefile.rb failure :('
+    cat <<EOS> Makefile
+.PHONY: all
+all: headers __src __fingerprint __demos __tests
+
+.PHONY: __src
+__src: src/Makefile
+	cd src && \$(MAKE)
+.PHONY: __fingerprint
+__fingerprint: src/fingerprint/Makefile
+	cd src/fingerprint && \$(MAKE)
+.PHONY: __tests
+__tests: tests/Makefile
+	cd tests && \$(MAKE)
+.PHONY: __demos
+__demos: demos/Makefile
+	cd demos && \$(MAKE)
+
+EOS
+    admin/Makefile.rb global.h \
+            core/UrlBuilder.h core/XmlQuery.h core/misc.h \
+            fingerprint/Fingerprint.h \
+            radio/RadioStation.h radio/RadioTuner.h \
+            scrobble/Audioscrobbler.h scrobble/Scrobble.h scrobble/ScrobblePoint.h \
+            types/Track.h types/Mbid.h types/Artist.h types/Album.h types/FingerprintId.h types/Playlist.h types/Tag.h types/User.h types/Xspf.h \
+            ws/ws.h ws/InternetConnectionMonitor ws/NetworkAccessManager \
+        >> Makefile || die 'Makefile.rb failure :('
 
 middle "Running qmake..."
     if [ $RELEASE ]
@@ -81,6 +105,8 @@ middle "Running qmake..."
     cat <<EOS>> Makefile
 src/Makefile:
 	cd src && $QMAKE -config $config "$other_args"
+src/fingerprint/Makefile:
+	cd src/fingerprint && $QMAKE -config $config "$other_args"
 tests/Makefile:
 	cd tests && $QMAKE -config debug "CONFIG -= app_bundle"
 demos/Makefile:

@@ -1,20 +1,13 @@
-include(core/core.pro)
-include(ws/ws.pro)
-include(types/types.pro)
-include(fingerprint/fingerprint.pro)
-include(radio/radio.pro)
-include(scrobble/scrobble.pro)
-include(_files.qmake)
-
 TEMPLATE = lib
 TARGET = lastfm
-QT = core network xml sql
-VERSION = 0.2.2
+QT = core network xml
+VERSION = 0.3
 INSTALLS = target
-target.path = /lib
+DEFINES += LASTFM_OHAI_QMAKE
+include( _files.qmake )
 
-# us at Last.fm want these but you prolly don't
-macx*:SOURCES -= core/mac/Growl.cpp core/mac/Applescript.cpp
+SOURCES -= $$system( $$ROOT_DIR/admin/findsrc cpp fingerprint )
+HEADERS -= $$system( $$ROOT_DIR/admin/findsrc h fingerprint )
 
 unix{
     QMAKE_CXXFLAGS_RELEASE -= -O2 -Os
@@ -24,3 +17,10 @@ unix{
     }    
     release:QMAKE_POST_LINK=strip $(DESTDIR)/$(TARGET)
 }
+
+# ws configuration
+win32:DEFINES += _ATL_DLL 
+win32:LIBS += winhttp.lib wbemuuid.lib
+macx*:LIBS += -framework SystemConfiguration
+
+target.path = /lib

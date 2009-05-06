@@ -20,48 +20,16 @@
 #ifndef LASTFM_GLOBAL_H
 #define LASTFM_GLOBAL_H
 
-/** LASTFM_EXPORTs symbols when compiled as part of the lib
-  * LASTFM_IMPORTs when included from some other target */
 #if defined(_WIN32) || defined(WIN32)
-    #define LASTFM_EXPORT __declspec(dllLASTFM_EXPORT)
-    #define LASTFM_IMPORT __declspec(dllLASTFM_IMPORT)
+    #ifdef LASTFM_OHAI_QMAKE
+        #define LASTFM_DLLEXPORT __declspec(dllexport)
+    #else
+        #define LASTFM_DLLEXPORT __declspec(dllexport)
+    #endif
 #elif __GNUC__ >= 4
-    // GCC is just annoying, yes both should be default
-    #define LASTFM_EXPORT __attribute__ ((visibility("default")))
-    #define LASTFM_IMPORT __attribute__ ((visibility("default")))
+    #define LASTFM_DLLEXPORT __attribute__ ((visibility("default")))
 #else
-    #define LASTFM_EXPORT
-    #define LASTFM_IMPORT
-#endif
-#ifdef _RADIO_DLLEXPORT
-    #define LASTFM_RADIO_DLLEXPORT LASTFM_EXPORT
-#else
-    #define LASTFM_RADIO_DLLEXPORT LASTFM_IMPORT
-#endif
-#ifdef _FINGERPRINT_DLLEXPORT
-    #define LASTFM_FINGERPRINT_DLLEXPORT LASTFM_EXPORT
-#else
-    #define LASTFM_FINGERPRINT_DLLEXPORT LASTFM_IMPORT
-#endif
-#ifdef _WS_DLLEXPORT
-    #define LASTFM_WS_DLLEXPORT LASTFM_EXPORT
-#else
-    #define LASTFM_WS_DLLEXPORT LASTFM_IMPORT
-#endif
-#ifdef _TYPES_DLLEXPORT
-    #define LASTFM_TYPES_DLLEXPORT LASTFM_EXPORT
-#else
-    #define LASTFM_TYPES_DLLEXPORT LASTFM_IMPORT
-#endif
-#ifdef _CORE_DLLEXPORT
-    #define LASTFM_CORE_DLLEXPORT LASTFM_EXPORT
-#else
-    #define LASTFM_CORE_DLLEXPORT LASTFM_IMPORT
-#endif
-#ifdef _SCROBBLE_DLLEXPORT
-    #define LASTFM_SCROBBLE_DLLEXPORT LASTFM_EXPORT
-#else
-    #define LASTFM_SCROBBLE_DLLEXPORT LASTFM_IMPORT
+    #define LASTFM_DLLEXPORT
 #endif
 
 

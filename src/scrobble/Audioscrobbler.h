@@ -33,7 +33,7 @@ namespace lastfm
       * version 1.2.1 for a single Last.fm user
       * http://www.audioscrobbler.net/development/protocol/
       */
-    class LASTFM_SCROBBLE_DLLEXPORT Audioscrobbler : public QObject
+    class LASTFM_DLLEXPORT Audioscrobbler : public QObject
     {
         Q_OBJECT
 

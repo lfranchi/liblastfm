@@ -31,18 +31,18 @@ namespace lastfm
 {
     /** if you don't set one, we create our own, our own is pretty good
       * for instance, it auto detects proxy settings on windows and mac */
-    LASTFM_WS_DLLEXPORT void setNetworkAccessManager( QNetworkAccessManager* nam );
-    LASTFM_WS_DLLEXPORT QNetworkAccessManager* nam();
+    LASTFM_DLLEXPORT void setNetworkAccessManager( QNetworkAccessManager* nam );
+    LASTFM_DLLEXPORT QNetworkAccessManager* nam();
 
     namespace ws
     {
         /** both of these are provided when you register at http://last.fm/api */
-        LASTFM_WS_DLLEXPORT extern const char* SharedSecret;
-        LASTFM_WS_DLLEXPORT extern const char* ApiKey;
+        LASTFM_DLLEXPORT extern const char* SharedSecret;
+        LASTFM_DLLEXPORT extern const char* ApiKey;
     
         /** you need to set this for scrobbling to work (for now)
           * Also the AuthenticatedUser class uses it */
-        LASTFM_WS_DLLEXPORT extern QString Username;
+        LASTFM_DLLEXPORT extern QString Username;
 
         /** Some webservices require authentication. See the following
           * documentation:
@@ -52,7 +52,7 @@ namespace lastfm
           * not do that for you. Also we do not store this. You should store this!
           * You only need to authenticate once, and that key lasts forever!
           */
-        LASTFM_WS_DLLEXPORT extern QString SessionKey;      
+        LASTFM_DLLEXPORT extern QString SessionKey;      
         
         enum Error
         {
@@ -102,10 +102,10 @@ namespace lastfm
         };
 
         /** the map needs a method entry, as per http://last.fm/api */
-        LASTFM_WS_DLLEXPORT QNetworkReply* get( QMap<QString, QString> );
+        LASTFM_DLLEXPORT QNetworkReply* get( QMap<QString, QString> );
         /** generates api sig, includes api key, and posts, don't add the api
           * key yourself as well--it'll break */
-        LASTFM_WS_DLLEXPORT QNetworkReply* post( QMap<QString, QString> );
+        LASTFM_DLLEXPORT QNetworkReply* post( QMap<QString, QString> );
 
 
         class ParseError : public std::runtime_error
@@ -124,10 +124,10 @@ namespace lastfm
           *
           * Like, you don't have to use this. But it does some standard error
           * handling for you */
-        LASTFM_WS_DLLEXPORT QByteArray parse( QNetworkReply* ) throw( ParseError );
+        LASTFM_DLLEXPORT QByteArray parse( QNetworkReply* ) throw( ParseError );
         
         /** returns the expiry date of this HTTP response */
-        LASTFM_WS_DLLEXPORT QDateTime expires( QNetworkReply* );
+        LASTFM_DLLEXPORT QDateTime expires( QNetworkReply* );
     }
 }
 

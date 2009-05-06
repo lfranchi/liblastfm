@@ -29,7 +29,7 @@ class QNetworkReply;
 
 namespace lastfm
 {
-    class LASTFM_TYPES_DLLEXPORT FingerprintId
+    class LASTFM_DLLEXPORT FingerprintId
     {
         int id;
 

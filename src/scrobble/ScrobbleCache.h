@@ -28,7 +28,7 @@ using lastfm::Track;
  
 
 /** absolutely not thread-safe */
-class LASTFM_SCROBBLE_DLLEXPORT ScrobbleCache
+class LASTFM_DLLEXPORT ScrobbleCache
 {
     QString m_username;
 

@@ -30,7 +30,7 @@ namespace lastfm
     /** With regard to error handling. We handle Ws::TryAgain up to 5 times,
       * don't try again after that! Just tell the user to try again later. 
       */
-    class LASTFM_RADIO_DLLEXPORT RadioTuner : public QObject
+    class LASTFM_DLLEXPORT RadioTuner : public QObject
     {
     	Q_OBJECT
 	

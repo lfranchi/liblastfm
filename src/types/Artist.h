@@ -28,7 +28,7 @@
 
 namespace lastfm
 {
-    class LASTFM_TYPES_DLLEXPORT Artist
+    class LASTFM_DLLEXPORT Artist
     {
         QString m_name;
         QList<QUrl> m_images;

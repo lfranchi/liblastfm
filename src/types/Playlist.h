@@ -28,7 +28,7 @@
 
 namespace lastfm
 {
-    class LASTFM_TYPES_DLLEXPORT Playlist
+    class LASTFM_DLLEXPORT Playlist
     {
     	int m_id;
 	

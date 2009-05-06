@@ -1,6 +1,2 @@
 Makefile
 _*
-src/_*
-src/Makefile
-tests/_*
-tests/Makefile

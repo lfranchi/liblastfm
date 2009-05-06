@@ -29,7 +29,7 @@ namespace lastfm
 {
     /** @author <jono@last.fm> 
       */
-    class LASTFM_RADIO_DLLEXPORT RadioStation
+    class LASTFM_DLLEXPORT RadioStation
     {
     public:
     	RadioStation()

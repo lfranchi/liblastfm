@@ -25,57 +25,25 @@ end
 def step2( path )
   b = nil
   File.open( path ).each_line do |line|
-    matches = /(class|struct)\s*LASTFM_[A-Z]+_DLLEXPORT\s*([a-zA-Z0-9]+)/.match( line )
+    matches = /(class|struct)\s*LASTFM_DLLEXPORT\s*([a-zA-Z0-9]+)/.match( line )
     if !matches.nil?
       b = true
       step3( path, matches[2] )
     end
   end
-  # if no matches, then assume one thing and just copy it, this makes it work
-  # for namespaces etc.
+  # otherwise just copy it without adjustment
   step3( path, File.basename( path ) ) if b.nil?
 end
 ################################################################################
 
 
 $install_prefix = ENV['PREFIX']
-
-exit 1 if ARGV[0].nil?
-exit 1 if !File.file?( ARGV[0] )
 exit 1 if $install_prefix.nil?
 
 $installheaders = Array.new
 $headers = Array.new
 
-def mkdir( path )
-  Dir.mkdir( path )
-rescue SystemCallError
-  # braindead for this to throw an exception if the dir already exists!
-  # as an additional rant, the Ruby File/Dir classes are a poo design
-end
-
-puts <<-EOS
-.PHONY: all
-all: headers __src __demos __tests
-
-.PHONY: __src
-__src: src/Makefile
-	cd src && $(MAKE)
-.PHONY: __tests
-__tests: tests/Makefile
-	cd tests && $(MAKE)
-.PHONY: __demos
-__demos: demos/Makefile
-	cd demos && $(MAKE)
-
-EOS
-
-while arg = ARGV.shift do
-  File.open( arg ).each_line do |line|
-    matches = /^\s*headers.files\s+=\s+(.*)$/.match( line )
-    matches[1].split( ' ' ).each { |file| step2( File.dirname( arg ) + '/' + file ) } if !matches.nil?
-  end
-end
+ARGV.each { |h| step2( 'src/'+h ) }
 
 rubystring = %q[ruby -e 'Dir["_include/lastfm/*"].each { |h| puts %Q{#include "lastfm/#{File.basename h}"\n} }']
 

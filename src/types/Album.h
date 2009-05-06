@@ -28,7 +28,7 @@
 
 namespace lastfm
 {
-    class LASTFM_TYPES_DLLEXPORT Album
+    class LASTFM_DLLEXPORT Album
     {
         Mbid m_mbid;
         Artist m_artist;

@@ -25,7 +25,7 @@ namespace lastfm
 {
     /** Qt's XmlQuery implementation is totally unimpressive, so this is a 
       * hack that feels like jQuery */
-    class LASTFM_CORE_DLLEXPORT XmlQuery
+    class LASTFM_DLLEXPORT XmlQuery
     {
         QDomDocument domdoc;
         QDomElement e;

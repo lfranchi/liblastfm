@@ -29,7 +29,7 @@
 namespace lastfm {
 
 /** Sets useragent and proxy. Auto detecting the proxy where possible. */
-class LASTFM_WS_DLLEXPORT NetworkAccessManager : public QNetworkAccessManager
+class LASTFM_DLLEXPORT NetworkAccessManager : public QNetworkAccessManager
 {
     Q_OBJECT
 

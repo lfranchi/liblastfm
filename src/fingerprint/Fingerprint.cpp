@@ -21,7 +21,7 @@
 #include "Collection.h"
 #include "Sha256.h"
 #include "MP3_Source_Qt.h"
-#include "fplib/include/FingerprintExtractor.h"
+#include "fplib/FingerprintExtractor.h"
 #include "../ws/ws.h"
 #include <QFileInfo>
 #include <QNetworkAccessManager>

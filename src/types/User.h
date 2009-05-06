@@ -27,7 +27,7 @@
 
 namespace lastfm
 {
-    class LASTFM_TYPES_DLLEXPORT User
+    class LASTFM_DLLEXPORT User
     {
         QString m_name;
 	
@@ -80,7 +80,7 @@ namespace lastfm
 
 
     /** The authenticated user is special, as some webservices only work for him */
-    class LASTFM_TYPES_DLLEXPORT AuthenticatedUser : public User
+    class LASTFM_DLLEXPORT AuthenticatedUser : public User
     {
         using User::match; //hide as not useful
     

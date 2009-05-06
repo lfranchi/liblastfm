@@ -24,7 +24,7 @@
 #include <QtAlgorithms>
 
 
-class LASTFM_SCROBBLE_DLLEXPORT ScrobblePoint
+class LASTFM_DLLEXPORT ScrobblePoint
 {
     uint i;
 

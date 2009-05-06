@@ -26,7 +26,7 @@
 
 namespace lastfm
 {
-    class LASTFM_TYPES_DLLEXPORT Xspf
+    class LASTFM_DLLEXPORT Xspf
     {
     public:
         /** pass in the playlist node! */

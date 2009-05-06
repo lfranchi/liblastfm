@@ -33,7 +33,7 @@ typedef const struct __SCNetworkReachability * SCNetworkReachabilityRef;
 
 namespace lastfm {
 
-class LASTFM_WS_DLLEXPORT InternetConnectionMonitor
+class LASTFM_DLLEXPORT InternetConnectionMonitor
         : public QObject
 #ifdef WIN32
         , NdisEvents

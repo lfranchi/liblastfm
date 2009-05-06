@@ -26,7 +26,7 @@
 
 namespace lastfm
 {
-    class LASTFM_TYPES_DLLEXPORT Mbid
+    class LASTFM_DLLEXPORT Mbid
     {
         QString id;
     

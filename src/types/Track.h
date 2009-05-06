@@ -65,7 +65,7 @@ struct TrackData : QSharedData
   * detach, which is very handy for our usage in the client, but perhaps not
   * what you want. If you need a deep copy for eg. work in a thread, call 
   * clone(). */
-class LASTFM_TYPES_DLLEXPORT Track
+class LASTFM_DLLEXPORT Track
 {
 public:
     enum Source
@@ -179,7 +179,7 @@ private:
   * encourages such usage, which is generally sensible. You can feel more
   * comfortable that the data hasn't accidently changed behind your back.
   */
-class LASTFM_TYPES_DLLEXPORT MutableTrack : public Track
+class LASTFM_DLLEXPORT MutableTrack : public Track
 {
 public:
     MutableTrack()

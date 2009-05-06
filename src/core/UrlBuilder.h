@@ -29,7 +29,7 @@
 namespace lastfm
 {
     /** For building www.last.fm urls. We have special rules for encoding and that */
-    class LASTFM_CORE_DLLEXPORT UrlBuilder
+    class LASTFM_DLLEXPORT UrlBuilder
     {
         QByteArray path;
 
