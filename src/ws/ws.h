@@ -26,8 +26,13 @@
 #include <QNetworkReply>
 #include <stdexcept>
 
+#ifdef WIN32
+// ms admits its lousy compiler doesn't care about throw declarations
+#pragma warning( disable : 4290 )
+#endif
 
-namespace lastfm 
+
+namespace lastfm
 {
     /** if you don't set one, we create our own, our own is pretty good
       * for instance, it auto detects proxy settings on windows and mac */

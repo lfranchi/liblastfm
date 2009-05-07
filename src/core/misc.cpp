@@ -185,7 +185,6 @@ lastfm::CFStringToUtf8( CFStringRef s )
 
     return result;
 }
-
 #endif
 
 #if 0

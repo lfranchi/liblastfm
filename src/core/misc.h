@@ -97,11 +97,10 @@ namespace lastfm
     }
 }
 
-#if Q_WS_MAC
+#ifdef Q_WS_MAC
 inline QString lastfm::CFStringToQString( CFStringRef s )
 {
     return QString::fromUtf8( CFStringToUtf8( s ) );
 }
 #endif
-
 #endif //LASTFM_MISC_H

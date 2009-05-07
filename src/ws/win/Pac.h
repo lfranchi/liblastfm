@@ -23,7 +23,8 @@
 #include <QNetworkProxy>
 #include <windows.h>
 #include <winhttp.h>
-
+class QNetworkRequest;
+ 
 namespace lastfm
 {
     /** @brief simple wrapper to do per url automatic proxy detection 
@@ -38,7 +39,7 @@ namespace lastfm
         Pac();
         ~Pac();
 
-        QNetworkProxy resolve( const class QNetworkRequest& url, const wchar_t* pacUrl );
+        QNetworkProxy resolve( const QNetworkRequest& url, const wchar_t* pacUrl );
 
         void resetFailedState() { m_bFailed = false; }
 
