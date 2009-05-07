@@ -24,6 +24,7 @@
 #include "../ws/ws.h"
 #include <QStringList>
 using lastfm::Artist;
+using lastfm::User;
 
 
 QMap<QString, QString> //private
@@ -35,7 +36,7 @@ Artist::params( const QString& method ) const
     return map;
 }
 
-QNetworkReply* 
+QNetworkReply*
 Artist::share( const User& user, const QString& message )
 {
     QMap<QString, QString> map = params("share");

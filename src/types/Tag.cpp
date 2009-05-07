@@ -23,6 +23,7 @@
 #include "../core/XmlQuery.h"
 #include "../ws/ws.h"
 using lastfm::Tag;
+using lastfm::User;
 
 
 QUrl
