@@ -94,6 +94,7 @@ using lastfm::Playlist;
 using lastfm::User;
 using lastfm::Tag;
 using lastfm::Track;
+using lastfm::XmlQuery;
 using lastfm::Xspf;
 #endif
 
