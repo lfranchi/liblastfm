@@ -24,7 +24,7 @@
     #ifdef LASTFM_OHAI_QMAKE
         #define LASTFM_DLLEXPORT __declspec(dllexport)
     #else
-        #define LASTFM_DLLEXPORT __declspec(dllexport)
+        #define LASTFM_DLLEXPORT __declspec(dllimport)
     #endif
 #elif __GNUC__ >= 4
     #define LASTFM_DLLEXPORT __attribute__ ((visibility("default")))
@@ -56,16 +56,16 @@ namespace lastfm
     }
 
 
-	enum ImageSize
-	{
-		Small = 0,
-		Medium = 1,
-		Large = 2, /** seemingly 174x174 */
+    enum ImageSize
+    {
+        Small = 0,
+        Medium = 1,
+        Large = 2, /** seemingly 174x174 */
         ExtraLarge = 3
-	};
-	
-	
-	//convenience
+    };
+    
+    
+    //convenience
     class Album;
     class Artist;
     class Audioscrobbler;
