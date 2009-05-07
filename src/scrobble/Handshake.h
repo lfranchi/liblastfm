@@ -26,7 +26,7 @@
 
 class ScrobblerHandshake : public ScrobblerHttp
 {
-	QString const m_clientId;
+    QString const m_clientId;
 
 public:
     ScrobblerHandshake( const QString& clientId );

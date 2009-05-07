@@ -65,8 +65,8 @@ namespace lastfm
 
 inline QDebug operator<<( QDebug d, const lastfm::XmlQuery& xq )
 {
-	QString s;
-	QTextStream t( &s, QIODevice::WriteOnly );
-	QDomElement(xq).save( t, 2 );
-	return d << s;
+    QString s;
+    QTextStream t( &s, QIODevice::WriteOnly );
+    QDomElement(xq).save( t, 2 );
+    return d << s;
 }

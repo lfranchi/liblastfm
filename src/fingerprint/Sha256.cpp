@@ -55,7 +55,7 @@
 
 #ifndef lint
 static const char rcsid[] =
-	"$Id: sha256.c 680 2003-07-25 21:57:49Z asaddi $";
+    "$Id: sha256.c 680 2003-07-25 21:57:49Z asaddi $";
 #endif /* !lint */
 
 #define ROTL(x, n) (((x) << (n)) | ((x) >> (32 - (n))))
@@ -110,7 +110,7 @@ static const uint32_t K[64] = {
 #else /* WORDS_BIGENDIAN */
 
 #define BYTESWAP(x) ((ROTR((x), 8) & 0xff00ff00L) | \
-		     (ROTL((x), 8) & 0x00ff00ffL))
+             (ROTL((x), 8) & 0x00ff00ffL))
 #define BYTESWAP64(x) _byteswap64(x)
 
 static inline uint64_t _byteswap64(uint64_t x)
@@ -128,7 +128,7 @@ static inline uint64_t _byteswap64(uint64_t x)
 #define BYTESWAP64(x) _byteswap64(sc->littleEndian, x)
 
 #define _BYTESWAP(x) ((ROTR((x), 8) & 0xff00ff00L) | \
-		      (ROTL((x), 8) & 0x00ff00ffL))
+              (ROTL((x), 8) & 0x00ff00ffL))
 #define _BYTESWAP64(x) __byteswap64(x)
 
 static inline uint64_t __byteswap64(uint64_t x)
@@ -450,8 +450,8 @@ main (int argc, char *argv[])
 
   SHA256Init (&foo);
   SHA256Update (&foo,
-		"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq",
-		56);
+        "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq",
+        56);
   SHA256Final (&foo, hash);
 
   for (i = 0; i < SHA256_HASH_SIZE;) {

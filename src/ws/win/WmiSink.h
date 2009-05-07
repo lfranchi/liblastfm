@@ -28,22 +28,22 @@ class WmiSink : public IWbemObjectSink
     UINT m_cRef;
 
 public:
-	WmiSink(class NdisEvents *callback);
-	~WmiSink();
+    WmiSink(class NdisEvents *callback);
+    ~WmiSink();
 
     // IUnknown members
     STDMETHODIMP         QueryInterface(REFIID, LPVOID *);
     STDMETHODIMP_(ULONG) AddRef(void);
     STDMETHODIMP_(ULONG) Release(void);
 
-	// IWbemObjectSink
+    // IWbemObjectSink
     STDMETHODIMP Indicate(long, IWbemClassObject**);
     STDMETHODIMP SetStatus(long, HRESULT, BSTR, IWbemClassObject *);
 
-	void disconnect();
+    void disconnect();
 
 private:
-	class NdisEvents *m_callback;
+    class NdisEvents *m_callback;
 };
 
 #endif

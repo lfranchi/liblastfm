@@ -36,8 +36,8 @@ QList<QPointer<lastfm::InternetConnectionMonitor> > monitors;
 
 
 lastfm::InternetConnectionMonitor::InternetConnectionMonitor( QObject *parent )
-                   				 : QObject( parent )
-				   				 , m_up( true )
+                                 : QObject( parent )
+                                 , m_up( true )
 {
 #ifdef __APPLE__
     if (monitors.isEmpty())
@@ -63,7 +63,7 @@ lastfm::InternetConnectionMonitor::callback( SCNetworkReachabilityRef, SCNetwork
     // I couldn't find any diffinitive usage examples for these flags
     // so I had to guess, since I can't test, eg. dial up :(
     
-	bool b;
+    bool b;
     if (flags & kSCNetworkFlagsConnectionRequired)
         b = false;
     else
@@ -76,16 +76,16 @@ lastfm::InternetConnectionMonitor::callback( SCNetworkReachabilityRef, SCNetwork
     up = b;
     
     foreach (InternetConnectionMonitor* monitor, monitors)
-		if (monitor) 
-		{
-			monitor->m_up = b;
-			
+        if (monitor) 
+        {
+            monitor->m_up = b;
+            
             if (b)
                 emit monitor->up();
             else
                 emit monitor->down();
 
-			emit monitor->connectivityChanged( b );
-		}
+            emit monitor->connectivityChanged( b );
+        }
 }
 #endif

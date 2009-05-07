@@ -73,7 +73,7 @@ User::getRecentTracks() const
 QNetworkReply*
 User::getNeighbours() const
 {
-	return ws::get( params( "getNeighbours" ) );
+    return ws::get( params( "getNeighbours" ) );
 }
 
 
@@ -87,7 +87,7 @@ User::getPlaylists() const
 QList<User> //static
 User::list( QNetworkReply* r )
 {
-	QList<User> users;
+    QList<User> users;
     try {
         XmlQuery lfm = ws::parse(r);
         foreach (XmlQuery e, lfm.children( "user" ))
@@ -113,7 +113,7 @@ AuthenticatedUser::getInfo()
 {
     QMap<QString, QString> map;
     map["method"] = "user.getInfo";
-	return ws::post( map );
+    return ws::post( map );
 }
 
 
@@ -122,7 +122,7 @@ AuthenticatedUser::getRecommendedArtists()
 {
     QMap<QString, QString> map;
     map["method"] = "user.getRecommendedArtists";
-	return ws::post( map );
+    return ws::post( map );
 }
 
 
@@ -167,28 +167,28 @@ AuthenticatedUser::getInfoString( QNetworkReply* reply )
     };
 
     QString text;
-	try
-	{
-    	XmlQuery user = XmlQuery(ws::parse(reply))["user"];
-    	Gender gender = user["gender"].text();
-    	QString age = user["age"].text();
-    	uint const scrobbles = user["playcount"].text().toUInt();
-    	if (gender.known() && age.size() && scrobbles > 0)
-    	{
-    		text = tr("A %1, %2 years of age with %L3 scrobbles")
-    				.arg( gender.toString() )
-    				.arg( age )
-    				.arg( scrobbles );
-    	}
-    	else if (scrobbles > 0)
-    	{
+    try
+    {
+        XmlQuery user = XmlQuery(ws::parse(reply))["user"];
+        Gender gender = user["gender"].text();
+        QString age = user["age"].text();
+        uint const scrobbles = user["playcount"].text().toUInt();
+        if (gender.known() && age.size() && scrobbles > 0)
+        {
+            text = tr("A %1, %2 years of age with %L3 scrobbles")
+                    .arg( gender.toString() )
+                    .arg( age )
+                    .arg( scrobbles );
+        }
+        else if (scrobbles > 0)
+        {
             text = tr("%L1 scrobbles").arg( scrobbles );
-    	}    
+        }    
     }
-	catch (ws::ParseError& e)
-	{
+    catch (ws::ParseError& e)
+    {
         qWarning() << e.what();
-	}
+    }
     return text;
     
     #undef tr

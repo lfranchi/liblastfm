@@ -77,8 +77,8 @@ public:
         LastFmRadio,
         Player,
         MediaDevice,
-		NonPersonalisedBroadcast, // eg Shoutcast, BBC Radio 1, etc.
-		PersonalisedRecommendation, // eg Pandora, but not Last.fm
+        NonPersonalisedBroadcast, // eg Shoutcast, BBC Radio 1, etc.
+        PersonalisedRecommendation, // eg Pandora, but not Last.fm
     };
 
     Track();
@@ -144,12 +144,12 @@ public:
     
 //////////// lastfm::Ws
     
-	/** See last.fm/api Track section */
+    /** See last.fm/api Track section */
     QNetworkReply* share( const class User& recipient, const QString& message = "" );
 
     /** you can get any QNetworkReply TagList using Tag::list( QNetworkReply* ) */
-	QNetworkReply* getTags() const; // for the logged in user
-	QNetworkReply* getTopTags() const;
+    QNetworkReply* getTags() const; // for the logged in user
+    QNetworkReply* getTopTags() const;
 
     /** you can only add 10 tags, we submit everything you give us, but the
       * docs state 10 only. Will return 0 if the list is empty. */
@@ -157,8 +157,8 @@ public:
     /** will return 0 if the string is "" */
     QNetworkReply* removeTag( const QString& ) const;
 
-	/** the url for this track's page at last.fm */
-	QUrl www() const;
+    /** the url for this track's page at last.fm */
+    QUrl www() const;
 
 protected:
     QExplicitlySharedDataPointer<TrackData> d;
@@ -213,10 +213,10 @@ public:
 
     /** currently doesn't work, as there is no webservice */
     void unlove();
-	
+    
     void stamp() { d->time = QDateTime::currentDateTime(); }
 
-	void setExtra( const QString& key, const QString& value ) { d->extras[key] = value; }
+    void setExtra( const QString& key, const QString& value ) { d->extras[key] = value; }
     void removeExtra( QString key ) { d->extras.remove( key ); }
 };
 

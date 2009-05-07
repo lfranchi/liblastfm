@@ -32,30 +32,30 @@ namespace lastfm
       */
     class LASTFM_DLLEXPORT RadioTuner : public QObject
     {
-    	Q_OBJECT
-	
+        Q_OBJECT
+    
     public:
-    	/** You need to have assigned Ws::* for this to work, creating the tuner
-    	  * automatically fetches the first 5 tracks for the station */
+        /** You need to have assigned Ws::* for this to work, creating the tuner
+          * automatically fetches the first 5 tracks for the station */
         explicit RadioTuner( const RadioStation& );
 
         Track takeNextTrack();
 
     signals:
-    	void title( const QString& );
-    	void trackAvailable();
+        void title( const QString& );
+        void trackAvailable();
         void error( lastfm::ws::Error );
 
     private slots:
-    	void onTuneReturn();
-    	void onGetPlaylistReturn();
+        void onTuneReturn();
+        void onGetPlaylistReturn();
 
     private:
-    	/** Tries again up to 5 times 
-    	  * @returns true if we tried again, otherwise you should emit error */
-    	bool tryAgain();
+        /** Tries again up to 5 times 
+          * @returns true if we tried again, otherwise you should emit error */
+        bool tryAgain();
         /** Will emit 5 tracks from tracks(), they have to played within an hour
-    	  * or the streamer will refuse to stream them. Also the previous five are
+          * or the streamer will refuse to stream them. Also the previous five are
           * invalidated apart from the one that is currently playing, so sorry, you
           * can't build up big lists of tracks.
           *
@@ -66,7 +66,7 @@ namespace lastfm
         bool fetchFiveMoreTracks();
 
         QList<Track> m_queue;
-    	uint m_retry_counter;
+        uint m_retry_counter;
     };
 }
 

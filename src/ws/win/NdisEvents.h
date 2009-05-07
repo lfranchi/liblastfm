@@ -31,8 +31,8 @@ public:
     ~NdisEvents();
     HRESULT registerForNdisEvents();
 
-	virtual void onConnectionUp(BSTR name) = 0;
-	virtual void onConnectionDown(BSTR name) = 0;
+    virtual void onConnectionUp(BSTR name) = 0;
+    virtual void onConnectionDown(BSTR name) = 0;
 
 private:
     CComPtr<IWbemLocator> m_pLocator;

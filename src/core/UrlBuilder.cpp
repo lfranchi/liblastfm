@@ -70,14 +70,14 @@ lastfm::UrlBuilder::host( const QLocale& locale )
 QUrl //static
 lastfm::UrlBuilder::localize( QUrl url)
 {
-	url.setHost( url.host().replace( QRegExp("^(www.)?last.fm"), host() ) );
-	return url;
+    url.setHost( url.host().replace( QRegExp("^(www.)?last.fm"), host() ) );
+    return url;
 }
 
 
 QUrl //static
 lastfm::UrlBuilder::mobilize( QUrl url )
 {
-	url.setHost( url.host().replace( QRegExp("^(www.)?last"), "m.last" ) );
-	return url;
+    url.setHost( url.host().replace( QRegExp("^(www.)?last"), "m.last" ) );
+    return url;
 }

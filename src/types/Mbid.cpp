@@ -31,7 +31,7 @@ namespace lastfm
         QByteArray const bytes = QFile::encodeName( path );
         int const r = getMP3_MBID( bytes.data(), out );
         Mbid mbid;
-    	if (r == 0) mbid.id = QString::fromLatin1( out );
+        if (r == 0) mbid.id = QString::fromLatin1( out );
         return mbid;
     }
 }

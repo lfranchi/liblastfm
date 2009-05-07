@@ -54,27 +54,27 @@ Artist::www() const
 QNetworkReply* 
 Artist::getInfo() const
 {
-	return ws::get( params("getInfo") );
+    return ws::get( params("getInfo") );
 }
 
 
 QNetworkReply* 
 Artist::getTags() const
 {
-	return ws::get( params("getTags") );
+    return ws::get( params("getTags") );
 }
 
 QNetworkReply* 
 Artist::getTopTags() const
 {
-	return ws::get( params("getTopTags") );
+    return ws::get( params("getTopTags") );
 }
 
 
 QNetworkReply* 
 Artist::getSimilar() const
 {
-	return ws::get( params("getSimilar") );
+    return ws::get( params("getSimilar") );
 }
 
 
@@ -92,20 +92,20 @@ Artist::getSimilar( QNetworkReply* r )
 {
     QMap<int, QString> artists;
     try
-	{
-        XmlQuery lfm = ws::parse(r);    	
-    	foreach (XmlQuery e, lfm.children( "artist" ))
-    	{
-    	    // convert floating percentage to int in range 0 to 10,000
-    		int const match = e["match"].text().toFloat() * 100;
-		    artists.insertMulti( match, e["name"].text() );
-    	}
+    {
+        XmlQuery lfm = ws::parse(r);        
+        foreach (XmlQuery e, lfm.children( "artist" ))
+        {
+            // convert floating percentage to int in range 0 to 10,000
+            int const match = e["match"].text().toFloat() * 100;
+            artists.insertMulti( match, e["name"].text() );
+        }
     }
-	catch (ws::ParseError& e)
-	{
-		qWarning() << e.what();
-	}
-	return artists;
+    catch (ws::ParseError& e)
+    {
+        qWarning() << e.what();
+    }
+    return artists;
 }
 
 
@@ -125,17 +125,17 @@ Artist::list( QNetworkReply* r )
     QList<Artist> artists;
     try {
         XmlQuery lfm = ws::parse(r);
-    	foreach (XmlQuery xq, lfm.children( "artist" )) {
+        foreach (XmlQuery xq, lfm.children( "artist" )) {
             Artist artist = xq["name"].text();
             artist.m_images = images( xq );
-    		artists += artist;
-    	}
+            artists += artist;
+        }
     }
     catch (ws::ParseError& e)
-	{
-		qWarning() << e.what();
-	}
-	return artists;
+    {
+        qWarning() << e.what();
+    }
+    return artists;
 }
 
 
@@ -149,8 +149,8 @@ Artist::getInfo( QNetworkReply* r )
         return artist;
     }
     catch (ws::ParseError& e)
-	{
-		qWarning() << e.what();
+    {
+        qWarning() << e.what();
         return Artist();
     }
 }

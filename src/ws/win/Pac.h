@@ -26,26 +26,26 @@
 
 namespace lastfm
 {
-	/** @brief simple wrapper to do per url automatic proxy detection 
-	  * @author <doug@last.fm>
-	  */
-	class Pac
-	{    
-		HINTERNET m_hSession;
-	    bool m_bFailed;
+    /** @brief simple wrapper to do per url automatic proxy detection 
+      * @author <doug@last.fm>
+      */
+    class Pac
+    {    
+        HINTERNET m_hSession;
+        bool m_bFailed;
 
-	public:
-		Pac();
-		~Pac();
+    public:
+        Pac();
+        ~Pac();
 
-		QNetworkProxy resolve( const class QNetworkRequest& url, const wchar_t* pacUrl );
+        QNetworkProxy resolve( const class QNetworkRequest& url, const wchar_t* pacUrl );
 
-	    void resetFailedState() { m_bFailed = false; }
+        void resetFailedState() { m_bFailed = false; }
 
-	private:
-	    Pac( const Pac& ); //undefined
-	    Pac operator=( const Pac& ); //undefined
-	};
+    private:
+        Pac( const Pac& ); //undefined
+        Pac operator=( const Pac& ); //undefined
+    };
 }
 
 #endif 

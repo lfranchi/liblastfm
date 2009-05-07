@@ -30,21 +30,21 @@ namespace lastfm
 {
     class LASTFM_DLLEXPORT Tag
     {
-    	QString m_name;
-	
+        QString m_name;
+    
     public:
-    	Tag( const QString& name ) : m_name( name )
-    	{}
-	
-    	operator QString() const { return m_name; }
+        Tag( const QString& name ) : m_name( name )
+        {}
+    
+        operator QString() const { return m_name; }
         QString name() const { return m_name; }
-	
-    	/** the global tag page at www.last.fm */
-    	QUrl www() const;
-    	/** the tag page for user @p user at www.last.fm */
-    	QUrl www( const class User& user ) const;
-	    /** pass the finished QNetworkReply to Tag::list() */
-    	class QNetworkReply* search() const;
+    
+        /** the global tag page at www.last.fm */
+        QUrl www() const;
+        /** the tag page for user @p user at www.last.fm */
+        QUrl www( const class User& user ) const;
+        /** pass the finished QNetworkReply to Tag::list() */
+        class QNetworkReply* search() const;
     
         /** the integer is the weighting, not all list type return requests
           * have a weighting, so the int may just be zero, if you don't care

@@ -241,21 +241,21 @@ OptFFT::OptFFT(const size_t maxDataSize)
    // DOUBLE
    //m_pIn = static_cast<double*>( fftw_malloc(sizeof(double) * FRAMESIZE) );
    //m_pOut = static_cast<fftw_complex*>( fftw_malloc(sizeof(fftw_complex) * (FRAMESIZE/2 + 1)) );
-	//m_p = fftw_plan_dft_r2c_1f(FRAMESIZE, m_pIn, m_pOut, FFTW_ESTIMATE); // FFTW_ESTIMATE or FFTW_MEASURE
+    //m_p = fftw_plan_dft_r2c_1f(FRAMESIZE, m_pIn, m_pOut, FFTW_ESTIMATE); // FFTW_ESTIMATE or FFTW_MEASURE
 
    // FLOAT
  //  m_pIn = static_cast<float*>( fftwf_malloc(sizeof(float) * FRAMESIZE) );
  //  m_pOut = static_cast<fftwf_complex*>( fftwf_malloc(sizeof(fftwf_complex) * (FRAMESIZE/2 + 1)) );
 
-	//// in destroyed when line executed
-	//m_p = fftwf_plan_dft_r2c_1d(FRAMESIZE, m_pIn, m_pOut, FFTW_ESTIMATE); // FFTW_ESTIMATE or FFTW_MEASURE
+    //// in destroyed when line executed
+    //m_p = fftwf_plan_dft_r2c_1d(FRAMESIZE, m_pIn, m_pOut, FFTW_ESTIMATE); // FFTW_ESTIMATE or FFTW_MEASURE
 
    //-----------------------------------------------------------------
 
    int numSamplesPerFrame    = FRAMESIZE;
    int numSamplesPerFrameOut = FRAMESIZE/2+1;
 
- 	m_maxFrames = static_cast<int> ( (maxDataSize - FRAMESIZE) / OVERLAPSAMPLES + 1 );
+    m_maxFrames = static_cast<int> ( (maxDataSize - FRAMESIZE) / OVERLAPSAMPLES + 1 );
 
    m_pIn  = static_cast<float*> ( fftwf_malloc(sizeof(float) * (numSamplesPerFrame * m_maxFrames) ) );
    if ( !m_pIn )
@@ -278,7 +278,7 @@ OptFFT::OptFFT(const size_t maxDataSize)
       throw std::runtime_error(oss.str());
    }
 
-	// in destroyed when line executed
+    // in destroyed when line executed
    m_p = fftwf_plan_many_dft_r2c(1, &numSamplesPerFrame, m_maxFrames,
                                  m_pIn, &numSamplesPerFrame, 1, numSamplesPerFrame,
                                  m_pOut, &numSamplesPerFrameOut,
@@ -288,7 +288,7 @@ OptFFT::OptFFT(const size_t maxDataSize)
    if ( !m_p )
       throw std::runtime_error ("fftwf_plan_many_dft_r2c failed");
 
-	double base = exp( log( static_cast<double>(MAXFREQ) / static_cast<double>(MINFREQ) ) / 
+    double base = exp( log( static_cast<double>(MAXFREQ) / static_cast<double>(MINFREQ) ) / 
                       static_cast<double>(Filter::NBANDS) 
                      );
 
@@ -322,10 +322,10 @@ OptFFT::OptFFT(const size_t maxDataSize)
 
 OptFFT::~OptFFT()
 {
-	fftwf_destroy_plan(m_p);
-	
-	fftwf_free(m_pIn);
-	fftwf_free(m_pOut);
+    fftwf_destroy_plan(m_p);
+    
+    fftwf_free(m_pIn);
+    fftwf_free(m_pOut);
 
    for (int i = 0; i < m_maxFrames; ++i)
       delete [] m_pFrames[i];
@@ -373,30 +373,30 @@ int OptFFT::process(float* pInData, const size_t dataSize)
    unsigned int outBlocStart;
    unsigned int outBlocEnd;
 
-	for (int i = 0; i < nFrames; ++i) 
+    for (int i = 0; i < nFrames; ++i) 
    {
       frameStart = i * (FRAMESIZE/2+1);
 
-	   // compute bands
-	   for (unsigned int j = 0; j < Filter::NBANDS; j++) 
+       // compute bands
+       for (unsigned int j = 0; j < Filter::NBANDS; j++) 
       {
          outBlocStart = m_powTable[j] + frameStart;
          outBlocEnd   = m_powTable[j+1] + frameStart;
 
-		   m_pFrames[i][j] = 0;
+           m_pFrames[i][j] = 0;
 
-		   // WARNING: We're double counting the last one here.
-		   // this bug is to match matlab's implementation bug in power2band.m
+           // WARNING: We're double counting the last one here.
+           // this bug is to match matlab's implementation bug in power2band.m
          unsigned int end_k = outBlocEnd + static_cast<unsigned int>(MINCOEF);
-		   for (unsigned int k = outBlocStart + static_cast<unsigned int>(MINCOEF); k <= end_k; k++) 
+           for (unsigned int k = outBlocStart + static_cast<unsigned int>(MINCOEF); k <= end_k; k++) 
          {
-			   m_pFrames[i][j] += m_pOut[k][0] * m_pOut[k][0] + 
+               m_pFrames[i][j] += m_pOut[k][0] * m_pOut[k][0] + 
                                m_pOut[k][1] * m_pOut[k][1];
-		   }
+           }
 
-		   // WARNING: if we change the k<=end to k<end above, we need to change the following line
-		   m_pFrames[i][j] /= static_cast<float>(outBlocEnd - outBlocStart + 1);   		
-	   }   
+           // WARNING: if we change the k<=end to k<end above, we need to change the following line
+           m_pFrames[i][j] /= static_cast<float>(outBlocEnd - outBlocStart + 1);        
+       }   
    }
 
    return nFrames;

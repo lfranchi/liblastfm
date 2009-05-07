@@ -34,54 +34,54 @@ NdisEvents::NdisEvents()
 NdisEvents::~NdisEvents()
 {
     if (m_pSink)
-	    m_pSink->disconnect();
-	if (m_pServices && m_pSink)
-		m_pServices->CancelAsyncCall(m_pSink);
-	// and reference counting will take care of the WmiSink object
+        m_pSink->disconnect();
+    if (m_pServices && m_pSink)
+        m_pServices->CancelAsyncCall(m_pSink);
+    // and reference counting will take care of the WmiSink object
 }
 
 HRESULT
 NdisEvents::registerForNdisEvents()
 {
-	HRESULT hr = m_pLocator.CoCreateInstance(CLSID_WbemLocator);
-	if (FAILED(hr))
-		return hr;
+    HRESULT hr = m_pLocator.CoCreateInstance(CLSID_WbemLocator);
+    if (FAILED(hr))
+        return hr;
 
     // Connect to the root\wmi namespace with the current user.
-    hr = m_pLocator->ConnectServer(CComBSTR("ROOT\\WMI"),		// strNetworkResource
-									NULL,				// strUser
-									NULL,				// strPassword
-									NULL,				// strLocale  
-									0,					// lSecurityFlags
-									CComBSTR(""),       // strAuthority               
-									NULL,				// pCtx
-									&m_pServices
-									);
+    hr = m_pLocator->ConnectServer(CComBSTR("ROOT\\WMI"),       // strNetworkResource
+                                    NULL,               // strUser
+                                    NULL,               // strPassword
+                                    NULL,               // strLocale  
+                                    0,                  // lSecurityFlags
+                                    CComBSTR(""),       // strAuthority               
+                                    NULL,               // pCtx
+                                    &m_pServices
+                                    );
     if (FAILED(hr))
-		return hr;
+        return hr;
 
-	m_pSink = new WmiSink(this);
+    m_pSink = new WmiSink(this);
 
-	//////////////////////////
+    //////////////////////////
 
-	// other notifications we're not interested in right now include...
-	// MSNdis_NotifyAdapterArrival  \DEVICE\<guid>
-	// MSNdis_NotifyAdapterRemoval
-	// MSNdis_StatusLinkSpeedChange
-	// MSNdis_NotifyVcArrival
-	// MSNdis_NotifyVcRemoval
-	// MSNdis_StatusResetStart
-	// MSNdis_StatusResetEnd
-	// MSNdis_StatusProtocolBind
-	// MSNdis_StatusProtocolUnbind
-	// MSNdis_StatusMediaSpecificIndication
+    // other notifications we're not interested in right now include...
+    // MSNdis_NotifyAdapterArrival  \DEVICE\<guid>
+    // MSNdis_NotifyAdapterRemoval
+    // MSNdis_StatusLinkSpeedChange
+    // MSNdis_NotifyVcArrival
+    // MSNdis_NotifyVcRemoval
+    // MSNdis_StatusResetStart
+    // MSNdis_StatusResetEnd
+    // MSNdis_StatusProtocolBind
+    // MSNdis_StatusProtocolUnbind
+    // MSNdis_StatusMediaSpecificIndication
 
-	CComBSTR wql("WQL");
-	CComBSTR query("SELECT * FROM MSNdis_StatusMediaDisconnect");
-	hr = m_pServices->ExecNotificationQueryAsync(wql, query, 0, 0, m_pSink);
+    CComBSTR wql("WQL");
+    CComBSTR query("SELECT * FROM MSNdis_StatusMediaDisconnect");
+    hr = m_pServices->ExecNotificationQueryAsync(wql, query, 0, 0, m_pSink);
 
-	query = "SELECT * FROM MSNdis_StatusMediaConnect";
-	hr = m_pServices->ExecNotificationQueryAsync(wql, query, 0, 0, m_pSink);
+    query = "SELECT * FROM MSNdis_StatusMediaConnect";
+    hr = m_pServices->ExecNotificationQueryAsync(wql, query, 0, 0, m_pSink);
 
     return S_OK;
 }

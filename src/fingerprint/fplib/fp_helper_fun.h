@@ -396,13 +396,13 @@ inline bool enoughUniqueGoodGroups(
 #define FRAME_TLEN ((float) FRAMESIZE / (float) DFREQ)
 #define MINCOEF (FRAME_TLEN * MINFREQ)
 
-#define round__(x)	((int)(x + .5))
+#define round__(x)  ((int)(x + .5))
 
 struct RawFilter
 {
    unsigned int ftid;
    float thresh;
-	float weight;
+    float weight;
 };
 
 const RawFilter rFilters[] = {

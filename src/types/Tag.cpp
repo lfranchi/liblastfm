@@ -28,14 +28,14 @@ using lastfm::Tag;
 QUrl
 Tag::www() const
 {
-	return UrlBuilder( "tag" ).slash( m_name ).url();
+    return UrlBuilder( "tag" ).slash( m_name ).url();
 }
 
 
 QUrl
 Tag::www( const User& user ) const
 {
-	return UrlBuilder( "user" ).slash( user.name() ).slash( "tags" ).slash( Tag::name() ).url();
+    return UrlBuilder( "user" ).slash( user.name() ).slash( "tags" ).slash( Tag::name() ).url();
 }
 
 
@@ -52,7 +52,7 @@ Tag::search() const
 QMap<int, QString> //static
 Tag::list( QNetworkReply* r )
 {
-	QMap<int, QString> tags;
+    QMap<int, QString> tags;
     try {
         foreach (XmlQuery xq, XmlQuery(ws::parse(r)).children("tag"))
             // we toLower always as otherwise it is ugly mixed case, as first

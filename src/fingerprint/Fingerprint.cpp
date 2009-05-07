@@ -206,11 +206,11 @@ lastfm::Fingerprint::submit() const
     if (m_data.isEmpty())
         return 0;
     
-	//Parameters understood by the server according to the MIR team: 
-	//{ "trackid", "recordingid", "artist", "album", "track", "duration", 
-	//  "tracknum", "username", "sha256", "ip", "fpversion", "mbid", 
-	//  "filename", "genre", "year", "samplerate", "noupdate", "fulldump" }
-	
+    //Parameters understood by the server according to the MIR team: 
+    //{ "trackid", "recordingid", "artist", "album", "track", "duration", 
+    //  "tracknum", "username", "sha256", "ip", "fpversion", "mbid", 
+    //  "filename", "genre", "year", "samplerate", "noupdate", "fulldump" }
+    
     Track const t = m_track;
     QString const path = t.url().toLocalFile();
     QFileInfo const fi( path );
@@ -232,7 +232,7 @@ lastfm::Fingerprint::submit() const
     url.addEncodedQueryItem( "noupdate", "false" );
     #undef e
 
-	//FIXME: talk to mir about submitting fplibversion
+    //FIXME: talk to mir about submitting fplibversion
 
     QNetworkRequest request( url );
     request.setHeader( QNetworkRequest::ContentTypeHeader, "multipart/form-data; boundary=----------------------------8e61d618ca16" );

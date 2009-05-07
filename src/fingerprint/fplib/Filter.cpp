@@ -38,96 +38,96 @@ namespace fingerprint
 Filter::Filter(unsigned int id, float threshold, float weight) 
 : id(id), threshold(threshold), weight(weight)
 {
-	float time_rate = 1.5;
-		
-	unsigned int t = 1;
-	vector<unsigned int> time_lengths;
+    float time_rate = 1.5;
+        
+    unsigned int t = 1;
+    vector<unsigned int> time_lengths;
 
-	while (t < KEYWIDTH) 
+    while (t < KEYWIDTH) 
    {
-		time_lengths.push_back(t);
+        time_lengths.push_back(t);
       t = max( static_cast<unsigned int>( round__(time_rate*t) ) +
                static_cast<unsigned int>( round__(time_rate*t) % 2),
                t+1 );
-	}
+    }
 
-	unsigned int filter_count = 0;
+    unsigned int filter_count = 0;
 
-	for (wt = 1; wt <= time_lengths.size(); wt++) 
+    for (wt = 1; wt <= time_lengths.size(); wt++) 
    {
-		for (wb = 1; wb <= NBANDS; wb++) 
+        for (wb = 1; wb <= NBANDS; wb++) 
       {
-			for (first_band = 1; first_band <= NBANDS - wb + 1;
-			     first_band++) 
+            for (first_band = 1; first_band <= NBANDS - wb + 1;
+                 first_band++) 
          {
-				unsigned int time = time_lengths[wt-1];
-				filter_count++;
+                unsigned int time = time_lengths[wt-1];
+                filter_count++;
 
-				if (filter_count == id) 
+                if (filter_count == id) 
             {
-					wt = time_lengths[wt-1];
-					filter_type = 1;
-					return;
-				}
+                    wt = time_lengths[wt-1];
+                    filter_type = 1;
+                    return;
+                }
 
-				if (time > 1) 
+                if (time > 1) 
             {
-					filter_count++;
-					if (filter_count == id) 
+                    filter_count++;
+                    if (filter_count == id) 
                {
-						wt = time_lengths[wt-1];
-						filter_type = 2;
-						return;
-					}
-				}
-					
-				if (wb > 1) 
+                        wt = time_lengths[wt-1];
+                        filter_type = 2;
+                        return;
+                    }
+                }
+                    
+                if (wb > 1) 
             {
-					filter_count++;
-					if (filter_count == id) 
+                    filter_count++;
+                    if (filter_count == id) 
                {
-						wt = time_lengths[wt-1];
-						filter_type = 3;
-						return;
-					}
-				}
+                        wt = time_lengths[wt-1];
+                        filter_type = 3;
+                        return;
+                    }
+                }
 
-				if (time > 1 && wb > 1) 
+                if (time > 1 && wb > 1) 
             {
-					filter_count++;
-					if (filter_count == id) 
+                    filter_count++;
+                    if (filter_count == id) 
                {
-						wt = time_lengths[wt-1];
-						filter_type = 4;
-						return;
-					}
-				}
-				
-				if (time > 3) 
+                        wt = time_lengths[wt-1];
+                        filter_type = 4;
+                        return;
+                    }
+                }
+                
+                if (time > 3) 
             {
-					filter_count++;
-					if (filter_count == id) 
+                    filter_count++;
+                    if (filter_count == id) 
                {
-						wt = time_lengths[wt-1];
-						filter_type = 5;
-						return;
-					}
-				}
-				
-				if (wb > 3) 
+                        wt = time_lengths[wt-1];
+                        filter_type = 5;
+                        return;
+                    }
+                }
+                
+                if (wb > 3) 
             {
-					filter_count++;
-					if (filter_count == id) 
+                    filter_count++;
+                    if (filter_count == id) 
                {
-						wt = time_lengths[wt-1];
-						filter_type = 6;
-						return;
-					}
-				}
+                        wt = time_lengths[wt-1];
+                        filter_type = 6;
+                        return;
+                    }
+                }
 
-			} // for first_band
-		} // for wb
-	} // for wt
+            } // for first_band
+        } // for wb
+    } // for wt
 }
 
 } // end of namespace fingerprint

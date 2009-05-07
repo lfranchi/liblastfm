@@ -39,46 +39,46 @@ class LASTFM_DLLEXPORT InternetConnectionMonitor
         , NdisEvents
 #endif
 {
-	Q_OBJECT
+    Q_OBJECT
 
 #ifdef WIN32
     // WmiSink callbacks:
     virtual void onConnectionUp( BSTR name )
     {
         emit up( QString::fromUtf16(name) );
-		emit connectivityChanged( true );
+        emit connectivityChanged( true );
     }
     
     virtual void onConnectionDown( BSTR name )
     {
         emit down( QString::fromUtf16(name) );
-		emit connectivityChanged( false );
+        emit connectivityChanged( false );
     }
 #endif
 #ifdef __APPLE__
     static void callback( SCNetworkReachabilityRef, SCNetworkConnectionFlags, void* );
 #endif
 
-	bool m_up;
-	
+    bool m_up;
+    
 public:
     /** if internet is unavailable you will get a down() signal soon, otherwise
       * you won't get a signal until the net goes down */
-	InternetConnectionMonitor( QObject *parent = 0 );
+    InternetConnectionMonitor( QObject *parent = 0 );
 
-	bool isDown() const { return !m_up; }
-	bool isUp() const { return m_up; }
-	
+    bool isDown() const { return !m_up; }
+    bool isUp() const { return m_up; }
+    
 signals:
     /** yay! internet has returned */
-	void up( const QString& connectionName = "" );
+    void up( const QString& connectionName = "" );
     
     /** we think the internet is unavailable, but well, still try, but show
       * an unhappy face in the statusbar or something */
-	void down( const QString& connectionName = "" );
-	
+    void down( const QString& connectionName = "" );
+    
     /** emitted after the above */
-	void connectivityChanged( bool );
+    void connectivityChanged( bool );
 };
 
 } //namespace lastfm

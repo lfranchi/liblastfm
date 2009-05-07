@@ -49,9 +49,9 @@ private:
 
    void applyHann(float* pInData, const size_t dataSize);
 
-	fftwf_plan        m_p;
-	fftwf_complex *   m_pOut;
-	float*            m_pIn;
+    fftwf_plan        m_p;
+    fftwf_complex *   m_pOut;
+    float*            m_pIn;
 
    //float   m_base;
 

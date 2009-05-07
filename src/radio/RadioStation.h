@@ -32,13 +32,13 @@ namespace lastfm
     class LASTFM_DLLEXPORT RadioStation
     {
     public:
-    	RadioStation()
-    	{}
+        RadioStation()
+        {}
         RadioStation( const QString& s ) : m_url( s )
         {}
         explicit RadioStation( const QUrl& u ) : m_url( u.toString() )
         {}
-	
+    
         static RadioStation library( const lastfm::User& user )         { return "lastfm://user/" + user + "/personal"; }
         static RadioStation recommendations( const lastfm::User& user ) { return "lastfm://user/" + user + "/recommended"; }
         static RadioStation neighbourhood( const lastfm::User& user )   { return "lastfm://user/" + user + "/neighbours"; }
@@ -55,16 +55,16 @@ namespace lastfm
         }
 
         /** eg. "mxcl's Loved Tracks"
-     	  * It is worth noting that the Radio doesn't set the title of RadioStation 
-    	  * object until we have tuned to it, and then we only set the one we give 
-    	  * you back.
-    	  */	
-    	QString title() const { return m_title; }
-    	/** the Last.fm url, eg. lastfm://user/mxcl/loved */
-    	QString url() const { return m_url; }
+          * It is worth noting that the Radio doesn't set the title of RadioStation 
+          * object until we have tuned to it, and then we only set the one we give 
+          * you back.
+          */    
+        QString title() const { return m_title; }
+        /** the Last.fm url, eg. lastfm://user/mxcl/loved */
+        QString url() const { return m_url; }
         QString rql() const { return m_rql; }
 
-    	void setTitle( const QString& s ) { m_title = s; }
+        void setTitle( const QString& s ) { m_title = s; }
 
         bool isLegacyPlaylist() const
         {
@@ -76,8 +76,8 @@ namespace lastfm
     
     private:
         QString m_rql;
-    	QString m_url;
-    	QString m_title;
+        QString m_url;
+        QString m_title;
     };
 }
 

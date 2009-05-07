@@ -30,7 +30,7 @@ struct IeSettings : WINHTTP_CURRENT_USER_IE_PROXY_CONFIG
     {
         if (!WinHttpGetIEProxyConfigForCurrentUser(this)) {
             fAutoDetect = FALSE;
-            lpszAutoConfigUrl =	lpszProxy = lpszProxyBypass = 0;
+            lpszAutoConfigUrl = lpszProxy = lpszProxyBypass = 0;
         }
     }
     

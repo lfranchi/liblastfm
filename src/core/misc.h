@@ -28,18 +28,18 @@ typedef const struct __CFString* CFStringRef;
 
 namespace lastfm
 {
-	namespace dir
-	{
-		QDir bundle(); // only defined on OS X
-		QDir programFiles(); // only defined on Windows
-		QDir runtimeData();
-		QDir cache();
-		QDir logs();
-	}
-	
-	QByteArray CFStringToUtf8( CFStringRef );
-	CFStringRef QStringToCFString( const QString& );
-	QString CFStringToQString( CFStringRef s );
+    namespace dir
+    {
+        QDir bundle(); // only defined on OS X
+        QDir programFiles(); // only defined on Windows
+        QDir runtimeData();
+        QDir cache();
+        QDir logs();
+    }
+    
+    QByteArray CFStringToUtf8( CFStringRef );
+    CFStringRef QStringToCFString( const QString& );
+    QString CFStringToQString( CFStringRef s );
 
     inline const char* platform()
     {

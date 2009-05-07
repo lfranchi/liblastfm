@@ -45,24 +45,24 @@ namespace lastfm
 
         QUrl url() const;
 
-    	/** www.last.fm becomes the local version, eg www.lastfm.de */
-    	static QUrl localize( QUrl );
-    	/** www.last.fm becomes m.last.fm, localisation is preserved */
-    	static QUrl mobilize( QUrl );
+        /** www.last.fm becomes the local version, eg www.lastfm.de */
+        static QUrl localize( QUrl );
+        /** www.last.fm becomes m.last.fm, localisation is preserved */
+        static QUrl mobilize( QUrl );
 
-    	/** Use this to URL encode any database item (artist, track, album). It
-    	  * internally calls UrlEncodeSpecialChars to double encode some special
-    	  * symbols according to the same pattern as that used on the website.
-    	  *
-    	  * &, /, ;, +, #
-    	  *
-    	  * Use for any urls that go to www.last.fm
-    	  * Do not use for ws.audioscrobbler.com
-    	  */
-    	static QByteArray encode( QString );
+        /** Use this to URL encode any database item (artist, track, album). It
+          * internally calls UrlEncodeSpecialChars to double encode some special
+          * symbols according to the same pattern as that used on the website.
+          *
+          * &, /, ;, +, #
+          *
+          * Use for any urls that go to www.last.fm
+          * Do not use for ws.audioscrobbler.com
+          */
+        static QByteArray encode( QString );
 
-    	/** returns eg. www.lastfm.de */
-    	static QString host( const QLocale& = QLocale() );
+        /** returns eg. www.lastfm.de */
+        static QString host( const QLocale& = QLocale() );
     };
 }
 

@@ -152,7 +152,7 @@ bool MP3_Source::isRecoverable(const mad_error& error, bool log)
       * stream guard bytes. (See the comments marked {3}
       * supra for more informations about guard bytes.)
       */
-      if (error != MAD_ERROR_LOSTSYNC	/*|| mad_stream.this_frame != pGuard */ && log)
+      if (error != MAD_ERROR_LOSTSYNC   /*|| mad_stream.this_frame != pGuard */ && log)
       {
          cerr << "Recoverable frame level error: " 
               << MadErrorString(error) << endl;
@@ -227,9 +227,9 @@ void MP3_Source::getInfo( const QString& fileName, int& lengthSecs, int& sampler
 
    unsigned char* pMP3_Buffer  = new unsigned char[m_MP3_BufferSize+MAD_BUFFER_GUARD];
 
-   mad_stream	madStream;
+   mad_stream   madStream;
    mad_header  madHeader;
-   mad_timer_t	madTimer;
+   mad_timer_t  madTimer;
 
    mad_stream_init(&madStream);
    mad_timer_reset(&madTimer);
@@ -353,7 +353,7 @@ bool MP3_Source::fetchData( QFile& mp3File,
 void MP3_Source::skipSilence(double silenceThreshold /* = 0.0001 */)
 {
    mad_frame  madFrame;
-   mad_synth	madSynth;
+   mad_synth    madSynth;
 
    mad_frame_init(&madFrame);
    mad_synth_init (&madSynth);

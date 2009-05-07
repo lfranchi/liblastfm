@@ -34,12 +34,12 @@ class LASTFM_DLLEXPORT NetworkAccessManager : public QNetworkAccessManager
     Q_OBJECT
 
 #ifdef WIN32
-	class Pac *m_pac;
+    class Pac *m_pac;
     class InternetConnectionMonitor* m_monitor;
 #endif
 
 public:
-	NetworkAccessManager( QObject *parent = 0 );
+    NetworkAccessManager( QObject *parent = 0 );
     ~NetworkAccessManager();
 
     /** PAC allows different proxy configurations depending on the request
@@ -49,7 +49,7 @@ public:
     QNetworkProxy proxy( const QNetworkRequest& = QNetworkRequest() );
 
 protected:
-	virtual QNetworkReply* createRequest( Operation, const QNetworkRequest&, QIODevice* outgoingdata = 0 );
+    virtual QNetworkReply* createRequest( Operation, const QNetworkRequest&, QIODevice* outgoingdata = 0 );
 
 private slots:
     void onConnectivityChanged( bool );
@@ -58,7 +58,7 @@ private:
     /** this function calls QNetworkAccessManager::setProxy, and thus 
       * configures the proxy correctly for the next request created by
       * createRequest. This is necessary due */
-	void applyProxy( const QNetworkRequest& );
+    void applyProxy( const QNetworkRequest& );
 };
 
 } //namespace lastfm

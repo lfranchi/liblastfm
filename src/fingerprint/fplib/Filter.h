@@ -31,17 +31,17 @@ namespace fingerprint
 
 struct Filter 
 {
-	/// Constructs a new filter with id.
-	Filter(unsigned int id, float threshold, float weight);
+    /// Constructs a new filter with id.
+    Filter(unsigned int id, float threshold, float weight);
    
    unsigned int id; //< filter id
-	unsigned int wt; //< time width
-	unsigned int first_band; //< first band
-	unsigned int wb; //< band width
-	unsigned int filter_type; //< filter type
-	
-	float threshold; //< threshold for filter
-	float weight; //< filter weight
+    unsigned int wt; //< time width
+    unsigned int first_band; //< first band
+    unsigned int wb; //< band width
+    unsigned int filter_type; //< filter type
+    
+    float threshold; //< threshold for filter
+    float weight; //< filter weight
 
    // number of frames in time
    static const unsigned int KEYWIDTH = 100;

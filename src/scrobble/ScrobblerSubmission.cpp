@@ -37,10 +37,10 @@ void
 ScrobblerSubmission::submitNextBatch()
 {
     if (isActive())
-		// the tracks cannot be submitted at this time
-		// if a parent Scrobbler instance exists, it will submit another batch
-		// when the current one is done
-		return;
+        // the tracks cannot be submitted at this time
+        // if a parent Scrobbler instance exists, it will submit another batch
+        // when the current one is done
+        return;
 
     m_batch.clear(); //yep before isEmpty() check
     m_data.clear();

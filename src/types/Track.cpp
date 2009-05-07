@@ -65,14 +65,14 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
     QDomElement item = xml.createElement( "track" );
     
     #define makeElement( tagname, getter ) { \
-		QString v = getter; \
-		if (!v.isEmpty()) \
-		{ \
-			QDomElement e = xml.createElement( tagname ); \
-			e.appendChild( xml.createTextNode( v ) ); \
-			item.appendChild( e ); \
-		} \
-	}
+        QString v = getter; \
+        if (!v.isEmpty()) \
+        { \
+            QDomElement e = xml.createElement( tagname ); \
+            e.appendChild( xml.createTextNode( v ) ); \
+            item.appendChild( e ); \
+        } \
+    }
 
     makeElement( "artist", d->artist );
     makeElement( "album", d->album );
@@ -88,10 +88,10 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
     QDomElement extras = xml.createElement( "extras" );
     QMapIterator<QString, QString> i( d->extras );
     while (i.hasNext()) {
-		QDomElement e = xml.createElement( i.next().key() );
-		e.appendChild( xml.createTextNode( i.value() ) );
-		extras.appendChild( e );
-	}
+        QDomElement e = xml.createElement( i.next().key() );
+        e.appendChild( xml.createTextNode( i.value() ) );
+        extras.appendChild( e );
+    }
     item.appendChild( extras );
 
     return item;
@@ -143,7 +143,7 @@ lastfm::MutableTrack::love()
     if (d->extras.value("rating").size())
         return 0;
     d->extras["rating"] = "L";
-	return ws::post(params("love"));
+    return ws::post(params("love"));
 }
 
 
@@ -171,8 +171,8 @@ lastfm::Track::params( const QString& method, bool use_mbid ) const
     if (d->mbid.size() && use_mbid)
         map["mbid"] = d->mbid;
     else {
-		map["artist"] = d->artist;
-		map["track"] = d->title;
+        map["artist"] = d->artist;
+        map["track"] = d->title;
     }
     return map;
 }
@@ -181,14 +181,14 @@ lastfm::Track::params( const QString& method, bool use_mbid ) const
 QNetworkReply*
 lastfm::Track::getTopTags() const
 {
-	return ws::get( params("getTopTags", true) );
+    return ws::get( params("getTopTags", true) );
 }
 
 
 QNetworkReply*
 lastfm::Track::getTags() const
 {
-	return ws::get( params("getTags", true) );
+    return ws::get( params("getTags", true) );
 }
 
 
@@ -217,7 +217,7 @@ lastfm::Track::removeTag( const QString& tag ) const
 QUrl
 lastfm::Track::www() const
 {
-	return UrlBuilder( "music" ).slash( d->artist ).slash( "_" ).slash( d->title ).url();
+    return UrlBuilder( "music" ).slash( d->artist ).slash( "_" ).slash( d->title ).url();
 }
 
 

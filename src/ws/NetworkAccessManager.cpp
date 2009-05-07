@@ -86,13 +86,13 @@ lastfm::NetworkAccessManager::NetworkAccessManager( QObject* parent )
             #endif
 {
     // can't be done in above init, as applicationName() won't be set
-	if (lastfm::UserAgent.isEmpty())
-	{
+    if (lastfm::UserAgent.isEmpty())
+    {
         QByteArray name = QCoreApplication::applicationName().toUtf8();
         QByteArray version = QCoreApplication::applicationVersion().toUtf8();
         if (version.size()) version.prepend( ' ' );
-		lastfm::UserAgent = name + version + " (" + lastfm::platform() + ")";
-	}
+        lastfm::UserAgent = name + version + " (" + lastfm::platform() + ")";
+    }
 }
 
 
@@ -110,7 +110,7 @@ lastfm::NetworkAccessManager::proxy( const QNetworkRequest& request )
     Q_UNUSED( request );
     
 #ifdef WIN32
-	IeSettings s;
+    IeSettings s;
     if (s.fAutoDetect) 
     {
         if (!m_pac) {
@@ -118,8 +118,8 @@ lastfm::NetworkAccessManager::proxy( const QNetworkRequest& request )
             m_monitor = new WsConnectionMonitor( this );
             connect( m_monitor, SIGNAL(connectivityChanged( bool )), SLOT(onConnectivityChanged( bool )) );
         }
-		return m_pac->resolve( request, s.lpszAutoConfigUrl );
-	} 
+        return m_pac->resolve( request, s.lpszAutoConfigUrl );
+    } 
 #endif
     
     return QNetworkProxy::applicationProxy();
@@ -140,7 +140,7 @@ lastfm::NetworkAccessManager::createRequest( Operation op, const QNetworkRequest
         QNetworkAccessManager::setProxy( proxy );
 #endif
 
-	return QNetworkAccessManager::createRequest( op, request, outgoingData );
+    return QNetworkAccessManager::createRequest( op, request, outgoingData );
 }
 
 

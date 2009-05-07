@@ -38,9 +38,9 @@ namespace lastfm
         Q_OBJECT
 
     public:
-    	/** You will need to do QCoreApplication::setVersion and 
-    	  * QCoreApplication::setApplicationName for this to work, also you will 
-    	  * need to have set all the keys in the Ws namespace in WsKeys.h */
+        /** You will need to do QCoreApplication::setVersion and 
+          * QCoreApplication::setApplicationName for this to work, also you will 
+          * need to have set all the keys in the Ws namespace in WsKeys.h */
         Audioscrobbler( const QString& clientId );
         ~Audioscrobbler();
 

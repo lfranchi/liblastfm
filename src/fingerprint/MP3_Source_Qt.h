@@ -59,10 +59,10 @@ private:
 
     static std::string MadErrorString(const mad_error& error);
 
-   struct mad_stream	m_mad_stream;
-   struct mad_frame	    m_mad_frame;
-   mad_timer_t			m_mad_timer;
-   struct mad_synth	    m_mad_synth;
+   struct mad_stream    m_mad_stream;
+   struct mad_frame     m_mad_frame;
+   mad_timer_t          m_mad_timer;
+   struct mad_synth     m_mad_synth;
 
    QString              m_fileName;
    QFile                m_inputFile;

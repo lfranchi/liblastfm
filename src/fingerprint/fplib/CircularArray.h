@@ -66,13 +66,13 @@ public:
       iterator() : _idx(0), _pData(NULL) {}
 
       iterator& operator++()
-      {	// preincrement
+      { // preincrement
          _idx = (_idx + 1) % _size;
          return (*this);
       }
 
       iterator operator++(int)
-      {	// postincrement
+      { // postincrement
          iterator _Tmp = *this;
          _idx = (_idx + 1) % _size;
          return (_Tmp);
@@ -113,7 +113,7 @@ public:
       }
 
       iterator& operator--()
-      {	// predecrement
+      { // predecrement
          if (_idx == 0)
             _idx = _size - 1;
          else
@@ -122,7 +122,7 @@ public:
       }
 
       iterator operator--(int)
-      {	// postdecrement
+      { // postdecrement
          iterator _Tmp = *this;
          if (_idx == 0)
             _idx = _size - 1;
@@ -132,27 +132,27 @@ public:
       }
 
       T& operator*() const
-      {	// return designated object
+      { // return designated object
          return _pData[_idx];
       }
 
       T* operator->() const
-      {	// return pointer to class object
+      { // return pointer to class object
          return &_pData[_idx];
       }    
 
       /*    T& operator=(const T& right)
-      {	// assign reference right to _val
+      { // assign reference right to _val
       return ( this->_idx = right._idx );
       }*/    
 
       bool operator==(const iterator& right) const
-      {	// test for iterator equality
+      { // test for iterator equality
          return ( this->_idx == right._idx );
       }
 
       bool operator!=(const iterator& right) const
-      {	// test for iterator inequality
+      { // test for iterator inequality
          return ( this->_idx != right._idx );
       }
 
@@ -188,7 +188,7 @@ public:
 
    // remember: it is not working (yet!) with negative numbers!
    T& operator[](size_type offset)
-   {	
+   {    
       return _pData[ (_headIdx + offset) % _size ];
    }
 

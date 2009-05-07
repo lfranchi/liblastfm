@@ -35,7 +35,7 @@ RadioTuner::RadioTuner( const RadioStation& station )
     map["method"] = "radio.tune";
     map["station"] = station.url();
     QNetworkReply* reply = ws::post(map);
-	connect( reply, SIGNAL(finished()), SLOT(onTuneReturn()) );
+    connect( reply, SIGNAL(finished()), SLOT(onTuneReturn()) );
 }
 
 
@@ -62,7 +62,7 @@ RadioTuner::fetchFiveMoreTracks()
     map["method"] = "radio.getPlaylist";
     map["rtp"] = "1"; // see above
     QNetworkReply* reply = ws::post( map );
-	connect( reply, SIGNAL(finished()), SLOT(onGetPlaylistReturn()) );
+    connect( reply, SIGNAL(finished()), SLOT(onGetPlaylistReturn()) );
     return true;
 }
 
@@ -72,10 +72,10 @@ RadioTuner::tryAgain()
 {
     qDebug() << "Bad response count" << m_retry_counter;
     
-	if (++m_retry_counter > 5)
-		return false;
-	fetchFiveMoreTracks();
-	return true;
+    if (++m_retry_counter > 5)
+        return false;
+    fetchFiveMoreTracks();
+    return true;
 }
 
 
@@ -99,8 +99,8 @@ RadioTuner::onGetPlaylistReturn()
     {
         qWarning() << e.what();
 
-    	if (e.enumValue() != ws::TryAgainLater || !tryAgain())
-    		emit error( e.enumValue() );
+        if (e.enumValue() != ws::TryAgainLater || !tryAgain())
+            emit error( e.enumValue() );
     }
 }
 

@@ -25,19 +25,19 @@
 QNetworkReply*
 lastfm::Playlist::addTrack( const Track& t ) const
 {
-	QMap<QString, QString> map;
+    QMap<QString, QString> map;
     map["method"] = "playlist.addTrack";
     map["playlistID"] = m_id;
     map["artist"] = t.artist();
     map["track"] = t.title();
-	return lastfm::ws::post(map);
+    return lastfm::ws::post(map);
 }
 
 
 QNetworkReply*
 lastfm::Playlist::fetch() const
 {
-	return fetch( QUrl("lastfm://playlist/" + QString::number( m_id )) );
+    return fetch( QUrl("lastfm://playlist/" + QString::number( m_id )) );
 }
 
 
