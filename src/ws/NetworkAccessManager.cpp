@@ -74,7 +74,7 @@ static struct NetworkAccessManagerInit
 
 namespace lastfm 
 {
-    QByteArray UserAgent;
+    LASTFM_DLLEXPORT QByteArray UserAgent;
 }
 
 

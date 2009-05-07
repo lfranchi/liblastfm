@@ -122,9 +122,18 @@ namespace lastfm
           * results, you have to pass a QDomDocument because QDomElements stop
           * existing when the parent DomDocument is deleted. 
           *
-          * Like, you don't have to use this. But it does some standard error
-          * handling for you */
-        LASTFM_DLLEXPORT QByteArray parse( QNetworkReply* ) throw( ParseError );
+          * The QByteArray is basically reply->readAll(), so all this function
+          * does is sanity check the response and throw if it is bad.
+          *
+          * Thus if you don't care about errors just do: reply->readAll() 
+          *
+          * Not caring about errors is often fine with Qt as you just get null
+          * strings and that instead, and you can handle those as you go.
+          *
+          * The QByteArray is an XML document. You can parse it with QDom or
+          * use our much more convenient lastfm::XmlQuery.
+          */
+        LASTFM_DLLEXPORT QByteArray parse( QNetworkReply* reply ) throw( ParseError );
         
         /** returns the expiry date of this HTTP response */
         LASTFM_DLLEXPORT QDateTime expires( QNetworkReply* );
