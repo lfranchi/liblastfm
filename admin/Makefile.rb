@@ -12,7 +12,7 @@ require "#{cwd}/platform.rb"
 def step3( path, classname )
 puts <<-EOS
 _include/lastfm/#{classname}: #{path} | _include/lastfm
-	ln #{path} $@
+	cp #{path} $@
 $(DESTDIR)#{$install_prefix}/include/lastfm/#{classname}: #{path} | $(DESTDIR)#{$install_prefix}/include/lastfm
 	cp #{path} $@
 
