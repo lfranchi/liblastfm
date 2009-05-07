@@ -112,7 +112,7 @@ lastfm::dir::runtimeData()
 QDir
 lastfm::dir::logs()
 {
-#if __APPLE__
+#ifdef Q_WS_MAC
     return QDir::home().filePath( "Library/Logs/Last.fm" );
 #else
     return runtimeData();    
@@ -123,7 +123,7 @@ lastfm::dir::logs()
 QDir
 lastfm::dir::cache()
 {
-#if __APPLE__
+#ifdef Q_WS_MAC
     return QDir::home().filePath( "Library/Cache/Last.fm" );
 #else
     return runtimeData().filePath( "cache" );
@@ -156,13 +156,12 @@ lastfm::dir::programFiles()
 }
 #endif
 
-
+#ifdef Q_WS_MAC
 CFStringRef
 lastfm::QStringToCFString( const QString &s )
 {
     return CFStringCreateWithCharacters( 0, (UniChar*)s.unicode(), s.length() );
 }
-
 
 QByteArray
 lastfm::CFStringToUtf8( CFStringRef s )
@@ -187,6 +186,7 @@ lastfm::CFStringToUtf8( CFStringRef s )
     return result;
 }
 
+#endif
 
 #if 0
 // this is a Qt implementation I found

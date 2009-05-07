@@ -24,7 +24,9 @@
 #include <QDir>
 #include <QString>
 
+#ifdef Q_WS_MAC
 typedef const struct __CFString* CFStringRef;
+#endif
 
 namespace lastfm
 {
@@ -36,10 +38,12 @@ namespace lastfm
         QDir cache();
         QDir logs();
     }
-    
+   
+#ifdef Q_WS_MAC 
     QByteArray CFStringToUtf8( CFStringRef );
     CFStringRef QStringToCFString( const QString& );
     QString CFStringToQString( CFStringRef s );
+#endif
 
     inline const char* platform()
     {
@@ -93,10 +97,11 @@ namespace lastfm
     }
 }
 
-#if __APPLE__
+#if Q_WS_MAC
 inline QString lastfm::CFStringToQString( CFStringRef s )
 {
     return QString::fromUtf8( CFStringToUtf8( s ) );
 }
 #endif
+
 #endif //LASTFM_MISC_H
