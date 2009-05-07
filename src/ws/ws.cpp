@@ -45,7 +45,7 @@ static QString iso639()
     return QLocale().name().left( 2 ).toLower(); 
 }
 
-void autograph( QMap<QString, QString> params )
+void autograph( QMap<QString, QString>& params )
 {
     params["api_key"] = lastfm::ws::ApiKey;
     params["lang"] = iso639();
@@ -83,6 +83,9 @@ lastfm::ws::get( QMap<QString, QString> params )
         QByteArray const value = QUrl::toPercentEncoding( i.value() );
         url.addEncodedQueryItem( key, value );
     }
+    
+    qDebug() << url;
+    
     return nam()->get( QNetworkRequest(url) );
 }
 
