@@ -22,9 +22,6 @@
 
 #include <lastfm/global.h>
 #include <QObject>
-#ifdef WIN32
-#include "win/NdisEvents.h"
-#endif
 #ifdef __APPLE__
 #include <SystemConfiguration/SCNetwork.h>
 typedef const struct __SCNetworkReachability * SCNetworkReachabilityRef;
@@ -35,28 +32,16 @@ namespace lastfm {
 
 class LASTFM_DLLEXPORT InternetConnectionMonitor
         : public QObject
-#ifdef WIN32
-        , NdisEvents
-#endif
 {
     Q_OBJECT
 
-#ifdef WIN32
-    // WmiSink callbacks:
-    virtual void onConnectionUp( BSTR name )
-    {
-        emit up( QString::fromUtf16(name) );
-        emit connectivityChanged( true );
-    }
-    
-    virtual void onConnectionDown( BSTR name )
-    {
-        emit down( QString::fromUtf16(name) );
-        emit connectivityChanged( false );
-    }
-#endif
 #ifdef __APPLE__
     static void callback( SCNetworkReachabilityRef, SCNetworkConnectionFlags, void* );
+#endif
+
+#ifdef WIN32
+    class NdisEventsProxy* m_ndisEventsProxy;
+    friend class NdisEventsProxy;
 #endif
 
     bool m_up;
