@@ -57,13 +57,7 @@ __demos: demos/Makefile __src
       args='-config release "CONFIG -= debug debug_and_release app_bundle"'
     else
       args='-config debug'
-      case Platform::IMPL
-        when :macosx 
-          args+=' "CONFIG -= app_bundle"' if ARGV.include? '--bundle'
-        when :linux
-          args+=' "CONFIG += warn_off"'
-        when :mswin, :cygwin
-      end
+      args+=' "CONFIG -= app_bundle"' unless ARGV.include? '--bundle' if Platform::IMPL == :macosx
     end
   end
 
@@ -99,4 +93,3 @@ rescue QMakeNotFound
   puts "Sorry, qmake was not found, is Qt4 installed?"
   exit 2
 end
-

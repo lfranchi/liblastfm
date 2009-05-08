@@ -18,7 +18,7 @@ case Platform::IMPL
     pipe='$B'
   else
     $cp='cp'
-    $ln='ln -s'
+    $ln='cp' #cp doesn't work for some reason, the target is always remade
     $mkdir='mkdir -p'
     pipe='|'
 end
