@@ -73,6 +73,7 @@ namespace lastfm
     class Fingerprint;
     class FingerprintId;
     class Mbid;
+    class NetworkAccessManager;
     class Playlist;
     class User;
     class Tag;
