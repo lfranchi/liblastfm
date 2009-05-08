@@ -149,7 +149,7 @@ lastfm::dir::programFiles()
     if (h != S_OK)
     {
         qCritical() << "Couldn't get Program Files dir. Possibly Win9x?";
-        return "";
+        return QDir();
     }
 
     return QString::fromLocal8Bit( path );

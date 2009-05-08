@@ -1,5 +1,4 @@
-win32: ROOT_DIR = $$system( cd )
-else:  ROOT_DIR = $$system( pwd )
+ROOT_DIR = $$system( cd )
 
 BUILD_DIR = _build
 DESTDIR = $$ROOT_DIR/_bin
@@ -9,7 +8,7 @@ OBJECTS_DIR = $$BUILD_DIR
 MOC_DIR = $$BUILD_DIR
 UI_DIR = $$BUILD_DIR
 RCC_DIR = $$BUILD_DIR
-INCLUDEPATH += $$ROOT_DIR $$ROOT_DIR/_include
+INCLUDEPATH += $$ROOT_DIR/_include
 
 win32:DEFINES += _CRT_SECURE_NO_WARNINGS WIN32_LEAN_AND_MEAN LASTFM_OHAI_QMAKE
 
@@ -23,15 +22,17 @@ macx* {
 
 CONFIG( debug, debug|release ):CONFIG -= release
 
-linux*:CONFIG += link_pkgconfig
-
 target.path = $$INSTALL_DIR/lib
 
-unix{
+CONFIG(mxcl){
     QMAKE_CXXFLAGS_RELEASE -= -O2 -Os
     QMAKE_CXXFLAGS_RELEASE += -fvisibility-inlines-hidden -fvisibility=hidden -O3 -fomit-frame-pointer
-    linux*{
-        QMAKE_CXXFLAGS_RELEASE += -freorder-blocks -fno-reorder-functions -w
-    }    
+    linux:QMAKE_CXXFLAGS_RELEASE += -freorder-blocks -fno-reorder-functions
     release:QMAKE_POST_LINK=strip $(DESTDIR)/$(TARGET)
+}
+
+linux{
+    CONFIG += link_pkgconfig
+    # I don't want your emails telling me to fix the warnings :P
+    QMAKE_CXXFLAGS_RELEASE += -w
 }
