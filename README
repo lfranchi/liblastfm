@@ -33,7 +33,9 @@ already installed (correct me if I'm wrong).
 
 Windows
 -------
-Best of luck to you.
+Best of luck to you. You'll need the Windows Server 2003 Platform SDK (r2):
+
+http://www.microsoft.com/Downloads/details.aspx?FamilyID=484269e2-3b89-47e3-8eb7-1f2be6d7123a&displaylang=en
 
 
 Installing liblastfm
