@@ -1,7 +1,13 @@
 TEMPLATE = lib
 TARGET = lastfm
 QT = core network xml
-VERSION = 0.3
+
+# we don't want windows lib files to have the major version in the name
+#
+!win32 {
+	VERSION = 0.3
+}
+
 INSTALLS = target
 include( _files.qmake )
 
