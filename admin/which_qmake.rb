@@ -3,7 +3,7 @@ class QMakeTooOld < RuntimeError; end
 
 def which_qmake
   args = '-v'
-  args += '&> /dev/null' unless Platform::IMPL == :mswin
+  args += ' 2> /dev/null' unless Platform::IMPL == :mswin
 
   versions = Hash.new
   ['qmake','qmake-qt4'].each do |qmake|
