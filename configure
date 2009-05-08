@@ -10,6 +10,7 @@ ENV['PREFIX'] = '/usr/local' if ENV['PREFIX'].nil? or !File.directory? ENV['PREF
 begin
   h1 'Welcome to liblastfm configure'
   $qmake = which_qmake
+  $make = '$(MAKE)'
   puts 'Using '+`which #{$qmake}` unless Platform::IMPL == :mswin
 
   h1 'Generating Build System'
@@ -20,21 +21,21 @@ begin
 
   f = File.new( 'Makefile', "w" )
   f.write <<-EOS
-  .PHONY: all
-  all: headers __src __fingerprint __demos __tests
+.PHONY: all
+all: headers __src __fingerprint __demos __tests
 
-  .PHONY: __src
-  __src: src/Makefile
-  	cd src && $MAKE
-  .PHONY: __fingerprint
-  __fingerprint: src/fingerprint/Makefile __src
-  	cd src/fingerprint && $MAKE
-  .PHONY: __tests
-  __tests: tests/Makefile __src
-  	cd tests && $MAKE
-  .PHONY: __demos
-  __demos: demos/Makefile __src
-  	cd demos && $MAKE
+.PHONY: __src
+__src: src/Makefile
+	cd src && #{$make}
+.PHONY: __fingerprint
+__fingerprint: src/fingerprint/Makefile __src
+	cd src/fingerprint && #{$make}
+.PHONY: __tests
+__tests: tests/Makefile __src
+	cd tests && #{$make}
+.PHONY: __demos
+__demos: demos/Makefile __src
+	cd demos && #{$make}
 
   EOS
 
@@ -68,13 +69,13 @@ begin
 
   f.write <<-EOS
 src/Makefile:
-	cd src && $QMAKE #{args}
+	cd src && #{$qmake} #{args}
 src/fingerprint/Makefile:
-	cd src/fingerprint && $QMAKE #{args}
+	cd src/fingerprint && #{$qmake} #{args}
 tests/Makefile:
-	cd tests && $QMAKE #{args}
+	cd tests && #{$qmake} #{args}
 demos/Makefile:
-	cd demos && $QMAKE #{args}
+	cd demos && #{$qmake} #{args}
 EOS
 
   puts

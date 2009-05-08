@@ -9,12 +9,26 @@ require 'find'
 require 'ftools'
 require "#{cwd}/platform.rb"
 
+
+case Platform::IMPL
+  when :mswin
+    $cp='ruby -e "require \'FileUtils\'; FileUtils.copy_file(ARGV[0], ARGV[1])" --'
+    $ln=$cp
+    $mkdir='ruby -e "require \'FileUtils\'; FileUtils.mkpath ARGV[0]" --'
+    pipe='$B'
+  else
+    $cp='cp'
+    $ln='ln -s'
+    $mkdir='mkdir -p'
+    pipe='|'
+end
+
 def step3( path, classname )
 puts <<-EOS
 _include/lastfm/#{classname}: #{path} | _include/lastfm
-	cp #{path} $@
+	#{$ln} #{path} $@
 $(DESTDIR)#{$install_prefix}/include/lastfm/#{classname}: #{path} | $(DESTDIR)#{$install_prefix}/include/lastfm
-	cp #{path} $@
+	#{$cp} #{path} $@
 
 EOS
 
@@ -45,18 +59,18 @@ $headers = Array.new
 
 ARGV.each { |h| step2( 'src/'+h ) }
 
-rubystring = %q[ruby -e 'Dir["_include/lastfm/*"].each { |h| puts %Q{#include "lastfm/#{File.basename h}"\n} }']
+$rubystring = %q[ruby -e 'Dir["_include/lastfm/*"].each {]+%Q[#{pipe}h#{pipe}]+%q[puts %Q{#include "lastfm/#{File.basename h}"\n} }']
 
 puts <<-EOS
 _include/lastfm:
-	mkdir -p $@
+	#{$mkdir} $@
 $(DESTDIR)#{$install_prefix}/include/lastfm:
-	mkdir -p $@
+	#{$mkdir} $@
 
 _include/lastfm.h: #{$headers.join(' ')} | _include/lastfm
-	#{rubystring} > $@
+	#{$rubystring} > $@
 $(DESTDIR)#{$install_prefix}/include/lastfm.h: _include/lastfm.h | $(DESTDIR)#{$install_prefix}/include/lastfm
-	cp _include/lastfm.h $@
+	#{$cp} _include/lastfm.h $@
 
 .PHONY: headers
 headers: #{$headers.join(' ')} _include/lastfm.h
