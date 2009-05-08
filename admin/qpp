@@ -8,7 +8,6 @@ require 'find'
 require 'ftools'
 require "#{cwd}/platform.rb"
 
-
 if ARGV[0] && File.file?( ARGV[0] )
   File.open( ARGV[0] ).each_line do |line|
     line.chomp!
@@ -42,7 +41,7 @@ end
 def find_sources( dir )
   Find.find( dir ) do |path|
     if File.directory? path
-      excludes = ['.svn', 'tests', '_build']
+      excludes = ['.svn', 'tests', '_build', 'fingerprint']
       case Platform::IMPL
         when :macosx then excludes << 'win'
         when :mswin, :cygwin then excludes << 'mac'

@@ -1,18 +1,86 @@
 #!/usr/bin/ruby
 cwd = File.dirname( __FILE__ )
 require "#{cwd}/admin/platform.rb"
+require "#{cwd}/admin/which_qmake.rb"
+require "#{cwd}/admin/utils.rb"
 
-def h1 s
-    puts '====> '+s
-end
-def h2 s
-    puts '==> '+s
-    yield
-end
 
-$qmake=`ruby admin/which_qmake.rb`
+ENV['PREFIX'] = '/usr/local' if ENV['PREFIX'].nil? or !File.directory? ENV['PREFIX']
 
-if $qmake == 'toolow'
+begin
+  h1 'Welcome to liblastfm configure'
+  $qmake = which_qmake
+  puts 'Using '+`which #{$qmake}` unless Platform::IMPL == :mswin
+
+  h1 'Generating Build System'
+  h2 "Running qpp..." do
+    Dir.chdir('src') { `ruby ../admin/qpp lastfm.pro` }
+    Dir.chdir('src/fingerprint') { `ruby ../../admin/qpp fingerprint.pro` }
+  end
+
+  f = File.new( 'Makefile', "w" )
+  f.write <<-EOS
+  .PHONY: all
+  all: headers __src __fingerprint __demos __tests
+
+  .PHONY: __src
+  __src: src/Makefile
+  	cd src && $MAKE
+  .PHONY: __fingerprint
+  __fingerprint: src/fingerprint/Makefile __src
+  	cd src/fingerprint && $MAKE
+  .PHONY: __tests
+  __tests: tests/Makefile __src
+  	cd tests && $MAKE
+  .PHONY: __demos
+  __demos: demos/Makefile __src
+  	cd demos && $MAKE
+
+  EOS
+
+  h2 "Generating Makefile..." do
+    hs = Array.new
+    hs << 'global.h'
+    hs << 'core/UrlBuilder.h' << 'core/XmlQuery.h' << 'core/misc.h'
+    hs << 'fingerprint/Fingerprint.h'
+    hs << 'radio/RadioStation.h' << 'radio/RadioTuner.h'
+    hs << 'scrobble/Audioscrobbler.h' << 'scrobble/Scrobble.h' << 'scrobble/ScrobblePoint.h'
+    hs << 'types/Track.h types/Mbid.h' << 'types/Artist.h' << 'types/Album.h' << 'types/FingerprintId.h' << 'types/Playlist.h' << 'types/Tag.h' << 'types/User.h types/Xspf.h'
+    hs << 'ws/ws.h' << 'ws/InternetConnectionMonitor.h' << 'ws/NetworkAccessManager.h'
+    f.write `ruby admin/Makefile.rb #{hs.join(' ')}`
+  end
+
+  args=''
+  h2 "Running qmake..." do
+    if ARGV.include? '--release'
+      args='-config release "CONFIG -= debug debug_and_release app_bundle"'
+    else
+      args='-config debug'
+      case Platform::IMPL
+        when :macosx 
+          args+=' "CONFIG -= app_bundle"' if ARGV.include? '--bundle'
+        when :linux
+          args+=' "CONFIG += warn_off"'
+        when :mswin, :cygwin
+      end
+    end
+  end
+
+  f.write <<-EOS
+src/Makefile:
+	cd src && $QMAKE #{args}
+src/fingerprint/Makefile:
+	cd src/fingerprint && $QMAKE #{args}
+tests/Makefile:
+	cd tests && $QMAKE #{args}
+demos/Makefile:
+	cd demos && $QMAKE #{args}
+EOS
+
+  puts
+  puts 'Good, your configure is finished! Now type: make'
+  
+rescue QMakeTooOld
 	      ##########################################################################80-->
 	puts "Your version of Qt seems to be too old, we require Qt 4.4 or above."
 	puts
@@ -26,76 +94,8 @@ if $qmake == 'toolow'
 	puts
 	puts "	qmake -config release && make"
 	exit 1
-elsif $QMAKE == ''
+rescue QMakeNotFound
   puts "Sorry, qmake was not found, is Qt4 installed?"
   exit 2
 end
 
-puts 'Using '+`which #{$qmake}`
-
-h1 'Generating Build System'
-h2 "Running qpp..." do
-  Dir.chdir('src') { `ruby ../admin/qpp lastfm.pro` }
-  Dir.chdir('src/fingerprint') { `ruby ../../admin/qpp fingerprint.pro` }
-end
-
-f = File.new( 'Makefile', "w" )
-f.write <<-EOS
-.PHONY: all
-all: headers __src __fingerprint __demos __tests
-
-.PHONY: __src
-__src: src/Makefile
-	cd src && $MAKE
-.PHONY: __fingerprint
-__fingerprint: src/fingerprint/Makefile __src
-	cd src/fingerprint && $MAKE
-.PHONY: __tests
-__tests: tests/Makefile __src
-	cd tests && $MAKE
-.PHONY: __demos
-__demos: demos/Makefile __src
-	cd demos && $MAKE
-
-EOS
-
-h2 "Generating Makefile..." do
-  ENV['PREFIX'] = '/usr/local' if ENV['PREFIX'].nil? or !File.directory? ENV['PREFIX']
-  f.write `ruby admin/Makefile.rb global.h \
-           core/UrlBuilder.h core/XmlQuery.h core/misc.h \
-           fingerprint/Fingerprint.h \
-           radio/RadioStation.h radio/RadioTuner.h \
-           scrobble/Audioscrobbler.h scrobble/Scrobble.h scrobble/ScrobblePoint.h \
-           types/Track.h types/Mbid.h types/Artist.h types/Album.h types/FingerprintId.h types/Playlist.h types/Tag.h types/User.h types/Xspf.h \
-           ws/ws.h ws/InternetConnectionMonitor.h ws/NetworkAccessManager.h`
-end
-
-h2 "Running qmake..." do
-  if ARGV.include? '--release'
-    args="CONFIG -= debug debug_and_release app_bundle"
-    config='release'
-  else
-    config='debug'
-    case Platform::IMPL
-      when :macosx 
-        args='"CONFIG -= app_bundle"' if ARGV.include? '--bundle'
-      when :mswin, :cygwin
-      else
-        args="CONFIG += warn_off"
-    end
-  end
-end
-
-f.write <<-EOS
-src/Makefile:
-	cd src && $QMAKE -config $config "$other_args"
-src/fingerprint/Makefile:
-	cd src/fingerprint && $QMAKE -config $config "$other_args"
-tests/Makefile:
-	cd tests && $QMAKE -config debug "CONFIG -= app_bundle"
-demos/Makefile:
-	cd demos && $QMAKE -config debug "CONFIG -= app_bundle"
-EOS
-
-puts
-puts 'Good, your configure is finished! Now type: make'

@@ -1,11 +1,20 @@
-#!/usr/bin/ruby
+class QMakeNotFound < RuntimeError; end
+class QMakeTooOld < RuntimeError; end
 
-def check
+def which_qmake
+  args = '-v'
+  args += '&> /dev/null' unless Platform::IMPL == :mswin
+
   versions = Hash.new
   ['qmake','qmake-qt4'].each do |qmake|
-    /^Using Qt version (\d\.\d\.\d)(-(.+))?/.match( `#{qmake} -v 2> /dev/null` )
+    begin
+      /^Using Qt version (\d\.\d\.\d)(-(.+))?/.match( `#{qmake} #{args}` )
+    rescue
+    end
     versions[qmake] = $1 unless $1.nil?
   end
+
+  raise QMakeNotFound if versions.empty? 
 
   versions.each do |key, v|
     i = 1
@@ -13,17 +22,15 @@ def check
     v.split( '.' ).reverse.each {|n| j += (n.to_i * i); i *= 100}
     versions[key] = j
   end
-  
-  return '' if versions.nil? 
-  
+
   versions.sort {|a,b| a[1]<=>b[1]}
 
   versions.each do |k, v| 
     if v >= 40400
       return k
     end
-    return 'toolow'
+    raise QMakeTooOld
   end
 end
 
-puts check
+puts which_qmake if __FILE__ == $0
