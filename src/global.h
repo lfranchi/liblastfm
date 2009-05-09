@@ -20,7 +20,7 @@
 #ifndef LASTFM_GLOBAL_H
 #define LASTFM_GLOBAL_H
 
-#if defined(_WIN32) || defined(WIN32)
+#ifdef Q_CC_MSVC
     #ifdef LASTFM_OHAI_QMAKE
         #define LASTFM_DLLEXPORT __declspec(dllexport)
     #else
