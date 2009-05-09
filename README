@@ -41,9 +41,7 @@ http://www.microsoft.com/Downloads/details.aspx?FamilyID=484269e2-3b89-47e3-8eb7
 
 Installing liblastfm
 ====================
-    PREFIX=/usr/local ./configure --release && make && sudo make install
-
-FIXME! we would like to support the normal --prefix route pls.
+    ./configure --release --prefix /usr/local && make && sudo make install
 
 Packaging liblastfm
 ===================
