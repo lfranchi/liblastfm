@@ -48,7 +48,7 @@ def step2( path )
   # otherwise just copy it without adjustment
   step3( path, File.basename( path ) ) if b.nil?
 end
-################################################################################
+######################################################################### impl
 
 
 $install_prefix = ENV['LFM_PREFIX']
@@ -70,6 +70,32 @@ __tests: tests/Makefile __src
 .PHONY: __demos
 __demos: demos/Makefile __src
 	cd demos && $(MAKE)
+
+src/Makefile:
+	cd src && #{ENV['LFM_QMAKE']}
+src/fingerprint/Makefile:
+	cd src/fingerprint && #{ENV['LFM_QMAKE']}
+tests/Makefile:
+	cd tests && #{ENV['LFM_QMAKE']}
+demos/Makefile:
+	cd demos && #{ENV['LFM_QMAKE']}
+
+.PHONY: clean
+clean:
+	rm -rf _include
+	rm -rf src/_build
+	rm -rf demos/_build
+	rm -rf tests/_build
+	rm -f src/Makefile
+	rm -f tests/Makefile
+	rm -f demos/Makefile
+	rm -rf _bin
+
+.PHONY: distclean
+distclean: clean
+	rm -f src/_files.qmake
+	rm -f src/_version.h
+	rm -f Makefile
 
 EOS
 
@@ -95,29 +121,4 @@ headers: #{$headers.join(' ')} _include/lastfm.h
 install: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastfm.h
 	cd src && make install "INSTALL_ROOT=$(DESTDIR)#{$install_prefix}"
 
-.PHONY: clean
-clean:
-	rm -rf _include
-	rm -rf src/_build
-	rm -rf demos/_build
-	rm -rf tests/_build
-	rm -f src/Makefile
-	rm -f tests/Makefile
-	rm -f demos/Makefile
-	rm -rf _bin
-
-.PHONY: distclean
-distclean: clean
-	rm -f src/_files.qmake
-	rm -f src/_version.h
-	rm -f Makefile
-
-src/Makefile:
-	cd src && #{ENV['LFM_QMAKE']}
-src/fingerprint/Makefile:
-	cd src/fingerprint && #{ENV['LFM_QMAKE']}
-tests/Makefile:
-	cd tests && #{ENV['LFM_QMAKE']}
-demos/Makefile:
-	cd demos && #{ENV['LFM_QMAKE']}
 EOS

@@ -58,7 +58,6 @@ begin
     hs << 'scrobble/Audioscrobbler.h' << 'scrobble/Scrobble.h' << 'scrobble/ScrobblePoint.h'
     hs << 'types/Track.h types/Mbid.h' << 'types/Artist.h' << 'types/Album.h' << 'types/FingerprintId.h' << 'types/Playlist.h' << 'types/Tag.h' << 'types/User.h types/Xspf.h'
     hs << 'ws/ws.h' << 'ws/InternetConnectionMonitor.h' << 'ws/NetworkAccessManager.h'
-
     
     File.new('Makefile', 'w').write `ruby admin/Makefile.rb #{hs.join(' ')}`
   end
@@ -67,17 +66,19 @@ begin
   puts 'Good, your configure is finished! Now type: make'
   
 rescue QMakeTooOld
-	puts "Your version of Qt seems to be too old, we require Qt 4.4 or above."
-	puts
-	puts "It is possible you have Qt3 and Qt4 both installed. Locate your Qt4"
-	puts "installation and ensure it is placed first in the path, eg:"
-	puts
-	puts "	PATH=/opt/qt4/bin:\$PATH ./configure"
-	puts
-	puts "However this configure script is very basic, perhaps we got it wrong.."
-	puts "Try typing the following, perhaps it will build for you :)"
-	puts
-	puts "	qmake -config release && make"
+	puts <<-sput
+  Your version of Qt seems to be too old, we require Qt 4.4 or above.
+
+  It is possible you have Qt3 and Qt4 both installed. Locate your Qt4
+  installation and ensure it is placed first in the path, eg:
+
+	PATH=/opt/qt4/bin:\$PATH ./configure
+
+  However this configure script is very basic, perhaps we got it wrong.
+  Try typing the following, perhaps it will build for you :)
+
+	qmake -config release && make
+  sput
 	exit 1
 rescue QMakeNotFound
   puts "Sorry, qmake was not found, is Qt4 installed?"
