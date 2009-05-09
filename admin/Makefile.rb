@@ -15,19 +15,19 @@ case Platform::IMPL
     $cp='ruby -e "require \'FileUtils\'; FileUtils.copy_file(ARGV[0], ARGV[1])" --'
     $ln=$cp
     $mkdir='ruby -e "require \'FileUtils\'; FileUtils.mkpath ARGV[0]" --'
-    pipe='$B'
+    $orderonly=''
   else
     $cp='cp'
     $ln='cp' #cp doesn't work for some reason, the target is always remade
     $mkdir='mkdir -p'
-    pipe='|'
+    $orderonly='|'
 end
 
 def step3( path, classname )
 puts <<-EOS
-_include/lastfm/#{classname}: #{path} | _include/lastfm
+_include/lastfm/#{classname}: #{path} #{$orderonly} _include/lastfm
 	#{$ln} #{path} $@
-$(DESTDIR)#{$install_prefix}/include/lastfm/#{classname}: #{path} | $(DESTDIR)#{$install_prefix}/include/lastfm
+$(DESTDIR)#{$install_prefix}/include/lastfm/#{classname}: #{path} #{$orderonly} $(DESTDIR)#{$install_prefix}/include/lastfm
 	#{$cp} #{path} $@
 
 EOS
@@ -59,17 +59,15 @@ $headers = Array.new
 
 ARGV.each { |h| step2( 'src/'+h ) }
 
-$rubystring = %q[ruby -e 'Dir["_include/lastfm/*"].each {]+%Q[#{pipe}h#{pipe}]+%q[puts %Q{#include "lastfm/#{File.basename h}"\n} }']
-
 puts <<-EOS
 _include/lastfm:
 	#{$mkdir} $@
 $(DESTDIR)#{$install_prefix}/include/lastfm:
 	#{$mkdir} $@
 
-_include/lastfm.h: #{$headers.join(' ')} | _include/lastfm
-	#{$rubystring} > $@
-$(DESTDIR)#{$install_prefix}/include/lastfm.h: _include/lastfm.h | $(DESTDIR)#{$install_prefix}/include/lastfm
+_include/lastfm.h: #{$headers.join(' ')} #{$orderonly} _include/lastfm
+	ruby admin/lastfm_h.rb $@
+$(DESTDIR)#{$install_prefix}/include/lastfm.h: _include/lastfm.h #{$orderonly} $(DESTDIR)#{$install_prefix}/include/lastfm
 	#{$cp} _include/lastfm.h $@
 
 .PHONY: headers
