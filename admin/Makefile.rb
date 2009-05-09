@@ -60,16 +60,16 @@ all: headers __src __fingerprint __demos __tests
 
 .PHONY: __src
 __src: src/Makefile
-	cd src && #{$make}
+	cd src && $(MAKE)
 .PHONY: __fingerprint
 __fingerprint: src/fingerprint/Makefile __src
-	cd src/fingerprint && #{$make}
+	cd src/fingerprint && $(MAKE)
 .PHONY: __tests
 __tests: tests/Makefile __src
-	cd tests && #{$make}
+	cd tests && $(MAKE)
 .PHONY: __demos
 __demos: demos/Makefile __src
-	cd demos && #{$make}
+	cd demos && $(MAKE)
 
 EOS
 
