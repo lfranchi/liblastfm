@@ -51,12 +51,30 @@ end
 ################################################################################
 
 
-$install_prefix = ENV['PREFIX']
+$install_prefix = ENV['LFM_PREFIX']
 exit 1 if $install_prefix.nil?
+
+puts <<-EOS
+.PHONY: all
+all: headers __src __fingerprint __demos __tests
+
+.PHONY: __src
+__src: src/Makefile
+	cd src && #{$make}
+.PHONY: __fingerprint
+__fingerprint: src/fingerprint/Makefile __src
+	cd src/fingerprint && #{$make}
+.PHONY: __tests
+__tests: tests/Makefile __src
+	cd tests && #{$make}
+.PHONY: __demos
+__demos: demos/Makefile __src
+	cd demos && #{$make}
+
+EOS
 
 $installheaders = Array.new
 $headers = Array.new
-
 ARGV.each { |h| step2( 'src/'+h ) }
 
 puts <<-EOS
@@ -66,7 +84,7 @@ $(DESTDIR)#{$install_prefix}/include/lastfm:
 	#{$mkdir} $@
 
 _include/lastfm.h: #{$headers.join(' ')} #{$orderonly} _include/lastfm
-	ruby admin/lastfm_h.rb $@
+	ruby admin/lastfm.h.rb $@
 $(DESTDIR)#{$install_prefix}/include/lastfm.h: _include/lastfm.h #{$orderonly} $(DESTDIR)#{$install_prefix}/include/lastfm
 	#{$cp} _include/lastfm.h $@
 
@@ -94,4 +112,12 @@ distclean: clean
 	rm -f src/_version.h
 	rm -f Makefile
 
+src/Makefile:
+	cd src && #{ENV['LFM_QMAKE']}
+src/fingerprint/Makefile:
+	cd src/fingerprint && #{ENV['LFM_QMAKE']}
+tests/Makefile:
+	cd tests && #{ENV['LFM_QMAKE']}
+demos/Makefile:
+	cd demos && #{ENV['LFM_QMAKE']}
 EOS

@@ -17,29 +17,27 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
-#ifndef WS_CONNECTION_MONITOR_H
-#define WS_CONNECTION_MONITOR_H
+#ifndef LASTFM_CONNECTION_MONITOR_H
+#define LASTFM_CONNECTION_MONITOR_H
 
 #include <lastfm/global.h>
 #include <QObject>
-#ifdef __APPLE__
-#include <SystemConfiguration/SCNetwork.h>
+#ifdef Q_WS_MAC
+#include <SystemConfiguration/SCNetwork.h> //TODO remove
 typedef const struct __SCNetworkReachability * SCNetworkReachabilityRef;
 #endif
 
 
 namespace lastfm {
 
-class LASTFM_DLLEXPORT InternetConnectionMonitor
-        : public QObject
+class LASTFM_DLLEXPORT InternetConnectionMonitor : public QObject
 {
     Q_OBJECT
 
-#ifdef __APPLE__
+#ifdef Q_WS_MAC
     static void callback( SCNetworkReachabilityRef, SCNetworkConnectionFlags, void* );
 #endif
-
-#ifdef WIN32
+#ifdef Q_WS_WIN
     class NdisEventsProxy* m_ndisEventsProxy;
     friend class NdisEventsProxy;
 #endif

@@ -18,7 +18,6 @@
  ***************************************************************************/
 
 #include "ScrobblerHttp.h"
-#include <QDebug>
 #include <QTimer>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>

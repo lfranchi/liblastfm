@@ -4,40 +4,50 @@ require "#{cwd}/admin/platform.rb"
 require "#{cwd}/admin/which_qmake.rb"
 require "#{cwd}/admin/utils.rb"
 
-
-ENV['PREFIX'] = '/usr/local' if ENV['PREFIX'].nil? or !File.directory? ENV['PREFIX']
-
 begin
   h1 'Welcome to liblastfm configure'
   $qmake = which_qmake
-  $make = '$(MAKE)'
   puts 'Using '+`which #{$qmake}` unless Platform::IMPL == :mswin
 
+  h2 'Determining installation prefix' do
+    if ARGV.include? '--prefix'
+      n=ARGV.index '--prefix'
+      ENV['LFM_PREFIX'] = ARGV[n+1]
+    end
+    ENV['LFM_PREFIX'] = '/usr/local' if ENV['LFM_PREFIX'].nil?
+    if File.exists? ENV['LFM_PREFIX'] and !File.directory? ENV['LFM_PREFIX']
+      abort "Installation prefix exists but isn't a directory: "+ENV['LFM_PREFIX']
+    end
+    puts "Will install to: "+ENV['LFM_PREFIX']
+  end
+
   h1 'Generating Build System'
+
+  h2 'Generating .qmake.env' do
+    f = File.new('.qmake.env', 'w')
+    f.write qmake_env('CC', 'QMAKE_CC')
+    f.write qmake_env('CXX', 'QMAKE_CXX')
+    f.write qmake_env(['CFLAGS', 'CPPFLAGS'], 'QMAKE_CFLAGS_RELEASE')
+    f.write qmake_env(['CXXFLAGS', 'CPPFLAGS'], 'QMAKE_CXXFLAGS_RELEASE')
+    f.write "QMAKE_CXXFLAGS_RELEASE = -O3 -fomit-frame-pointer\n" if `whoami` == "mxcl\n" #OHAI!
+    f.close
+  end
+
   h2 "Running qpp..." do
     Dir.chdir('src') { `ruby ../admin/qpp lastfm.pro` }
     Dir.chdir('src/fingerprint') { `ruby ../../admin/qpp fingerprint.pro` }
   end
 
-  f = File.new( 'Makefile', "w" )
-  f.write <<-EOS
-.PHONY: all
-all: headers __src __fingerprint __demos __tests
-
-.PHONY: __src
-__src: src/Makefile
-	cd src && #{$make}
-.PHONY: __fingerprint
-__fingerprint: src/fingerprint/Makefile __src
-	cd src/fingerprint && #{$make}
-.PHONY: __tests
-__tests: tests/Makefile __src
-	cd tests && #{$make}
-.PHONY: __demos
-__demos: demos/Makefile __src
-	cd demos && #{$make}
-
-  EOS
+  h2 "Configuring qmake..." do
+    args=Array.new
+    if ARGV.include? '--release'
+      args << '-config release'
+      args << '"CONFIG -= app_bundle"' if Platform::IMPL == :macosx unless ARGV.include? '--bundle'
+    else
+      args << '-config debug'
+    end
+    ENV['LFM_QMAKE'] = "#{$qmake} #{args.join(' ')}"
+  end
 
   h2 "Generating Makefile..." do
     hs = Array.new
@@ -48,43 +58,19 @@ __demos: demos/Makefile __src
     hs << 'scrobble/Audioscrobbler.h' << 'scrobble/Scrobble.h' << 'scrobble/ScrobblePoint.h'
     hs << 'types/Track.h types/Mbid.h' << 'types/Artist.h' << 'types/Album.h' << 'types/FingerprintId.h' << 'types/Playlist.h' << 'types/Tag.h' << 'types/User.h types/Xspf.h'
     hs << 'ws/ws.h' << 'ws/InternetConnectionMonitor.h' << 'ws/NetworkAccessManager.h'
-    f.write `ruby admin/Makefile.rb #{hs.join(' ')}`
+
+    
+    File.new('Makefile', 'w').write `ruby admin/Makefile.rb #{hs.join(' ')}`
   end
-
-  args=Array.new
-  h2 "Running qmake..." do
-    if ARGV.include? '--release'
-      args << '-config release' << '"CONFIG -= debug debug_and_release app_bundle"'
-      # OHAI!
-      args << '"CONFIG += mxcl"' if `whoami` == 'mxcl'
-    else
-      args << '-config debug'
-      args << '"CONFIG -= app_bundle"' unless ARGV.include? '--bundle' if Platform::IMPL == :macosx
-    end
-  end
-
-  args=args.join(' ')
-
-  f.write <<-EOS
-src/Makefile:
-	cd src && #{$qmake} #{args}
-src/fingerprint/Makefile:
-	cd src/fingerprint && #{$qmake} #{args}
-tests/Makefile:
-	cd tests && #{$qmake} #{args}
-demos/Makefile:
-	cd demos && #{$qmake} #{args}
-EOS
 
   puts
   puts 'Good, your configure is finished! Now type: make'
   
 rescue QMakeTooOld
-	      ##########################################################################80-->
 	puts "Your version of Qt seems to be too old, we require Qt 4.4 or above."
 	puts
-	puts "It is possible you have Qt3 and Qt4 both installed. Locate your Qt4 installation"
-	puts "and ensure it is placed first in the path, eg:"
+	puts "It is possible you have Qt3 and Qt4 both installed. Locate your Qt4"
+	puts "installation and ensure it is placed first in the path, eg:"
 	puts
 	puts "	PATH=/opt/qt4/bin:\$PATH ./configure"
 	puts

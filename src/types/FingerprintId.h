@@ -21,10 +21,7 @@
 #define LASTFM_FINGERPRINT_ID_H
 
 #include <lastfm/Track>
-#include <QDebug>
-#include <QList>
-#include <QString>
-class QNetworkReply;
+#include <QMap>
  
 
 namespace lastfm
