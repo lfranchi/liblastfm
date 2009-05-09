@@ -73,6 +73,7 @@ namespace lastfm
     class Fingerprint;
     class FingerprintId;
     class Mbid;
+    class MutableTrack;
     class NetworkAccessManager;
     class Playlist;
     class User;
@@ -91,6 +92,7 @@ using lastfm::AuthenticatedUser;
 using lastfm::Fingerprint;
 using lastfm::FingerprintId;
 using lastfm::Mbid;
+using lastfm::MutableTrack;
 using lastfm::Playlist;
 using lastfm::User;
 using lastfm::Tag;
