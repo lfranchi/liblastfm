@@ -51,15 +51,19 @@ __demos: demos/Makefile __src
     f.write `ruby admin/Makefile.rb #{hs.join(' ')}`
   end
 
-  args=''
+  args=Array.new
   h2 "Running qmake..." do
     if ARGV.include? '--release'
-      args='-config release "CONFIG -= debug debug_and_release app_bundle"'
+      args << '-config release' << '"CONFIG -= debug debug_and_release app_bundle"'
+      # OHAI!
+      args << '"CONFIG += mxcl"' if `whoami` == 'mxcl'
     else
-      args='-config debug'
-      args+=' "CONFIG -= app_bundle"' unless ARGV.include? '--bundle' if Platform::IMPL == :macosx
+      args << '-config debug'
+      args << '"CONFIG -= app_bundle"' unless ARGV.include? '--bundle' if Platform::IMPL == :macosx
     end
   end
+
+  args=args.join(' ')
 
   f.write <<-EOS
 src/Makefile:

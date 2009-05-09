@@ -13,9 +13,6 @@ INCLUDEPATH += $$ROOT_DIR/_include
 
 win32:DEFINES += _CRT_SECURE_NO_WARNINGS WIN32_LEAN_AND_MEAN LASTFM_OHAI_QMAKE
 
-# allow use of and, or, etc. as symbols
-unix:QMAKE_CXXFLAGS += -fno-operator-names
-
 macx* {
 	QMAKE_PKGINFO_TYPEINFO = last
 	QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.4
@@ -25,15 +22,16 @@ CONFIG( debug, debug|release ):CONFIG -= release
 
 target.path = $$INSTALL_DIR/lib
 
-release:CONFIG(mxcl){
-    QMAKE_CXXFLAGS_RELEASE -= -O2 -Os
-    QMAKE_CXXFLAGS_RELEASE += -O3 -fomit-frame-pointer
-    QMAKE_POST_LINK=strip $(DESTDIR)/$(TARGET)
-}
-
-linux{
+unix {
+    # allow use of 'and', 'or', etc. as symbols
+    QMAKE_CXXFLAGS += -fno-operator-names
 	QMAKE_CXXFLAGS_RELEASE += -fvisibility-inlines-hidden -fvisibility=hidden
-    CONFIG += link_pkgconfig
     # I don't want your emails telling me to fix the warnings :P
-    QMAKE_CXXFLAGS_RELEASE += -w
+    linux:QMAKE_CXXFLAGS_RELEASE += -w
+    # OHAI!
+    CONFIG(mxcl) {
+        QMAKE_CXXFLAGS_RELEASE -= -O2 -Os
+        QMAKE_CXXFLAGS_RELEASE += -O3 -fomit-frame-pointer
+        QMAKE_POST_LINK=strip $(DESTDIR)/$(TARGET)
+    }
 }
