@@ -5,7 +5,6 @@ else:ROOT_DIR = $$system( pwd )
 
 BUILD_DIR = _build
 DESTDIR = $$ROOT_DIR/_bin
-LIBS += -L$$DESTDIR
 
 OBJECTS_DIR = $$BUILD_DIR
 MOC_DIR = $$BUILD_DIR
@@ -13,7 +12,7 @@ UI_DIR = $$BUILD_DIR
 RCC_DIR = $$BUILD_DIR
 INCLUDEPATH += $$ROOT_DIR/_include
 
-win32:DEFINES += _CRT_SECURE_NO_WARNINGS WIN32_LEAN_AND_MEAN 
+win32:DEFINES += _CRT_SECURE_NO_WARNINGS WIN32_LEAN_AND_MEAN
 
 mac {
     QMAKE_PKGINFO_TYPEINFO = last
@@ -23,13 +22,11 @@ mac {
 CONFIG( debug, debug|release ):CONFIG -= release
 CONFIG( release, release|debug ):CONFIG -= debug
 
-target.path = $$INSTALL_DIR/lib
-
 *g++* {
     # allow use of 'and', 'or', etc. as symbols
     QMAKE_CXXFLAGS += -fno-operator-names
     QMAKE_CXXFLAGS_RELEASE += -fvisibility-inlines-hidden -fvisibility=hidden
 }
 
-# I don't want your emails telling me to fix the warnings :P
+# look better to Linux folks :P
 linux:CONFIG += warn_off

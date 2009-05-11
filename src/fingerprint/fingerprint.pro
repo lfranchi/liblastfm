@@ -1,6 +1,6 @@
 TEMPLATE = lib
 TARGET = lastfm_fingerprint
-LIBS += -llastfm
+LIBS += -L$$DESTDIR -llastfm
 QT = core xml network sql
 include( _files.qmake )
 DEFINES += LASTFM_OHAI_QMAKE

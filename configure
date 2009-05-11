@@ -72,12 +72,8 @@ rescue QMakeTooOld
   It is possible you have Qt3 and Qt4 both installed. Locate your Qt4
   installation and ensure it is placed first in the path, eg:
 
-	PATH=/opt/qt4/bin:\$PATH ./configure
+  	PATH=/opt/qt4/bin:\$PATH ./configure
 
-  However this configure script is very basic, perhaps we got it wrong.
-  Try typing the following, perhaps it will build for you :)
-
-	qmake -config release && make
   sput
 	exit 1
 rescue QMakeNotFound
