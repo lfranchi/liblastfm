@@ -17,6 +17,9 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
 
+#ifndef LASTFM_XMLQUERY_H
+#define LASTFM_XMLQUERY_H
+
 #include <lastfm/global.h>
 #include <QDomDocument>
 #include <QDomElement>
@@ -62,7 +65,6 @@ namespace lastfm
     };
 }
 
-
 inline QDebug operator<<( QDebug d, const lastfm::XmlQuery& xq )
 {
     QString s;
@@ -70,3 +72,5 @@ inline QDebug operator<<( QDebug d, const lastfm::XmlQuery& xq )
     QDomElement(xq).save( t, 2 );
     return d << s;
 }
+
+#endif

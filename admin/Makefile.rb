@@ -25,13 +25,16 @@ case Platform::IMPL
 end
 
 def penis( path )
-  matches = nil
+  yielded = false
   File.open( path ).each_line do |line|
     matches = /(class|struct)\s*LASTFM_DLLEXPORT\s*([a-zA-Z0-9]+)/.match( line )
-    yield path, matches[2] unless matches.nil?
+    unless matches.nil?
+      yield path, matches[2]
+      yielded = true
+    end
   end
   # just copy it without adjustment if there were no exported classes
-  yield path, File.basename( path ) if matches.nil?
+  yield path, File.basename( path ) unless yielded
 end
 
 
