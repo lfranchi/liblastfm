@@ -48,7 +48,7 @@ begin
     args=Array.new
     if ARGV.include? '--release'
       args << '-config release'
-      args << '"CONFIG -= app_bundle"' if Platform::IMPL == :macosx unless ARGV.include? '--bundle'
+      args << '"CONFIG += app_bundle"' if Platform::IMPL == :macosx and ARGV.include? '--bundle'
     else
       args << '-config debug'
     end

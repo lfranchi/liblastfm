@@ -30,3 +30,7 @@ CONFIG( release, release|debug ):CONFIG -= debug
 
 # look better to Linux folks :P
 linux:CONFIG += warn_off
+
+# used to determine if we should statically link the fingerprint library
+# used by lastfm-desktop and other projects
+CONFIG -= app_bundle
