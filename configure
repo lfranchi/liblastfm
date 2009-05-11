@@ -1,4 +1,9 @@
 #!/usr/bin/ruby
+if ARGV.include? '--help'
+  puts "usage: ./configure [--prefix <dir>] [--no-strip] [--release]"
+  exit
+end
+
 cwd = File.dirname( __FILE__ )
 require "#{cwd}/admin/platform.rb"
 require "#{cwd}/admin/which_qmake.rb"

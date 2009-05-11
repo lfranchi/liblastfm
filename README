@@ -7,11 +7,12 @@ Max Howell   http://twitter.com/mxcl
 Jono Cole    http://twitter.com/jonocole
 Doug Mansell http://twitter.com/dougma
 
+Fork it: http://github.com/mxcl/liblastfm
+
 
 Dependencies
 ============
-The build process requires ruby, perl and GNU make. Pls to remove perl dep.
-Pls to fork http://github.com/mxcl/liblastfm
+The build process requires ruby, Qt>=4.4 and GNU make (or MS nmake).
 
 Mac OS X
 --------
@@ -44,8 +45,7 @@ Installing liblastfm
     ./configure --release --prefix /usr/local && make && sudo make install
 
 Packaging liblastfm
-===================
-
+-------------------
 DESTDIR is supported.
 
 The library is split into liblastfm and liblastfm_fingerprint. The 
@@ -94,7 +94,7 @@ Private Headers
 1. For consistency and to make it more obvious it is a private header, don't
    prefix the header guard with LASTFM
 2. #includes should be the full source tree path, eg.
-   #include "../ws/QNetworkReply.h"
+   #include "../core/UrlBuilder.h"
 
 
 Release History
