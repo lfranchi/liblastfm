@@ -84,17 +84,22 @@ demos/Makefile:
 clean:
 	rm -rf _include
 	rm -rf src/_build
+	rm -rf src/fingerprint/_build
 	rm -rf demos/_build
 	rm -rf tests/_build
 	rm -f src/Makefile
+	rm -f src/fingerprint/Makefile
 	rm -f tests/Makefile
 	rm -f demos/Makefile
 	rm -rf _bin
 
 .PHONY: distclean
 distclean: clean
+	rm -f .qmake.env
 	rm -f src/_files.qmake
 	rm -f src/_version.h
+	rm -f src/fingerprint/_files.qmake
+	rm -f src/fingerprint/_version.h
 	rm -f Makefile
 
 EOS
