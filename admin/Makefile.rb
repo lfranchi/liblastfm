@@ -120,5 +120,6 @@ headers: #{$headers.join(' ')} _include/lastfm.h
 .PHONY: install
 install: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastfm.h
 	cd src && make install "INSTALL_ROOT=$(DESTDIR)#{$install_prefix}"
+	cd src/fingerprint && make install "INSTALL_ROOT=$(DESTDIR)#{$install_prefix}"
 
 EOS
