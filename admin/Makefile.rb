@@ -10,6 +10,7 @@ require 'ftools'
 require "#{cwd}/platform.rb"
 
 
+######################################################################### defs
 case Platform::IMPL
   when :mswin
     $cp='ruby -e "require \'FileUtils\'; FileUtils.copy_file(ARGV[0], ARGV[1])" --'
@@ -18,41 +19,27 @@ case Platform::IMPL
     $orderonly=''
   else
     $cp='cp'
-    $ln='cp' #cp doesn't work for some reason, the target is always remade
+    $ln='cp' #'ln -sf' oddly doesn't work, the target is always remade
     $mkdir='mkdir -p'
     $orderonly='|'
 end
 
-def step3( path, classname )
-puts <<-EOS
-_include/lastfm/#{classname}: #{path} #{$orderonly} _include/lastfm
-	#{$ln} #{path} $@
-$(DESTDIR)#{$install_prefix}/include/lastfm/#{classname}: #{path} #{$orderonly} $(DESTDIR)#{$install_prefix}/include/lastfm
-	#{$cp} #{path} $@
-
-EOS
-
-  $headers << "_include/lastfm/#{classname}"
-  $installheaders << "$(DESTDIR)#{$install_prefix}/include/lastfm/#{classname}"
-end
-
-def step2( path )
-  b = nil
+def penis( path )
+  matches = nil
   File.open( path ).each_line do |line|
     matches = /(class|struct)\s*LASTFM_DLLEXPORT\s*([a-zA-Z0-9]+)/.match( line )
-    if !matches.nil?
-      b = true
-      step3( path, matches[2] )
-    end
+    yield path, matches[2] unless matches.nil?
   end
-  # otherwise just copy it without adjustment
-  step3( path, File.basename( path ) ) if b.nil?
+  # just copy it without adjustment if there were no exported classes
+  yield path, File.basename( path ) if matches.nil?
 end
-######################################################################### impl
 
 
+######################################################################### main
+$install_headers=''
+$headers=''
 $install_prefix = ENV['LFM_PREFIX']
-exit 1 if $install_prefix.nil?
+abort("Environment variable LFM_PREFIX not defined") if $install_prefix.nil?
 
 puts <<-EOS
 .PHONY: all
@@ -104,9 +91,21 @@ distclean: clean
 
 EOS
 
-$installheaders = Array.new
-$headers = Array.new
-ARGV.each { |h| step2( 'src/'+h ) }
+begin
+  lhd='_include/lastfm'
+  ihd="$(DESTDIR)#{$install_prefix}/include/lastfm"
+  ARGV.each do |header|
+    penis "src/#{header}" do |path, classname|
+      puts "#{lhd}/#{classname}: #{path} #{$orderonly} #{lhd}"
+      puts "	#{$ln} #{path} $@"
+      puts "#{ihd}/#{classname}: #{path} #{$orderonly} #{ihd}"
+      puts "	#{$cp} #{path} $@"
+      puts
+      $headers+=" #{lhd}/#{classname}"
+      $install_headers+=" #{ihd}/#{classname}"
+    end
+  end
+end
 
 puts <<-EOS
 _include/lastfm:
@@ -114,16 +113,16 @@ _include/lastfm:
 $(DESTDIR)#{$install_prefix}/include/lastfm:
 	#{$mkdir} $@
 
-_include/lastfm.h: #{$headers.join(' ')} #{$orderonly} _include/lastfm
+_include/lastfm.h: #{$headers} #{$orderonly} _include/lastfm
 	ruby admin/lastfm.h.rb $@
 $(DESTDIR)#{$install_prefix}/include/lastfm.h: _include/lastfm.h #{$orderonly} $(DESTDIR)#{$install_prefix}/include/lastfm
 	#{$cp} _include/lastfm.h $@
 
 .PHONY: headers
-headers: #{$headers.join(' ')} _include/lastfm.h
+headers: #{$headers} _include/lastfm.h
 
 .PHONY: install
-install: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastfm.h
+install: #{$install_headers} $(DESTDIR)#{$install_prefix}/include/lastfm.h
 	cd src && make install "INSTALL_ROOT=$(DESTDIR)#{$install_prefix}"
 	cd src/fingerprint && make install "INSTALL_ROOT=$(DESTDIR)#{$install_prefix}"
 
