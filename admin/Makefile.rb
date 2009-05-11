@@ -18,7 +18,7 @@ case Platform::IMPL
     $orderonly=''
   else
     $cp='cp'
-    $ln='ln -s'
+    $ln='cp' #cp doesn't work for some reason, the target is always remade
     $mkdir='mkdir -p'
     $orderonly='|'
 end
@@ -48,34 +48,37 @@ def step2( path )
   # otherwise just copy it without adjustment
   step3( path, File.basename( path ) ) if b.nil?
 end
-################################################################################
+######################################################################### impl
 
 
-$install_prefix = ENV['PREFIX']
+$install_prefix = ENV['LFM_PREFIX']
 exit 1 if $install_prefix.nil?
 
-$installheaders = Array.new
-$headers = Array.new
-
-ARGV.each { |h| step2( 'src/'+h ) }
-
 puts <<-EOS
-_include/lastfm:
-	#{$mkdir} $@
-$(DESTDIR)#{$install_prefix}/include/lastfm:
-	#{$mkdir} $@
+.PHONY: all
+all: headers __src __fingerprint __demos __tests
 
-_include/lastfm.h: #{$headers.join(' ')} #{$orderonly} _include/lastfm
-	ruby admin/lastfm_h.rb $@
-$(DESTDIR)#{$install_prefix}/include/lastfm.h: _include/lastfm.h #{$orderonly} $(DESTDIR)#{$install_prefix}/include/lastfm
-	#{$cp} _include/lastfm.h $@
+.PHONY: __src
+__src: src/Makefile
+	cd src && $(MAKE)
+.PHONY: __fingerprint
+__fingerprint: src/fingerprint/Makefile __src
+	cd src/fingerprint && $(MAKE)
+.PHONY: __tests
+__tests: tests/Makefile __src
+	cd tests && $(MAKE)
+.PHONY: __demos
+__demos: demos/Makefile __src
+	cd demos && $(MAKE)
 
-.PHONY: headers
-headers: #{$headers.join(' ')} _include/lastfm.h
-
-.PHONY: install
-install: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastfm.h
-	cd src && make install "INSTALL_ROOT=$(DESTDIR)#{$install_prefix}"
+src/Makefile:
+	cd src && #{ENV['LFM_QMAKE']}
+src/fingerprint/Makefile:
+	cd src/fingerprint && #{ENV['LFM_QMAKE']}
+tests/Makefile:
+	cd tests && #{ENV['LFM_QMAKE']}
+demos/Makefile:
+	cd demos && #{ENV['LFM_QMAKE']}
 
 .PHONY: clean
 clean:
@@ -93,5 +96,29 @@ distclean: clean
 	rm -f src/_files.qmake
 	rm -f src/_version.h
 	rm -f Makefile
+
+EOS
+
+$installheaders = Array.new
+$headers = Array.new
+ARGV.each { |h| step2( 'src/'+h ) }
+
+puts <<-EOS
+_include/lastfm:
+	#{$mkdir} $@
+$(DESTDIR)#{$install_prefix}/include/lastfm:
+	#{$mkdir} $@
+
+_include/lastfm.h: #{$headers.join(' ')} #{$orderonly} _include/lastfm
+	ruby admin/lastfm.h.rb $@
+$(DESTDIR)#{$install_prefix}/include/lastfm.h: _include/lastfm.h #{$orderonly} $(DESTDIR)#{$install_prefix}/include/lastfm
+	#{$cp} _include/lastfm.h $@
+
+.PHONY: headers
+headers: #{$headers.join(' ')} _include/lastfm.h
+
+.PHONY: install
+install: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastfm.h
+	cd src && make install "INSTALL_ROOT=$(DESTDIR)#{$install_prefix}"
 
 EOS

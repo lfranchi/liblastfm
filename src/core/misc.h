@@ -20,6 +20,7 @@
 #ifndef LASTFM_MISC_H
 #define LASTFM_MISC_H
 
+#include <lastfm/global.h>
 #include <QCryptographicHash>
 #include <QDir>
 #include <QString>
@@ -32,17 +33,21 @@ namespace lastfm
 {
     namespace dir
     {
-        QDir bundle(); // only defined on OS X
-        QDir programFiles(); // only defined on Windows
-        QDir runtimeData();
-        QDir cache();
-        QDir logs();
+    #ifdef Q_WS_WIN
+        LASTFM_DLLEXPORT QDir programFiles();
+    #endif
+    #ifdef Q_WS_MAC
+        LASTFM_DLLEXPORT QDir bundle();
+    #endif
+        LASTFM_DLLEXPORT QDir runtimeData();
+        LASTFM_DLLEXPORT QDir cache();
+        LASTFM_DLLEXPORT QDir logs();
     }
    
 #ifdef Q_WS_MAC 
-    QByteArray CFStringToUtf8( CFStringRef );
-    CFStringRef QStringToCFString( const QString& );
-    QString CFStringToQString( CFStringRef s );
+    LASTFM_DLLEXPORT QByteArray CFStringToUtf8( CFStringRef );
+    LASTFM_DLLEXPORT CFStringRef QStringToCFString( const QString& );
+    inline QString CFStringToQString( CFStringRef s );
 #endif
 
     inline const char* platform()
@@ -84,7 +89,7 @@ namespace lastfm
             default:                      return "Unknown";
         }
         #elif defined Q_WS_X11
-            return "Unix X11";
+            return "UNIX X11";
         #else
             return "Unknown";
         #endif

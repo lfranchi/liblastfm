@@ -22,7 +22,6 @@
 #include "../ws/ws.h"
 #include <QCoreApplication>
 #include <QDateTime>
-#include <QDebug>
 #include <QNetworkAccessManager>
 
 

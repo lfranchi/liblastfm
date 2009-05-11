@@ -19,7 +19,6 @@
 
 #include "InternetConnectionMonitor.h"
 #include "ws.h"
-#include <QDebug>
 
 #ifdef __APPLE__
 #include <QPointer>

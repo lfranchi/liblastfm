@@ -18,7 +18,6 @@
  ***************************************************************************/
 
 #include "misc.h"
-#include <QDebug>
 #include <QDir>
 #ifdef WIN32
     #include <shlobj.h>

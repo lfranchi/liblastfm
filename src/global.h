@@ -20,7 +20,7 @@
 #ifndef LASTFM_GLOBAL_H
 #define LASTFM_GLOBAL_H
 
-#if defined(_WIN32) || defined(WIN32)
+#ifdef Q_CC_MSVC
     #ifdef LASTFM_OHAI_QMAKE
         #define LASTFM_DLLEXPORT __declspec(dllexport)
     #else
@@ -73,6 +73,8 @@ namespace lastfm
     class Fingerprint;
     class FingerprintId;
     class Mbid;
+    class MutableTrack;
+    class NetworkAccessManager;
     class Playlist;
     class User;
     class Tag;
@@ -90,6 +92,7 @@ using lastfm::AuthenticatedUser;
 using lastfm::Fingerprint;
 using lastfm::FingerprintId;
 using lastfm::Mbid;
+using lastfm::MutableTrack;
 using lastfm::Playlist;
 using lastfm::User;
 using lastfm::Tag;

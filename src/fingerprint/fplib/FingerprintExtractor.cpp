@@ -35,7 +35,7 @@
 
 #include <samplerate.h> // libsamplerate
 
-#include "../include/FingerprintExtractor.h"
+#include "FingerprintExtractor.h"
 #include "fp_helper_fun.h" // for GroupData
 #include "Filter.h"
 #include "FloatingAverage.h"

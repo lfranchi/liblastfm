@@ -21,7 +21,6 @@
 #include "Collection.h"
 #include "../core/misc.h"
 #include <QCoreApplication>
-#include <QDebug>
 #include <QFileInfo>
 #include <QMutexLocker>
 #include <QSqlQuery>
