@@ -17,7 +17,6 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
 
-
 #include "Collection.h"
 #include "../core/misc.h"
 #include <QCoreApplication>

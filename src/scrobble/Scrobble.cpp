@@ -19,16 +19,9 @@
 
 #include "Scrobble.h"
 #include "ScrobblePoint.h"
-#include <QFSFileEngine>
-
-
-static inline QString dirToString( const QDir& d )
-{
-    QString s = d.absolutePath();
-    if (QFSFileEngine().caseSensitive()) s = s.toLower();
-    return s;
-}
-
+#include <QStringList>
+using lastfm::Scrobble;
+ 
 
 QByteArray
 Scrobble::sourceString() const

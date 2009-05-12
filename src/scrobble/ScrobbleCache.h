@@ -24,6 +24,8 @@
 #include <QList>
 #include <QString>
 
+// because we are not for public consumption
+using lastfm::Scrobble;
 using lastfm::Track;
  
 

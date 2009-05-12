@@ -22,40 +22,42 @@
 
 #include <lastfm/Track>
 
-
-struct LASTFM_DLLEXPORT Scrobble : lastfm::Track
+namespace lastfm
 {
-    Scrobble()
-    {}
-    
-    Scrobble( const lastfm::Track& that ) : Track( that )
-    {}
-    
-    QByteArray sourceString() const;
-    
-    QByteArray ratingCharacter() const
+    struct LASTFM_DLLEXPORT Scrobble : lastfm::Track
     {
-        return d->extras["rating"].toAscii();
-    }
+        Scrobble()
+        {}
     
-    bool isLoved() const { return ratingCharacter() == QChar('L'); }
-    bool isBanned() const { return ratingCharacter() == QChar('B'); }
-    bool isSkipped() const { return ratingCharacter() == QChar('S'); }
+        Scrobble( const lastfm::Track& that ) : Track( that )
+        {}
+    
+        QByteArray sourceString() const;
+    
+        QByteArray ratingCharacter() const
+        {
+            return d->extras["rating"].toAscii();
+        }
+    
+        bool isLoved() const { return ratingCharacter() == QChar('L'); }
+        bool isBanned() const { return ratingCharacter() == QChar('B'); }
+        bool isSkipped() const { return ratingCharacter() == QChar('S'); }
 
-    /** if isValid() returns false, we will not scrobble the track */
-    enum Invalidity
-    {
-        TooShort,
-        ArtistNameMissing,
-        TrackNameMissing,
-        ArtistInvalid,
-        NoTimestamp,
-        FromTheFuture,
-        FromTheDistantPast
-    };
+        /** if isValid() returns false, we will not scrobble the track */
+        enum Invalidity
+        {
+            TooShort,
+            ArtistNameMissing,
+            TrackNameMissing,
+            ArtistInvalid,
+            NoTimestamp,
+            FromTheFuture,
+            FromTheDistantPast
+        };
     
-    /** @returns true if the server is unlikely to reject this scrobble */
-    bool isValid( Invalidity* = 0 ) const;
-};
+        /** @returns true if the server is unlikely to reject this scrobble */
+        bool isValid( Invalidity* = 0 ) const;
+    };
+}
 
 #endif

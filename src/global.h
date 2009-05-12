@@ -76,6 +76,7 @@ namespace lastfm
     class NetworkAccessManager;
     class Playlist;
     class User;
+    class Scrobble;
     class Tag;
     class Track;
     class XmlQuery;
@@ -93,6 +94,7 @@ using lastfm::FingerprintId;
 using lastfm::Mbid;
 using lastfm::Playlist;
 using lastfm::User;
+using lastfm::Scrobble;
 using lastfm::Tag;
 using lastfm::Track;
 using lastfm::XmlQuery;
