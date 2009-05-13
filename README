@@ -70,6 +70,10 @@ and getting metadata for music via our fingerprinting technology.
 
 You need an API key from http://last.fm/api to use the webservice API.
 
+Your link line needs to include the following:
+
+    -llastfm -lQtCore -lQtNetwork -lQtXml
+
 Radio
 -----
 Please set an identifiable UserAgent on your HTTP requests for the actual MP3s,
