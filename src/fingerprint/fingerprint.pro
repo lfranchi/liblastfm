@@ -22,7 +22,7 @@ else{
     else{
         CONFIG += link_pkgconfig
         PKGCONFIG += mad fftw3f samplerate
-        LIBS += -lvorbisfile -lFLAC
+        LIBS += -lvorbisfile -lFLAC -lfaad -lmp4ff
     }
 }
 

@@ -21,6 +21,7 @@
 #include "MP3_Source_Qt.h"
 #include "OGG_Source.h"
 #include "FLAC_Source.h"
+#include "AAC_Source.h"
 
 #include <QStringList>
 
@@ -38,6 +39,9 @@ FileSourceInterface * FileSource::createFileSource( const QString& fileName )
             break;
         case FLAC:
             return new FLAC_Source(fileName);
+            break;
+        case AAC:
+            return new AAC_Source(fileName);
             break;
         default:
            return NULL;
@@ -60,6 +64,10 @@ int FileSource::fileSourceType( const QString& fileName )
         return FLAC;
     else if ( extension.toLower() == "flac" )
         return FLAC;
+    else if ( extension.toLower() == "aac" )
+        return AAC;
+    else if ( extension.toLower() == "m4a" )
+        return AAC;
 
     // So much for relying on extensions.  Let's try file magic instead.
     FILE *fp = NULL;
@@ -108,6 +116,21 @@ int FileSource::fileSourceType( const QString& fileName )
     {
         // flac file
         fType = FLAC;
+    }
+    else if ( (header[0] == 0xFF) && ((header[1] & 0xF6) == 0xF0) )
+    {
+        // aac adts
+        fType = AAC;
+    }
+    else if (memcmp(header, "ADIF", 4) == 0)
+    {
+        // aac adif
+        fType = AAC;
+    }
+    else if ( memcmp( &header[4], "ftyp", 4 ) == 0 )
+    {
+        // mp4 header: aac
+        fType = AAC;
     }
 
     fclose(fp);
