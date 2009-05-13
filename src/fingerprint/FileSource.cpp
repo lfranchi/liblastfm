@@ -20,6 +20,7 @@
 #include "FileSource.h"
 #include "MP3_Source_Qt.h"
 #include "OGG_Source.h"
+#include "FLAC_Source.h"
 
 #include <QStringList>
 
@@ -34,6 +35,9 @@ FileSourceInterface * FileSource::createFileSource( const QString& fileName )
             break;
         case OGG:
             return new OGG_Source(fileName);
+            break;
+        case FLAC:
+            return new FLAC_Source(fileName);
             break;
         default:
            return NULL;
@@ -52,6 +56,10 @@ int FileSource::fileSourceType( const QString& fileName )
         return MP3;
     else if ( extension.toLower() == "ogg" )
         return OGG;
+    else if ( extension.toLower() == "oga" )
+        return FLAC;
+    else if ( extension.toLower() == "flac" )
+        return FLAC;
 
     // So much for relying on extensions.  Let's try file magic instead.
     FILE *fp = NULL;
@@ -90,6 +98,16 @@ int FileSource::fileSourceType( const QString& fileName )
             // ogg vorbis (.ogg)
             fType = OGG;
         }
+        else if ( memcmp(&header[29], "FLAC", 4) == 0 )
+        {
+            // ogg flac (.oga)
+            fType = FLAC;
+        }
+    }
+    else if ( memcmp(header, "fLaC", 4 ) == 0 )
+    {
+        // flac file
+        fType = FLAC;
     }
 
     fclose(fp);
