@@ -26,19 +26,20 @@
 #include <mad.h>
 #include <QString>
 #include <QFile>
+#include "FileSourceInterface.h"
 
 // ----------------------------------------------------------------------- ------
 
-class MP3_Source
+class MP3_Source : public FileSourceInterface
 {
 public:
    // ctor
-   MP3_Source();
+   MP3_Source(const QString& fileName);
    virtual ~MP3_Source();
 
-   static void getInfo(const QString& fileName, int& lengthSecs, int& samplerate, int& bitrate, int& nchannels);
-   virtual void  init(const QString& fileName);
-   virtual void  release();
+   virtual void getInfo(int& lengthSecs, int& samplerate, int& bitrate, int& nchannels);
+   virtual void  init();
+   //virtual QString getMbid();
 
    // return a chunk of PCM data from the mp3
    virtual int updateBuffer(signed short* pBuffer, size_t bufferSize);
@@ -64,11 +65,11 @@ private:
    mad_timer_t          m_mad_timer;
    struct mad_synth     m_mad_synth;
 
-   QString              m_fileName;
    QFile                m_inputFile;
 
    unsigned char*       m_pMP3_Buffer;
    static const int     m_MP3_BufferSize = (5*8192);
+   QString              m_fileName;
 
    size_t               m_pcmpos;
 };

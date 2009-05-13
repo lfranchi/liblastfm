@@ -26,6 +26,7 @@
 #include <cassert>
 #include <stdexcept>
 
+//#include "../types/mbid_mp3.c"
 #include "MP3_Source_Qt.h"
 #undef max // was definded in mad
 
@@ -34,14 +35,22 @@ using namespace std;
 
 // -----------------------------------------------------------
 
-MP3_Source::MP3_Source()
+MP3_Source::MP3_Source(const QString& fileName)
           : m_pMP3_Buffer ( new unsigned char[m_MP3_BufferSize+MAD_BUFFER_GUARD] )
+          , m_fileName(fileName)
 {}
 
 // -----------------------------------------------------------
 
 MP3_Source::~MP3_Source()
 {
+   if ( m_inputFile.isOpen() )
+   {
+      m_inputFile.close();
+      mad_synth_finish(&m_mad_synth);
+      mad_frame_finish(&m_mad_frame);
+      mad_stream_finish(&m_mad_stream);
+   }
    if (m_pMP3_Buffer) delete[] m_pMP3_Buffer;
 }
 
@@ -179,23 +188,9 @@ bool MP3_Source::isRecoverable(const mad_error& error, bool log)
 
 // -----------------------------------------------------------
 
-void MP3_Source::release()
+void MP3_Source::init()
 {
-   if ( m_inputFile.isOpen() )
-   {
-      m_inputFile.close();
-      mad_synth_finish(&m_mad_synth);
-      mad_frame_finish(&m_mad_frame);
-      mad_stream_finish(&m_mad_stream);
-   }
-}
-
-// -----------------------------------------------------------
-
-void MP3_Source::init(const QString& fileName)
-{
-   m_fileName = fileName;
-   m_inputFile.setFileName( fileName );
+   m_inputFile.setFileName( m_fileName );
    bool fine = m_inputFile.open( QIODevice::ReadOnly );
 
    if ( !fine )
@@ -213,10 +208,19 @@ void MP3_Source::init(const QString& fileName)
 
 // -----------------------------------------------------------------------------
 
-void MP3_Source::getInfo( const QString& fileName, int& lengthSecs, int& samplerate, int& bitrate, int& nchannels )
+/*QString MP3_Source::getMbid()
+{
+    char out[MBID_BUFFER_SIZE];
+    int const r = getMP3_MBID( QFile::encodeName( m_fileName ), out );
+    if (r == 0)
+        return QString::fromLatin1( out );
+    return QString();
+}*/
+
+void MP3_Source::getInfo(int& lengthSecs, int& samplerate, int& bitrate, int& nchannels )
 {
    // get the header plus some other stuff..
-   QFile inputFile(fileName);
+   QFile inputFile(m_fileName);
    bool fine = inputFile.open( QIODevice::ReadOnly );
 
    if ( !fine )

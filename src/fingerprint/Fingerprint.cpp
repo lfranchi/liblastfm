@@ -20,7 +20,7 @@
 #include "Fingerprint.h"
 #include "Collection.h"
 #include "Sha256.h"
-#include "MP3_Source_Qt.h"
+#include "FileSource.h"
 #include "fplib/FingerprintExtractor.h"
 #include "../ws/ws.h"
 #include <QFileInfo>
@@ -59,12 +59,16 @@ lastfm::Fingerprint::generate() throw( Error )
         throw ReadError;
 
     int sampleRate, bitrate, numChannels;
-    MP3_Source ms;
-    
+
+    FileSourceInterface *ms = FileSource::createFileSource( path );
+
+    if ( !ms )
+        throw ReadError;
+
     try
     {
-        MP3_Source::getInfo( path, m_duration, sampleRate, bitrate, numChannels );
-        ms.init( path );
+        ms->init();
+        ms->getInfo( m_duration, sampleRate, bitrate, numChannels );
     }
     catch (std::exception& e)
     {
@@ -76,7 +80,7 @@ lastfm::Fingerprint::generate() throw( Error )
     if (m_duration < k_minTrackDuration)
         throw TrackTooShortError;
     
-    ms.skipSilence();
+    ms->skipSilence();
     
     bool fpDone = false;
     fingerprint::FingerprintExtractor* extractor;
@@ -93,7 +97,7 @@ lastfm::Fingerprint::generate() throw( Error )
             extractor->initForQuery( sampleRate, numChannels, m_duration );
             
             // Skippety skip for as long as the skipper sez (optimisation)
-            ms.skip( extractor->getToSkipMs() );
+            ms->skip( extractor->getToSkipMs() );
             float secsToSkip = extractor->getToSkipMs() / 1000.0f;
             fpDone = extractor->process( 0,
                                          (size_t) sampleRate * numChannels * secsToSkip,
@@ -111,23 +115,24 @@ lastfm::Fingerprint::generate() throw( Error )
     
     while (!fpDone)
     {
-        size_t readData = ms.updateBuffer( pPCMBuffer, PCMBufSize );
+        size_t readData = ms->updateBuffer( pPCMBuffer, PCMBufSize );
         if (readData == 0)
             break;
         
         try
         {
-            fpDone = extractor->process( pPCMBuffer, readData, ms.eof() );
+            fpDone = extractor->process( pPCMBuffer, readData, ms->eof() );
         }
         catch ( const std::exception& e )
         {
             qWarning() << e.what();
+            delete ms;
             delete[] pPCMBuffer;
             throw InternalError;
         }
     }
     
-    ms.release();
+    delete ms;
     delete[] pPCMBuffer;
     
     if (!fpDone)
