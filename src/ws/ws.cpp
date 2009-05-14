@@ -29,13 +29,24 @@
 static QNetworkAccessManager* nam = 0;
 
 
+static inline QString host()
+{
+    QStringList const args = QCoreApplication::arguments();
+    if (args.contains( "--debug"))
+        return "ws.staging.audioscrobbler.com";
+
+    int const n = args.indexOf( "--host" );
+    if (n != -1 && args.count() > n+1)
+        return args[n+1];
+
+    return LASTFM_WS_HOSTNAME;
+}
+
 static QUrl url()
 {
     QUrl url;
     url.setScheme( "http" );
-    url.setHost( !QCoreApplication::arguments().contains( "--debug")
-            ? LASTFM_WS_HOSTNAME
-            : "ws.staging.audioscrobbler.com" );
+    url.setHost( host() );
     url.setPath( "/2.0/" );
     return url;
 }
