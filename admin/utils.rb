@@ -18,3 +18,14 @@ def h2 s
     h(s, 33)
     yield
 end
+
+def qmake_env(env, qenv)
+  env=Array.new(1,env) if env.instance_of? String
+  values=Array.new
+  env.each { |x| values << ENV[x] if ENV[x] }
+  if values.size > 0
+    "#{qenv} = #{values.join(' ')}\n"
+  else
+    nil
+  end
+end

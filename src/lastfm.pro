@@ -1,13 +1,17 @@
 TEMPLATE = lib
 TARGET = lastfm
 QT = core network xml
-VERSION = 0.3
 INSTALLS = target
 include( _files.qmake )
 
-# ws configuration
-win32:DEFINES += _ATL_DLL 
-win32:LIBS += winhttp.lib wbemuuid.lib
-macx*:LIBS += -framework SystemConfiguration
+win32{
+    DEFINES += LASTFM_OHAI_QMAKE _ATL_DLL 
+    LIBS += winhttp.lib wbemuuid.lib # ws configuration
+}
+else{
+    # don't break the link name on Windows, otherwise you get eg. lastfm1.dll
+    VERSION = 0.3
+    mac:LIBS += -framework SystemConfiguration # ws configuration
+}
 
 target.path = /lib

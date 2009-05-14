@@ -19,7 +19,6 @@
 
 #include "NowPlaying.h"
 #include "../types/Track.h"
-#include <QDebug>
 #include <QTimer>
 
 

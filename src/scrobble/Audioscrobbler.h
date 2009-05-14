@@ -19,6 +19,7 @@
 
 #ifndef LASTFM_AUDIOSCROBBLER_H
 #define LASTFM_AUDIOSCROBBLER_H
+
 #include <lastfm/global.h>
 #include <QByteArray>
 #include <QList>
@@ -103,7 +104,6 @@ namespace lastfm
 }
 
 
-#include <QDebug>
 static inline QDebug operator<<( QDebug d, lastfm::Audioscrobbler::Status status )
 {
     return d << lastfm::qMetaEnumString<lastfm::Audioscrobbler>( status, "Status" );

@@ -1,23 +1,25 @@
 liblastfm
 =========
-liblastfm is a collection of libraries to help you integrate Last.fm services 
-into your rich desktop software. It depends on Qt 4.4.
+liblastfm is a collection of libraries to help you integrate Last.fm services
+into your rich desktop software. It is officially supported software developed
+by Last.fm staff.
 
 Max Howell   http://twitter.com/mxcl
 Jono Cole    http://twitter.com/jonocole
 Doug Mansell http://twitter.com/dougma
 
+Fork it: http://github.com/mxcl/liblastfm
+
 
 Dependencies
 ============
-The build process requires ruby, perl and GNU make. Pls to remove perl dep.
-Pls to fork http://github.com/mxcl/liblastfm
+The build process requires ruby, Qt>=4.4 and GNU make (or MS nmake).
 
 Mac OS X
 --------
-	sudo port selfupdate
-	sudo port upgrade installed
-	sudo port install libsamplerate fftw-3 libmad qt4-mac-devel
+    sudo port selfupdate
+    sudo port upgrade installed
+    sudo port install libsamplerate fftw-3 libmad qt4-mac-devel
 
 qt4-mac-devel will take a long time to build. So you may want to install the
 Trolltech binary package instead.
@@ -26,32 +28,31 @@ Linux
 -----
 For Ubuntu 9.04 (some are build deps, eg. Ruby is used during configure):
 
-	sudo apt-get install qt4-qmake pkg-config libsamplerate-dev libfftw3-dev libmad0-dev ruby g++ libqt4-dev
+    sudo apt-get install qt4-qmake pkg-config libsamplerate-dev libfftw3-dev libmad0-dev ruby g++ libqt4-dev
 
-The configure process also requires lsb_release on Linux. This is usually 
+The configure process also requires lsb_release on Linux. This is usually
 already installed (correct me if I'm wrong).
 
 Windows
 -------
-Best of luck to you. You'll need Ruby, GNU Make and the Windows Server 2003 
+Best of luck to you. You'll need Ruby, GNU Make and the Windows Server 2003
 Platform SDK r2:
 
 http://www.microsoft.com/Downloads/details.aspx?FamilyID=484269e2-3b89-47e3-8eb7-1f2be6d7123a&displaylang=en
 
+liblastfm should build under both cygwin and regular Windows shell.
+
 
 Installing liblastfm
 ====================
-    PREFIX=/usr/local ./configure --release && make && sudo make install
-
-FIXME! we would like to support the normal --prefix route pls.
+    ./configure --release --prefix /usr/local && make && sudo make install
 
 Packaging liblastfm
-===================
-
+-------------------
 DESTDIR is supported.
 
-The library is split into liblastfm and liblastfm_fingerprint. The 
-fingerprinting part is separate as it links to libfftw3. So if you want to 
+The library is split into liblastfm and liblastfm_fingerprint. The
+fingerprinting part is separate as it links to libfftw3. So if you want to
 package it separately then you can. Sadly because there is simply no good
 configuration system in the world, you still have to build both…
 
@@ -60,9 +61,9 @@ Using liblastfm
 ===============
 We have copied the API at http://last.fm/api onto C++, so like you find
 artist.getInfo there you will find an lastfm::Artist::getInfo function in our
-C++ API. lastfm is a namespace, Artist a class, getInfo a function.
+C++ API. lastfm is a namespace, Artist a class and getInfo a function.
 
-Thus the API is quite easy to learn. We suggest installing and checking the 
+Thus the API is quite easy to learn. We suggest installing and checking the
 include/lastfm/* directory to find out all capabilities.
 
 The demos directory shows some further basic usage including Audioscrobbling
@@ -81,7 +82,7 @@ in extreme cases we'll contact you directly and demand you do so :P
 
 HTTP & Networking
 -----------------
-You can specify your own QNetworkAccessManager derived class for liblastfm to 
+You can specify your own QNetworkAccessManager derived class for liblastfm to
 use with lastfm::setNetworkAccessManager(). Our default is pretty good
 though, auto-determining proxy settings on Windows and OS X for instance.
 
@@ -100,7 +101,7 @@ Private Headers
 1. For consistency and to make it more obvious it is a private header, don't
    prefix the header guard with LASTFM
 2. #includes should be the full source tree path, eg.
-   #include "../ws/QNetworkReply.h"
+   #include "../core/UrlBuilder.h"
 
 
 Release History

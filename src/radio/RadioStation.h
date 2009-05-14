@@ -81,11 +81,10 @@ namespace lastfm
     };
 }
 
-#include <QMetaType>
+
 Q_DECLARE_METATYPE( lastfm::RadioStation )
 
 
-#include <QDebug>
 inline QDebug operator<<( QDebug d, const lastfm::RadioStation& station )
 {
     return d << station.url();

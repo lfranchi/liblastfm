@@ -26,11 +26,9 @@
 #include <QNetworkReply>
 #include <stdexcept>
 
-#ifdef WIN32 
-#if !__GNUC__
+#ifdef Q_CC_MSVC
 // ms admits its lousy compiler doesn't care about throw declarations
 #pragma warning( disable : 4290 )
-#endif
 #endif
 
 

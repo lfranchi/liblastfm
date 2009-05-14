@@ -17,21 +17,54 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
-#ifdef WIN32
-// WsAccessManager needs special init (on Windows), and it needs to be done
-// early, so be careful about moving this
-#include "win/ComSetup.h" //must be first header or compile fail results!
-static ComSetup com_setup;
-#endif
-
 #include "InternetConnectionMonitor.h"
 #include "ws.h"
-#include <QDebug>
 
 #ifdef __APPLE__
 #include <QPointer>
 #include <SystemConfiguration/SCNetworkReachability.h>
 QList<QPointer<lastfm::InternetConnectionMonitor> > monitors;
+#endif
+
+
+#ifdef WIN32
+
+// WsAccessManager needs special init (on Windows), and it needs to be done
+// early, so be careful about moving this
+#include "win/ComSetup.h" //must be first header or compile fail results!
+#include "win/NdisEvents.h"
+static ComSetup com_setup;
+
+namespace lastfm {
+
+// bounce NdisEvents signals through here so we don't have to expose the 
+// NdisEvents interface in InternetConnectionMonitor  :)
+class NdisEventsProxy : public NdisEvents
+{
+public:
+    NdisEventsProxy(InternetConnectionMonitor *icm)
+        :m_icm(icm)
+    {
+    }
+
+    // WmiSink callbacks:
+    virtual void onConnectionUp( BSTR name )
+    {
+        emit m_icm->up( QString::fromUtf16(name) );
+        emit m_icm->connectivityChanged( true );
+    }
+    
+    virtual void onConnectionDown( BSTR name )
+    {
+        emit m_icm->down( QString::fromUtf16(name) );
+        emit m_icm->connectivityChanged( false );
+    }
+
+    InternetConnectionMonitor* m_icm;
+};
+
+}
+
 #endif
 
 
@@ -50,6 +83,10 @@ lastfm::InternetConnectionMonitor::InternetConnectionMonitor( QObject *parent )
     
     QPointer<InternetConnectionMonitor> p = this;
     monitors += p;
+#endif
+#ifdef WIN32
+    m_ndisEventsProxy = new NdisEventsProxy(this);
+    m_ndisEventsProxy->registerForNdisEvents();
 #endif
 }
 
@@ -89,3 +126,5 @@ lastfm::InternetConnectionMonitor::callback( SCNetworkReachabilityRef, SCNetwork
         }
 }
 #endif
+
+

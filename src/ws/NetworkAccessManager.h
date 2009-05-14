@@ -33,7 +33,7 @@ class LASTFM_DLLEXPORT NetworkAccessManager : public QNetworkAccessManager
 {
     Q_OBJECT
 
-#ifdef WIN32
+#ifdef Q_WS_WIN
     class Pac *m_pac;
     class InternetConnectionMonitor* m_monitor;
 #endif

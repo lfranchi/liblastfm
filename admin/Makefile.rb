@@ -10,56 +10,105 @@ require 'ftools'
 require "#{cwd}/platform.rb"
 
 
+######################################################################### defs
 case Platform::IMPL
   when :mswin
     $cp='ruby -e "require \'FileUtils\'; FileUtils.copy_file(ARGV[0], ARGV[1])" --'
     $ln=$cp
     $mkdir='ruby -e "require \'FileUtils\'; FileUtils.mkpath ARGV[0]" --'
-    pipe='$B'
+    $orderonly=''
   else
     $cp='cp'
-    $ln='cp' #cp doesn't work for some reason, the target is always remade
+    $ln='cp' #'ln -sf' oddly doesn't work, the target is always remade
     $mkdir='mkdir -p'
-    pipe='|'
+    $orderonly='|'
 end
 
-def step3( path, classname )
+def penis( path )
+  yielded = false
+  File.open( path ).each_line do |line|
+    matches = /(class|struct)\s*LASTFM_DLLEXPORT\s*([a-zA-Z0-9]+)/.match( line )
+    unless matches.nil?
+      yield path, matches[2]
+      yielded = true
+    end
+  end
+  # just copy it without adjustment if there were no exported classes
+  yield path, File.basename( path ) unless yielded
+end
+
+
+######################################################################### main
+$install_headers=''
+$headers=''
+$install_prefix = ENV['LFM_PREFIX']
+abort("Environment variable LFM_PREFIX not defined") if $install_prefix.nil?
+
 puts <<-EOS
-_include/lastfm/#{classname}: #{path} | _include/lastfm
-	#{$ln} #{path} $@
-$(DESTDIR)#{$install_prefix}/include/lastfm/#{classname}: #{path} | $(DESTDIR)#{$install_prefix}/include/lastfm
-	#{$cp} #{path} $@
+.PHONY: all
+all: headers __src __fingerprint __demos __tests
+
+.PHONY: __src
+__src: src/Makefile
+	cd src && $(MAKE)
+.PHONY: __fingerprint
+__fingerprint: src/fingerprint/Makefile __src
+	cd src/fingerprint && $(MAKE)
+.PHONY: __tests
+__tests: tests/Makefile __src
+	cd tests && $(MAKE)
+.PHONY: __demos
+__demos: demos/Makefile __src
+	cd demos && $(MAKE)
+
+src/Makefile:
+	cd src && #{ENV['LFM_QMAKE']}
+src/fingerprint/Makefile:
+	cd src/fingerprint && #{ENV['LFM_QMAKE']}
+tests/Makefile:
+	cd tests && #{ENV['LFM_QMAKE']}
+demos/Makefile:
+	cd demos && #{ENV['LFM_QMAKE']}
+
+.PHONY: clean
+clean:
+	rm -rf _include
+	rm -rf src/_build
+	rm -rf src/fingerprint/_build
+	rm -rf demos/_build
+	rm -rf tests/_build
+	rm -f src/Makefile
+	rm -f src/fingerprint/Makefile
+	rm -f tests/Makefile
+	rm -f demos/Makefile
+	rm -rf _bin
+
+.PHONY: distclean
+distclean: clean
+	rm -f .qmake.env
+	rm -f src/_files.qmake
+	rm -f src/_version.h
+	rm -f src/fingerprint/_files.qmake
+	rm -f src/fingerprint/_version.h
+	rm -f Makefile
 
 EOS
 
-  $headers << "_include/lastfm/#{classname}"
-  $installheaders << "$(DESTDIR)#{$install_prefix}/include/lastfm/#{classname}"
-end
-
-def step2( path )
-  b = nil
-  File.open( path ).each_line do |line|
-    matches = /(class|struct)\s*LASTFM_DLLEXPORT\s*([a-zA-Z0-9]+)/.match( line )
-    if !matches.nil?
-      b = true
-      step3( path, matches[2] )
+begin
+  lhd='_include/lastfm'
+  ihd="$(DESTDIR)#{$install_prefix}/include/lastfm"
+  ARGV.each do |header|
+    penis "src/#{header}" do |path, classname|
+      puts "#{lhd}/#{classname}: #{path} #{$orderonly} #{lhd}"
+      puts "	#{$ln} #{path} $@"
+      puts "#{ihd}/#{classname}: #{path} #{$orderonly} #{ihd}"
+      puts "	#{$cp} #{path} $@"
+      puts
+      $headers+=" #{lhd}/#{classname}"
+      $install_headers+=" #{ihd}/#{classname}"
     end
   end
-  # otherwise just copy it without adjustment
-  step3( path, File.basename( path ) ) if b.nil?
 end
-################################################################################
-
-
-$install_prefix = ENV['PREFIX']
-exit 1 if $install_prefix.nil?
-
-$installheaders = Array.new
-$headers = Array.new
-
-ARGV.each { |h| step2( 'src/'+h ) }
-
-$rubystring = %q[ruby -e 'Dir["_include/lastfm/*"].each {]+%Q[#{pipe}h#{pipe}]+%q[puts %Q{#include "lastfm/#{File.basename h}"\n} }']
 
 puts <<-EOS
 _include/lastfm:
@@ -67,33 +116,17 @@ _include/lastfm:
 $(DESTDIR)#{$install_prefix}/include/lastfm:
 	#{$mkdir} $@
 
-_include/lastfm.h: #{$headers.join(' ')} | _include/lastfm
-	#{$rubystring} > $@
-$(DESTDIR)#{$install_prefix}/include/lastfm.h: _include/lastfm.h | $(DESTDIR)#{$install_prefix}/include/lastfm
+_include/lastfm.h: #{$headers} #{$orderonly} _include/lastfm
+	ruby admin/lastfm.h.rb $@
+$(DESTDIR)#{$install_prefix}/include/lastfm.h: _include/lastfm.h #{$orderonly} $(DESTDIR)#{$install_prefix}/include/lastfm
 	#{$cp} _include/lastfm.h $@
 
 .PHONY: headers
-headers: #{$headers.join(' ')} _include/lastfm.h
+headers: #{$headers} _include/lastfm.h
 
 .PHONY: install
-install: #{$installheaders.join(' ')} $(DESTDIR)#{$install_prefix}/include/lastfm.h
+install: #{$install_headers} $(DESTDIR)#{$install_prefix}/include/lastfm.h
 	cd src && make install "INSTALL_ROOT=$(DESTDIR)#{$install_prefix}"
-
-.PHONY: clean
-clean:
-	rm -rf _include
-	rm -rf src/_build
-	rm -rf demos/_build
-	rm -rf tests/_build
-	rm -f src/Makefile
-	rm -f tests/Makefile
-	rm -f demos/Makefile
-	rm -rf _bin
-
-.PHONY: distclean
-distclean: clean
-	rm -f src/_files.qmake
-	rm -f src/_version.h
-	rm -f Makefile
+	cd src/fingerprint && make install "INSTALL_ROOT=$(DESTDIR)#{$install_prefix}"
 
 EOS

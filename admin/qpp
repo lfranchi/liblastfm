@@ -17,9 +17,9 @@ if ARGV[0] && File.file?( ARGV[0] )
       exit if matches[1].downcase == 'subdirs'
     end
 
-    matches = /^\s*VERSION += +((\d\.){0,2}\d)/.match( line )
+    matches = /(\s|\:|\{)VERSION\s*=\s*((\d\.){0,2}\d)$/.match( line )
     if !matches.nil? && !File.file?( "_version.h" )
-      File.open( "_version.h", 'w' ) { |f| f.write( "#define VERSION \"#{matches[1]}\"\n" ) }
+      File.open( "_version.h", 'w' ) { |f| f.write( "#define VERSION \"#{matches[2]}\"\n" ) }
     end
   end
 end

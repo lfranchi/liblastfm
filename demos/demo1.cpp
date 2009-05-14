@@ -20,7 +20,8 @@
 #include <lastfm.h> // this includes everything in liblastfm, you may prefer 
 #include <QtCore>   // to just include what you need with your project. Still
 #include <QtGui>    // we've given you the option.
-
+#include <QPointer>
+#include <QNetworkReply>
 
 class ArtistList : public QListWidget
 {
