@@ -17,65 +17,52 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
 
-#ifndef __MP3_SOURCE
-#define __MP3_SOURCE
+#ifndef __MP3_SOURCE_H__
+#define __MP3_SOURCE_H__
 
+#include <lastfm/FingerprintableSource>
+#include <QFile>
 #include <string>
 #include <vector>
 #include <fstream>
 #include <mad.h>
-#include <QString>
-#include <QFile>
-#include "FileSourceInterface.h"
 
-// ----------------------------------------------------------------------- ------
 
-class MP3_Source : public FileSourceInterface
+class MadSource : public lastfm::FingerprintableSource
 {
 public:
-   // ctor
-   MP3_Source(const QString& fileName);
-   virtual ~MP3_Source();
+    MadSource();
+    ~MadSource();
 
-   virtual void getInfo(int& lengthSecs, int& samplerate, int& bitrate, int& nchannels);
-   virtual void  init();
-   //virtual QString getMbid();
-
-   // return a chunk of PCM data from the mp3
-   virtual int updateBuffer(signed short* pBuffer, size_t bufferSize);
-
-   virtual void skip(const int mSecs);
-   virtual void skipSilence(double silenceThreshold = 0.0001);
-
-   bool  eof() const { return m_inputFile.atEnd(); }
+    virtual void getInfo(int& lengthSecs, int& samplerate, int& bitrate, int& nchannels);
+    virtual void init(const QString& fileName);
+    virtual int updateBuffer(signed short* pBuffer, size_t bufferSize);
+    virtual void skip(const int mSecs);
+    virtual void skipSilence(double silenceThreshold = 0.0001);
+    virtual bool eof() const { return m_inputFile.atEnd(); }
 
 private:
+    static bool fetchData( QFile& mp3File,
+                           unsigned char* pMP3_Buffer,
+                           const int MP3_BufferSize,
+                           mad_stream& madStream );
 
-   static bool fetchData( QFile& mp3File,
-                          unsigned char* pMP3_Buffer,
-                          const int MP3_BufferSize,
-                          mad_stream& madStream );
-
-   static bool isRecoverable(const mad_error& error, bool log = false);
+    static bool isRecoverable(const mad_error& error, bool log = false);
 
     static std::string MadErrorString(const mad_error& error);
 
-   struct mad_stream    m_mad_stream;
-   struct mad_frame     m_mad_frame;
-   mad_timer_t          m_mad_timer;
-   struct mad_synth     m_mad_synth;
+    struct mad_stream    m_mad_stream;
+    struct mad_frame     m_mad_frame;
+    mad_timer_t          m_mad_timer;
+    struct mad_synth     m_mad_synth;
 
-   QFile                m_inputFile;
+    QFile                m_inputFile;
 
-   unsigned char*       m_pMP3_Buffer;
-   static const int     m_MP3_BufferSize = (5*8192);
-   QString              m_fileName;
+    unsigned char*       m_pMP3_Buffer;
+    static const int     m_MP3_BufferSize = (5*8192);
+    QString              m_fileName;
 
-   size_t               m_pcmpos;
+    size_t               m_pcmpos;
 };
 
-// ---------------------------------------------------------------------
-
-// -----------------------------------------------------------------------------
-
-#endif // __MP3_SOURCE
+#endif

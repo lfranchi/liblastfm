@@ -21,18 +21,17 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
 
-#include "AAC_Source.h"
-//#include "../types/mbid_mp3.c"
+#include "AacSource.h"
+#include "AacSource_p.h"
 
 #include <QFile>
-#include <errno.h>
-#include <string.h>
-
 #include <algorithm>
 #include <cassert>
-#include <iostream>
 #include <limits>
+#include <iostream>
 #include <stdexcept>
+#include <errno.h>
+#include <string.h>
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -40,9 +39,8 @@
 // AAC_File
 //
 ////////////////////////////////////////////////////////////////////////
-AAC_File::AAC_File(const QString& fileName, int headerType) :
-      m_fileName(fileName)
-    , m_inBuf(NULL)
+AAC_File::AAC_File(int headerType)
+    : m_inBuf(NULL)
     , m_inBufSize(0)
     , m_decoder(0)
     , m_overflow(static_cast<unsigned char*>(malloc( sizeof(unsigned char) * 1024 )))
@@ -727,11 +725,11 @@ AAC_MP4_File::~AAC_MP4_File()
 
 ////////////////////////////////////////////////////////////////////////
 //
-// AAC_Source
+// AacSource
 //
 ////////////////////////////////////////////////////////////////////////
 
-AAC_Source::AAC_Source(const QString& fileName) :
+AacSource::AacSource(const QString& fileName) :
       m_fileName(fileName)
     , m_eof( false )
     , m_aacFile( NULL )
@@ -747,13 +745,13 @@ AAC_Source::AAC_Source(const QString& fileName) :
 }
 
 
-AAC_Source::~AAC_Source()
+AacSource::~AacSource()
 {
     delete m_aacFile;
 }
 
 
-int AAC_Source::checkHeader()
+int AacSource::checkHeader()
 {
     FILE *fp = NULL;
     unsigned char header[10];
@@ -805,7 +803,7 @@ int AAC_Source::checkHeader()
 }
 
 
-void AAC_Source::getInfo( int& lengthSecs, int& samplerate, int& bitrate, int& nchannels )
+void AacSource::getInfo( int& lengthSecs, int& samplerate, int& bitrate, int& nchannels )
 {
     // get the header plus some other stuff..
 
@@ -813,8 +811,9 @@ void AAC_Source::getInfo( int& lengthSecs, int& samplerate, int& bitrate, int& n
 }
 
 
-void AAC_Source::init()
+void AacSource::init(const QString& fileName)
 {
+    m_fileName = fileName;
     if ( m_aacFile )
         m_aacFile->init();
     else
@@ -822,14 +821,14 @@ void AAC_Source::init()
 }
 
 
-/*QString AAC_Source::getMbid()
+/*QString AacSource::getMbid()
 {
     QString mbid = m_aacFile->getMbid();
     return mbid;
 }*/
 
 
-void AAC_Source::skip( const int mSecs )
+void AacSource::skip( const int mSecs )
 {
     if ( mSecs < 0 || !m_aacFile->m_decoder )
         return;
@@ -838,7 +837,7 @@ void AAC_Source::skip( const int mSecs )
 }
 
 
-void AAC_Source::skipSilence(double silenceThreshold /* = 0.0001 */)
+void AacSource::skipSilence(double silenceThreshold /* = 0.0001 */)
 {
     if ( !m_aacFile->m_decoder )
         return;
@@ -884,7 +883,7 @@ void AAC_Source::skipSilence(double silenceThreshold /* = 0.0001 */)
 }
 
 
-int AAC_Source::updateBuffer( signed short *pBuffer, size_t bufferSize )
+int AacSource::updateBuffer( signed short *pBuffer, size_t bufferSize )
 {
     size_t nwrit = 0; //number of samples written to the output buffer
 

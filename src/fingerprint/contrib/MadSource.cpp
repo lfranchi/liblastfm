@@ -25,9 +25,8 @@
 #include <sstream>
 #include <cassert>
 #include <stdexcept>
+#include "MadSource.h"
 
-//#include "../types/mbid_mp3.c"
-#include "MP3_Source_Qt.h"
 #undef max // was definded in mad
 
 using namespace std;
@@ -35,14 +34,13 @@ using namespace std;
 
 // -----------------------------------------------------------
 
-MP3_Source::MP3_Source(const QString& fileName)
+MadSource::MadSource()
           : m_pMP3_Buffer ( new unsigned char[m_MP3_BufferSize+MAD_BUFFER_GUARD] )
-          , m_fileName(fileName)
 {}
 
 // -----------------------------------------------------------
 
-MP3_Source::~MP3_Source()
+MadSource::~MadSource()
 {
    if ( m_inputFile.isOpen() )
    {
@@ -91,7 +89,7 @@ inline short f2s(mad_fixed_t f)
 
 // ---------------------------------------------------------------------
 
-string MP3_Source::MadErrorString(const mad_error& error)
+string MadSource::MadErrorString(const mad_error& error)
 {
    switch(error)
    {
@@ -152,7 +150,7 @@ string MP3_Source::MadErrorString(const mad_error& error)
 
 // -----------------------------------------------------------------------------
 
-bool MP3_Source::isRecoverable(const mad_error& error, bool log)
+bool MadSource::isRecoverable(const mad_error& error, bool log)
 {
    if (MAD_RECOVERABLE (error))
    {
@@ -188,9 +186,9 @@ bool MP3_Source::isRecoverable(const mad_error& error, bool log)
 
 // -----------------------------------------------------------
 
-void MP3_Source::init()
+void MadSource::init(const QString& fileName)
 {
-   m_inputFile.setFileName( m_fileName );
+   m_inputFile.setFileName( m_fileName = fileName );
    bool fine = m_inputFile.open( QIODevice::ReadOnly );
 
    if ( !fine )
@@ -208,7 +206,7 @@ void MP3_Source::init()
 
 // -----------------------------------------------------------------------------
 
-/*QString MP3_Source::getMbid()
+/*QString MadSource::getMbid()
 {
     char out[MBID_BUFFER_SIZE];
     int const r = getMP3_MBID( QFile::encodeName( m_fileName ), out );
@@ -217,7 +215,7 @@ void MP3_Source::init()
     return QString();
 }*/
 
-void MP3_Source::getInfo(int& lengthSecs, int& samplerate, int& bitrate, int& nchannels )
+void MadSource::getInfo(int& lengthSecs, int& samplerate, int& bitrate, int& nchannels )
 {
    // get the header plus some other stuff..
    QFile inputFile(m_fileName);
@@ -281,7 +279,7 @@ void MP3_Source::getInfo(int& lengthSecs, int& samplerate, int& bitrate, int& nc
 // -----------------------------------------------------------
 
 
-bool MP3_Source::fetchData( QFile& mp3File,
+bool MadSource::fetchData( QFile& mp3File,
                             unsigned char* pMP3_Buffer,
                             const int MP3_BufferSize,
                             mad_stream& madStream )
@@ -354,7 +352,7 @@ bool MP3_Source::fetchData( QFile& mp3File,
 
 // -----------------------------------------------------------------------------
 
-void MP3_Source::skipSilence(double silenceThreshold /* = 0.0001 */)
+void MadSource::skipSilence(double silenceThreshold /* = 0.0001 */)
 {
    mad_frame  madFrame;
    mad_synth    madSynth;
@@ -404,7 +402,7 @@ void MP3_Source::skipSilence(double silenceThreshold /* = 0.0001 */)
 
 // -----------------------------------------------------------------------------
 
-void MP3_Source::skip(const int mSecs)
+void MadSource::skip(const int mSecs)
 {
    if ( mSecs <= 0 )
       return;
@@ -436,7 +434,7 @@ void MP3_Source::skip(const int mSecs)
 
 // -----------------------------------------------------------
 
-int MP3_Source::updateBuffer(signed short* pBuffer, size_t bufferSize)
+int MadSource::updateBuffer(signed short* pBuffer, size_t bufferSize)
 {
    size_t nwrit = 0; //number of samples written to the output buffer
 

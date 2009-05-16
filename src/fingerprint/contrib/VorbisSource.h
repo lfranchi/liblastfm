@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright 2005-2009 Last.fm Ltd.                                      *
+ *   Copyright (C) 2008-2009 John Stamp <jstamp@users.sourceforge.net>     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,29 +17,31 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
 
-#ifndef __FILESOURCEINTERFACE_H
-#define __FILESOURCEINTERFACE_H
+#ifndef __VORBIS_SOURCE_H__
+#define __VORBIS_SOURCE_H__
 
-#include <QString>
+#include <lastfm/FingerprintableSource>
+#include <vorbis/vorbisfile.h>
 
-// ----------------------------------------------------------------------- ------
 
-class FileSourceInterface
+class VorbisSource : public lastfm::FingerprintableSource
 {
 public:
-   virtual ~FileSourceInterface() {}
-   virtual void init() = 0;
+    VorbisSource();
+    ~VorbisSource();
+    virtual void getInfo(int& lengthSecs, int& samplerate, int& bitrate, int& nchannels);
+    virtual void init(const QString& fileName);
+    virtual int updateBuffer(signed short* pBuffer, size_t bufferSize);
+    virtual void skip(const int mSecs);
+    virtual void skipSilence(double silenceThreshold = 0.0001);
+    virtual bool eof() const { return m_eof; }
 
-   virtual void getInfo(int& lengthSecs, int& samplerate, int& bitrate, int& nchannels) = 0;
-   //virtual QString getMbid() = 0;
-
-   // return a chunk of PCM data
-   virtual int updateBuffer(signed short* pBuffer, size_t bufferSize) = 0;
-
-   virtual void skip(const int mSecs) = 0;
-   virtual void skipSilence(double silenceThreshold = 0.0001) = 0;
-
-   virtual bool eof() const = 0;
+private:
+    OggVorbis_File m_vf;
+    QString m_fileName;
+    int m_channels;
+    int m_samplerate;
+    bool m_eof;
 };
 
 #endif

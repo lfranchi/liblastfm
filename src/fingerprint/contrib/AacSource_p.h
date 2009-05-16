@@ -17,14 +17,8 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
 
-#ifndef __AAC_SOURCE
-#define __AAC_SOURCE
-
-#include "FileSourceInterface.h"
-#include <QString>
-
 #include <faad.h>
-#include <mp4ff.h>
+#include <mp4.h>
 
 class AAC_File
 {
@@ -54,6 +48,7 @@ public:
     int m_header;
 };
 
+
 class AAC_MP4_File : public AAC_File
 {
 public:
@@ -74,6 +69,7 @@ private:
     mp4ff_t *m_mp4File;
     mp4ff_callback_t *m_mp4cb;
 };
+
 
 class AAC_ADTS_File : public AAC_File
 {
@@ -96,32 +92,3 @@ private:
     uint32_t m_adifSamplerate;
     int m_adifChannels;
 };
-
-
-class AAC_Source : public FileSourceInterface
-{
-public:
-    AAC_Source(const QString& fileName);
-    ~AAC_Source();
-
-    virtual void getInfo(int& lengthSecs, int& samplerate, int& bitrate, int& nchannels);
-    virtual void init();
-    //virtual QString getMbid();
-
-    // return a chunk of PCM data from the aac file
-    virtual int updateBuffer(signed short* pBuffer, size_t bufferSize);
-
-    virtual void skip(const int mSecs);
-    virtual void skipSilence(double silenceThreshold = 0.0001);
-
-    bool  eof() const { return m_eof; }
-
-private:
-    int checkHeader();
-    QString m_fileName;
-    bool m_eof;
-    AAC_File *m_aacFile;
-};
-
-#endif
-

@@ -72,7 +72,7 @@ namespace lastfm
         };
 
         /** This is CPU intensive, do it in a thread in your GUI application */
-        void generate() throw( Error );
+        void generate( FingerprintableSource* ) throw( Error );
 
         /** Submits the fingerprint data to Last.fm in order to get a FingerprintId
           * back. You need to wait for the QNetworkReply to finish before you can
@@ -87,7 +87,7 @@ namespace lastfm
     };
 
 
-    class LASTFM_DLLEXPORT CompleteFingerprint : public Fingerprint
+    class CompleteFingerprint : public Fingerprint
     {
     public:
         CompleteFingerprint( const lastfm::Track& t ) : Fingerprint( t )

@@ -73,6 +73,7 @@ namespace lastfm
     class Audioscrobbler;
     class AuthenticatedUser;
     class Fingerprint;
+    class FingerprintableSource;
     class FingerprintId;
     class Mbid;
     class MutableTrack;

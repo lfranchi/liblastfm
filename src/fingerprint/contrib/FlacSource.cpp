@@ -17,7 +17,7 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
 
-#include "FLAC_Source.h"
+#include "FlacSource.h"
 #include <algorithm>
 #include <cassert>
 #include <errno.h>
@@ -29,15 +29,15 @@
 #include <QFile>
 
 
-FLAC__StreamDecoderWriteStatus FLAC_Source::_write_callback(const FLAC__StreamDecoder *, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data)
+FLAC__StreamDecoderWriteStatus FlacSource::_write_callback(const FLAC__StreamDecoder *, const FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *client_data)
 {
     assert(client_data != NULL);
-    FLAC_Source *instance = reinterpret_cast<FLAC_Source *>(client_data);
+    FlacSource *instance = reinterpret_cast<FlacSource *>(client_data);
     assert(instance != NULL);
     return instance->write_callback(frame, buffer);
 }
 
-FLAC__StreamDecoderWriteStatus FLAC_Source::write_callback(const FLAC__Frame *frame, const FLAC__int32 * const buffer[])
+FLAC__StreamDecoderWriteStatus FlacSource::write_callback(const FLAC__Frame *frame, const FLAC__int32 * const buffer[])
 {
     m_outBufLen = 0;
 
@@ -67,15 +67,15 @@ FLAC__StreamDecoderWriteStatus FLAC_Source::write_callback(const FLAC__Frame *fr
 
 // ---------------------------------------------------------------------
 
-void FLAC_Source::_metadata_callback(const FLAC__StreamDecoder *, const FLAC__StreamMetadata *metadata, void *client_data)
+void FlacSource::_metadata_callback(const FLAC__StreamDecoder *, const FLAC__StreamMetadata *metadata, void *client_data)
 {
     assert(client_data != NULL);
-    FLAC_Source *instance = reinterpret_cast<FLAC_Source *>(client_data);
+    FlacSource *instance = reinterpret_cast<FlacSource *>(client_data);
     assert(instance != NULL);
     instance->metadata_callback(metadata);
 }
 
-void FLAC_Source::metadata_callback( const FLAC__StreamMetadata *metadata )
+void FlacSource::metadata_callback( const FLAC__StreamMetadata *metadata )
 {
     switch ( metadata->type )
     {
@@ -96,24 +96,23 @@ void FLAC_Source::metadata_callback( const FLAC__StreamMetadata *metadata )
 
 // ---------------------------------------------------------------------
 
-void FLAC_Source::_error_callback(const FLAC__StreamDecoder *, FLAC__StreamDecoderErrorStatus status, void *client_data)
+void FlacSource::_error_callback(const FLAC__StreamDecoder *, FLAC__StreamDecoderErrorStatus status, void *client_data)
 {
     assert(client_data != NULL);
-    FLAC_Source *instance = reinterpret_cast<FLAC_Source *>(client_data);
+    FlacSource *instance = reinterpret_cast<FlacSource *>(client_data);
     assert(instance != NULL);
     instance->error_callback(status);
 }
 
-void FLAC_Source::error_callback(FLAC__StreamDecoderErrorStatus status)
+void FlacSource::error_callback(FLAC__StreamDecoderErrorStatus status)
 {
     std::cerr << "Got FLAC error: " << FLAC__StreamDecoderErrorStatusString[status] << std::endl;
 }
 
 // ---------------------------------------------------------------------
 
-FLAC_Source::FLAC_Source(const QString& fileName)
+FlacSource::FlacSource()
     : m_decoder( 0 )
-    , m_fileName(fileName)
     , m_fileSize( 0 )
     , m_outBuf( 0 )
     , m_outBufLen( 0 )
@@ -131,7 +130,7 @@ FLAC_Source::FLAC_Source(const QString& fileName)
 
 // ---------------------------------------------------------------------
 
-FLAC_Source::~FLAC_Source()
+FlacSource::~FlacSource()
 {
     if ( m_decoder )
     {
@@ -146,8 +145,10 @@ FLAC_Source::~FLAC_Source()
 
 // ---------------------------------------------------------------------
 
-void FLAC_Source::init()
+void FlacSource::init(const QString& fileName)
 {
+    m_fileName = fileName;
+    
     if ( !m_decoder )
     {
         FILE *f = fopen(QFile::encodeName(m_fileName), "rb" );
@@ -200,7 +201,7 @@ void FLAC_Source::init()
 
 // ---------------------------------------------------------------------
 
-/*QString FLAC_Source::getMbid()
+/*QString FlacSource::getMbid()
 {
     if ( m_commentData )
     {
@@ -222,7 +223,7 @@ void FLAC_Source::init()
 
 // ---------------------------------------------------------------------
 
-void FLAC_Source::getInfo(int& lengthSecs, int& samplerate, int& bitrate, int& nchannels)
+void FlacSource::getInfo(int& lengthSecs, int& samplerate, int& bitrate, int& nchannels)
 {
     lengthSecs = 0;
     samplerate = 0;
@@ -255,7 +256,7 @@ void FLAC_Source::getInfo(int& lengthSecs, int& samplerate, int& bitrate, int& n
 
 // ---------------------------------------------------------------------
 
-void FLAC_Source::skip( const int mSecs )
+void FlacSource::skip( const int mSecs )
 {
     FLAC__uint64 absSample = mSecs * m_samplerate / 1000 + m_samplePos;
     if ( !FLAC__stream_decoder_seek_absolute(m_decoder, absSample) )
@@ -265,7 +266,7 @@ void FLAC_Source::skip( const int mSecs )
 
 // ---------------------------------------------------------------------
 
-void FLAC_Source::skipSilence(double silenceThreshold /* = 0.0001 */)
+void FlacSource::skipSilence(double silenceThreshold /* = 0.0001 */)
 {
     silenceThreshold *= static_cast<double>( std::numeric_limits<short>::max() );
     for ( ;; )
@@ -296,7 +297,7 @@ void FLAC_Source::skipSilence(double silenceThreshold /* = 0.0001 */)
 
 // ---------------------------------------------------------------------
 
-int FLAC_Source::updateBuffer( signed short *pBuffer, size_t bufferSize )
+int FlacSource::updateBuffer( signed short *pBuffer, size_t bufferSize )
 {
     size_t nwrit = 0;
 

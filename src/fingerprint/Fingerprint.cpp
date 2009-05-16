@@ -18,9 +18,9 @@
  ***************************************************************************/
 
 #include "Fingerprint.h"
+#include "FingerprintableSource.h"
 #include "Collection.h"
 #include "Sha256.h"
-#include "FileSource.h"
 #include "fplib/FingerprintExtractor.h"
 #include "../ws/ws.h"
 #include <QFileInfo>
@@ -51,23 +51,21 @@ lastfm::Fingerprint::Fingerprint( const Track& t )
 
 
 void
-lastfm::Fingerprint::generate() throw( Error )
+lastfm::Fingerprint::generate( FingerprintableSource* ms ) throw( Error )
 {
-    QString const path = m_track.url().toLocalFile();
+    //TODO throw if we can't get required metadata from the track object
     
-    if (!QFileInfo( path ).isReadable())
-        throw ReadError;
+//TODO    if (!QFileInfo( path ).isReadable())
+//TODO        throw ReadError;
 
     int sampleRate, bitrate, numChannels;
-
-    FileSourceInterface *ms = FileSource::createFileSource( path );
 
     if ( !ms )
         throw ReadError;
 
     try
     {
-        ms->init();
+        ms->init( m_track.url().toLocalFile() );
         ms->getInfo( m_duration, sampleRate, bitrate, numChannels );
     }
     catch (std::exception& e)
@@ -132,7 +130,6 @@ lastfm::Fingerprint::generate() throw( Error )
         }
     }
     
-    delete ms;
     delete[] pPCMBuffer;
     
     if (!fpDone)

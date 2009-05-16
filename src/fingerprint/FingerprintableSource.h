@@ -17,24 +17,32 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
 
-#ifndef __FILESOURCE_H
-#define __FILESOURCE_H
+#ifndef LASTFM_FINGERPRINTABLE_SOURCE_H
+#define LASTFM_FINGERPRINTABLE_SOURCE_H
 
-#include "FileSourceInterface.h"
+#include <QString>
 
-// ----------------------------------------------------------------------- ------
-
-class FileSource
+namespace lastfm
 {
-public:
-    static FileSourceInterface * createFileSource( const QString& fileName );
-    static int fileSourceType( const QString& fileName );
-    enum { UNKNOWN = 0,
-           MP3,
-           OGG,
-           FLAC,
-           AAC
+    class FingerprintableSource
+    {
+    public:
+        virtual ~FingerprintableSource() = 0;
+        
+        /** do all initialisation here and throw if there is problems */
+        virtual void init( const QString& path ) = 0;
+
+        virtual void getInfo( int& lengthSecs, int& samplerate, int& bitrate, int& nchannels ) = 0;
+
+        /** put a chunk of PCM data in pBuffer, don't exceed size, return the
+          * number of bytes you put in the buffer */
+        virtual int updateBuffer( signed short* buffer, size_t bufferSize ) = 0;
+
+        virtual void skip( const int mSecs ) = 0;
+        virtual void skipSilence( double silenceThreshold = 0.0001 ) = 0;
+
+        virtual bool eof() const = 0;
     };
-};
+}
 
 #endif

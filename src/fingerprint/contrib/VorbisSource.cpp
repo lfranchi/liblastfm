@@ -17,15 +17,14 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
 
-#include "OGG_Source.h"
-
+#include "VorbisSource.h"
 #include <QFile>
 #include <cassert>
-#include <errno.h>
+#include <cstdlib>
 #include <iostream>
 #include <limits>
 #include <stdexcept>
-#include <cstdlib>
+#include <errno.h>
 
 // These specify the output format
 static const int wordSize = 2; // 16 bit output
@@ -37,9 +36,8 @@ static const int isBigEndian = 0;
 #endif
 
 
-OGG_Source::OGG_Source(const QString& fileName)
-    : m_fileName(fileName)
-    , m_channels( 0 )
+VorbisSource::VorbisSource()
+    : m_channels( 0 )
     , m_samplerate( 0 )
     , m_eof( false )
 {
@@ -48,7 +46,7 @@ OGG_Source::OGG_Source(const QString& fileName)
 
 // ---------------------------------------------------------------------
 
-OGG_Source::~OGG_Source()
+VorbisSource::~VorbisSource()
 {
     // ov_clear() also closes the file
     ov_clear( &m_vf );
@@ -56,8 +54,10 @@ OGG_Source::~OGG_Source()
 
 // ---------------------------------------------------------------------
 
-void OGG_Source::init()
+void VorbisSource::init(const QString& fileName)
 {
+    m_fileName = fileName;
+    
     if ( m_vf.datasource )
     {
         std::cerr << "Warning: file already appears to be open";
@@ -87,40 +87,7 @@ void OGG_Source::init()
     m_eof = false;
 }
 
-// ---------------------------------------------------------------------
-
-/*QString OGG_Source::getMbid()
-{
-    // Likely more than one track
-    // Return nothing
-    if ( ov_streams( &m_vf ) != 1 )
-        return QString();
-
-    vorbis_comment *vc = ov_comment( &m_vf, -1 );
-    for ( int i = 0; i < vc->comments; i++ )
-    {
-        QString comment = vc->user_comments[i];
-        int delim = comment.indexOf( '=' );
-        if ( delim >= 0 )
-        {
-            QString key( comment.left(delim) );
-            if ( key.toLower() == "musicbrainz_trackid" )
-            {
-                QString val = comment.mid(delim+1);
-                if ( val.length() == 36 )
-                {
-                    return val;
-                }
-            }
-        }
-    }
-
-    return QString();
-}*/
-
-// ---------------------------------------------------------------------
-
-void OGG_Source::getInfo( int& lengthSecs, int& samplerate, int& bitrate, int& nchannels)
+void VorbisSource::getInfo( int& lengthSecs, int& samplerate, int& bitrate, int& nchannels)
 {
     // stream info
     nchannels = ov_info( &m_vf, -1 )->channels;
@@ -131,7 +98,7 @@ void OGG_Source::getInfo( int& lengthSecs, int& samplerate, int& bitrate, int& n
 
 // ---------------------------------------------------------------------
 
-void OGG_Source::skip( const int mSecs )
+void VorbisSource::skip( const int mSecs )
 {
     if ( mSecs < 0 )
         return;
@@ -142,7 +109,7 @@ void OGG_Source::skip( const int mSecs )
 
 // ---------------------------------------------------------------------
 
-void OGG_Source::skipSilence(double silenceThreshold /* = 0.0001 */)
+void VorbisSource::skipSilence(double silenceThreshold /* = 0.0001 */)
 {
     silenceThreshold *= static_cast<double>( std::numeric_limits<short>::max() );
 
@@ -186,7 +153,7 @@ void OGG_Source::skipSilence(double silenceThreshold /* = 0.0001 */)
 
 // ---------------------------------------------------------------------
 
-int OGG_Source::updateBuffer( signed short *pBuffer, size_t bufferSize )
+int VorbisSource::updateBuffer( signed short *pBuffer, size_t bufferSize )
 {
     char buf[ bufferSize * wordSize ];
     int bs = 0;

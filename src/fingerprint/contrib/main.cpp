@@ -1,5 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2009 John Stamp <jstamp@users.sourceforge.net>          *
+ *   Copyright (C) 2009 Max Howell <max@last.fm>                           *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,38 +18,68 @@
  *   51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.          *
  ***************************************************************************/
 
-#include "FileSource.h"
-#include "MP3_Source_Qt.h"
-#include "OGG_Source.h"
-#include "FLAC_Source.h"
-#include "AAC_Source.h"
-
+#include "MadSource.h"
+#include "VorbisSource.h"
+#include "FlacSource.h"
+#include "AacSource.h"
+#include <lastfm.h>
+#include <QCoreApplication>
+#include <QFile>
 #include <QStringList>
+#include <iostream>
+int typeOf(const QString& path);
+lastfm::FingerprintableSource* factory(int type);
+enum { MP3, OGG, FLAC, AAC, UNKNOWN };
+namespace lastfm { Track taglib(const QString& path); }
 
-FileSourceInterface * FileSource::createFileSource( const QString& fileName )
+
+int main(int argc, char** argv) try
 {
-    int fType = fileSourceType( fileName );
-
-    switch ( fType )
-    {
-        case MP3:
-            return new MP3_Source(fileName);
-            break;
-        case OGG:
-            return new OGG_Source(fileName);
-            break;
-        case FLAC:
-            return new FLAC_Source(fileName);
-            break;
-        case AAC:
-            return new AAC_Source(fileName);
-            break;
-        default:
-           return NULL;
-    } 
+    if (argc < 2) {
+        std::cerr << "usage: " << argv[0] << " path" << std::endl;
+        return 1;
+    }
+ 
+    QCoreApplication app(argc, argv);
+    QEventLoop loop;
+    
+    QString const path = QFile::decodeName(argv[1]);
+    
+    lastfm::Track t = lastfm::taglib(path); //see contrib //TODO mbid
+    lastfm::Fingerprint fp(t);
+    if (fp.id().isNull()) {
+        lastfm::FingerprintableSource* src = factory(typeOf(path));
+        fp.generate(src);
+        QNetworkReply* reply = fp.submit();
+        loop.connect(reply, SIGNAL(finished()), SLOT(quit()));
+        fp.decode(reply);
+    }
+    
+    QNetworkReply* reply = fp.id().getSuggestions();
+    loop.connect(reply, SIGNAL(finished()), SLOT(quit()));
+    
+    std::cout << reply->readAll().data() << std::endl; //returns XML
+    return 0;
+}
+catch (std::exception& e)
+{
+    std::cerr << e.what() << std::endl;
 }
 
-int FileSource::fileSourceType( const QString& fileName )
+lastfm::FingerprintableSource* factory(int type)
+{
+    switch (type) {
+        case MP3: return new MadSource;
+        case OGG: return new VorbisSource;
+        case FLAC: return new FlacSource;
+    #ifndef MACPORTS_SUCKS
+        case AAC: return new AacSource;
+    #endif
+        default: throw std::runtime_error("Cannot handle filetype");
+    }
+}
+
+int typeOf(const QString& fileName)
 {
     QStringList parts = fileName.split( "." );
     QString extension;
