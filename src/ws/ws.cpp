@@ -200,6 +200,7 @@ lastfm::setNetworkAccessManager( QNetworkAccessManager* nam )
 {
     delete ::nam;
     ::nam = nam;
+    nam->setParent( qApp ); // ensure it isn't deleted out from under us
 }
 
 

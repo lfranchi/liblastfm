@@ -35,7 +35,10 @@
 namespace lastfm
 {
     /** if you don't set one, we create our own, our own is pretty good
-      * for instance, it auto detects proxy settings on windows and mac */
+      * for instance, it auto detects proxy settings on windows and mac
+      * We take ownership of the NAM, do not delete it out from underneath us!
+      * So don't keep any other pointers to this around in case you accidently
+      * call delete on them :P */
     LASTFM_DLLEXPORT void setNetworkAccessManager( QNetworkAccessManager* nam );
     LASTFM_DLLEXPORT QNetworkAccessManager* nam();
 
