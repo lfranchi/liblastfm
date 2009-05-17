@@ -38,16 +38,18 @@ elsif !File.directory?( dir )
 end
 
 
-def find_sources( dir )
+def find_sources(dir)
   Find.find( dir ) do |path|
+    next if path == dir # oddly neccessary
     if File.directory? path
-      excludes = ['.svn', 'tests', '_build', 'fingerprint']
+      excludes = ['.svn', 'tests', '_build']
       case Platform::IMPL
         when :macosx then excludes << 'win'
         when :mswin, :cygwin then excludes << 'mac'
         else excludes << 'win' << 'mac'
       end
       Find.prune if excludes.include? File.basename path
+      Find.prune if Dir["#{path}/*.pro"].length > 0 #don't recurse into dirs with pro files in
     elsif File.file? path
       case Platform::IMPL
         when :macosx then next if /_mac\.cpp$/.match path
