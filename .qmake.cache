@@ -21,6 +21,7 @@ mac {
 
 CONFIG( debug, debug|release ):CONFIG -= release
 CONFIG( release, release|debug ):CONFIG -= debug
+CONFIG -= debug_and_release #never works properly IMO
 
 *g++* {
     # allow use of 'and', 'or', etc. as symbols

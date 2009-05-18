@@ -1,5 +1,4 @@
 QT = core testlib network xml
-LIBS += -llastfm
+LIBS += -llastfm -L$$DESTDIR
 SOURCES = main.cpp 
 HEADERS = TestTrack.h TestUrlBuilder.h
-LIBS += -L$$DESTDIR

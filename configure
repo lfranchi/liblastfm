@@ -37,7 +37,7 @@ begin
     f.write qmake_env(['CXXFLAGS', 'CPPFLAGS'], 'QMAKE_CXXFLAGS_RELEASE')
     f.write "QMAKE_CXXFLAGS_RELEASE = -O3 -fomit-frame-pointer\n" if `whoami` == "mxcl\n" #OHAI!
     f.close
-  end
+  end unless Platform::IMPL == :mswin
 
   h2 "Running qpp..." do
     Dir.chdir('src') { `ruby ../admin/qpp lastfm.pro` }
