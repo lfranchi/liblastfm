@@ -1,31 +1,30 @@
-/***************************************************************************
- *   Copyright 2005-2009 Last.fm Ltd.                                      *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
- ***************************************************************************/
+/*
+   Copyright 2009 Last.fm Ltd. 
+      - Primarily authored by Max Howell, Jono Cole and Doug Mansell
+
+   This file is part of liblastfm.
+
+   liblastfm is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   liblastfm is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#include "NdisEvents.h"
+#include "WmiSink.h"
 
 // see http://msdn.microsoft.com/en-us/magazine/cc301850.aspx for
 // more about Ndis and wmi and getting these events
 
 // Link to wbemuuid.lib to resolve IWbemObjectSink and IWbemClassObject
 // interface definitions.
-
-#include "NdisEvents.h"
-#include "WmiSink.h"
-
 
 NdisEvents::NdisEvents()
     : m_pSink(0)
