@@ -1,3 +1,8 @@
+/*
+   This software is in the public domain, furnished "as is", without technical 
+   support, and with no warranty, express or implied, as to its usefulness for 
+   any purpose.
+*/
 #include <lastfm.h> // this includes everything in liblastfm, you may prefer 
 #include <QtCore>   // to just include what you need with your project. Still
 #include <QtGui>    // we've given you the option.
