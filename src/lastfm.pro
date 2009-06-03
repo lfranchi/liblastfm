@@ -11,7 +11,11 @@ win32{
 else{
     # don't break the link name on Windows, otherwise you get eg. lastfm1.dll
     VERSION = 0.3
-    mac:LIBS += -framework SystemConfiguration # ws configuration
+    mac{
+        LIBS += -framework SystemConfiguration # ws configuration
+        #TODO we should only use these with the carbon version of Qt!
+        LIBS += -framework Carbon -framework CoreFoundation # various
+    }
 }
 
 target.path = /lib
