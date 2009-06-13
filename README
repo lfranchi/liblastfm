@@ -112,8 +112,3 @@ Private Headers
    prefix the header guard with LASTFM
 2. #includes should be the full source tree path, eg.
    #include "../core/UrlBuilder.h"
-
-
-Release History
-===============
-0.2 -- 20th April 2009
