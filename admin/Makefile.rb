@@ -6,7 +6,6 @@
 
 cwd = File.dirname( __FILE__ )
 require 'find'
-require 'ftools'
 require "#{cwd}/platform.rb"
 
 

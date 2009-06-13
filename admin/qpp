@@ -5,7 +5,6 @@
 #
 cwd = File.dirname( __FILE__ )
 require 'find'
-require 'ftools'
 require "#{cwd}/platform.rb"
 
 if ARGV[0] && File.file?( ARGV[0] )
