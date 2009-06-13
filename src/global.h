@@ -21,6 +21,13 @@
 #ifndef LASTFM_GLOBAL_H
 #define LASTFM_GLOBAL_H
 
+#define LASTFM_VERSION 0x00000400
+#define LASTFM_VERSION_STRING "0.4.0"
+#define LASTFM_MAJOR_VERSION 0
+#define LASTFM_MINOR_VERSION 4
+#define LASTFM_PATCH_VERSION 0
+
+
 #include <QtGlobal>
 
 #ifdef Q_CC_MSVC

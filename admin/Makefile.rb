@@ -12,15 +12,15 @@ require "#{cwd}/platform.rb"
 ######################################################################### defs
 case Platform::IMPL
   when :mswin
-    $cp='ruby -e "require \'FileUtils\'; FileUtils.copy_file(ARGV[0], ARGV[1])" --'
-    $ln=$cp
-    $mkdir='ruby -e "require \'FileUtils\'; FileUtils.mkpath ARGV[0]" --'
-    $orderonly=''
+    CP='ruby -e "require \'FileUtils\'; FileUtils.copy_file(ARGV[0], ARGV[1])" --'
+    LN=CP
+    MKDIR='ruby -e "require \'FileUtils\'; FileUtils.mkpath ARGV[0]" --'
+    ORDERONLY=''
   else
-    $cp='cp'
-    $ln='cp' #'ln -sf' oddly doesn't work, the target is always remade
-    $mkdir='mkdir -p'
-    $orderonly='|'
+    CP='cp'
+    LN='cp' #'ln -sf' oddly doesn't work, the target is always remade
+    MKDIR='mkdir -p'
+    ORDERONLY='|'
 end
 
 def penis( path )
@@ -38,10 +38,10 @@ end
 
 
 ######################################################################### main
+INSTALL_PREFIX=ENV['LFM_PREFIX']
+abort("Environment variable LFM_PREFIX not defined") if INSTALL_PREFIX.nil?
 $install_headers=''
 $headers=''
-$install_prefix = ENV['LFM_PREFIX']
-abort("Environment variable LFM_PREFIX not defined") if $install_prefix.nil?
 
 puts <<-EOS
 .PHONY: all
@@ -95,13 +95,13 @@ EOS
 
 begin
   lhd='_include/lastfm'
-  ihd="$(DESTDIR)#{$install_prefix}/include/lastfm"
+  ihd="$(DESTDIR)#{INSTALL_PREFIX}/include/lastfm"
   ARGV.each do |header|
     penis "src/#{header}" do |path, classname|
-      puts "#{lhd}/#{classname}: #{path} #{$orderonly} #{lhd}"
-      puts "	#{$ln} #{path} $@"
-      puts "#{ihd}/#{classname}: #{path} #{$orderonly} #{ihd}"
-      puts "	#{$cp} #{path} $@"
+      puts "#{lhd}/#{classname}: #{path} #{ORDERONLY} #{lhd}"
+      puts "	#{LN} #{path} $@"
+      puts "#{ihd}/#{classname}: #{path} #{ORDERONLY} #{ihd}"
+      puts "	#{CP} #{path} $@"
       puts
       $headers+=" #{lhd}/#{classname}"
       $install_headers+=" #{ihd}/#{classname}"
@@ -111,21 +111,28 @@ end
 
 puts <<-EOS
 _include/lastfm:
-	#{$mkdir} $@
-$(DESTDIR)#{$install_prefix}/include/lastfm:
-	#{$mkdir} $@
+	#{MKDIR} $@
+$(DESTDIR)#{INSTALL_PREFIX}/include/lastfm:
+	#{MKDIR} $@
 
-_include/lastfm.h: #{$headers} #{$orderonly} _include/lastfm
+_include/lastfm.h: #{$headers} #{ORDERONLY} _include/lastfm
 	ruby admin/lastfm.h.rb $@
-$(DESTDIR)#{$install_prefix}/include/lastfm.h: _include/lastfm.h #{$orderonly} $(DESTDIR)#{$install_prefix}/include/lastfm
-	#{$cp} _include/lastfm.h $@
+$(DESTDIR)#{INSTALL_PREFIX}/include/lastfm.h: _include/lastfm.h #{ORDERONLY} $(DESTDIR)#{INSTALL_PREFIX}/include/lastfm
+	#{CP} _include/lastfm.h $@
 
 .PHONY: headers
 headers: #{$headers} _include/lastfm.h
 
 .PHONY: install
-install: #{$install_headers} $(DESTDIR)#{$install_prefix}/include/lastfm.h
-	cd src && make install "INSTALL_ROOT=$(DESTDIR)#{$install_prefix}"
-	cd src/fingerprint && make install "INSTALL_ROOT=$(DESTDIR)#{$install_prefix}"
+install: #{$install_headers} $(DESTDIR)#{INSTALL_PREFIX}/include/lastfm.h
+	cd src && $(MAKE) install "INSTALL_ROOT=$(DESTDIR)#{INSTALL_PREFIX}"
+	cd src/fingerprint && $(MAKE) install "INSTALL_ROOT=$(DESTDIR)#{INSTALL_PREFIX}"
 
+EOS
+
+BASENAME='liblastfm-'+ENV['LFM_VERSION']
+puts <<-EOS
+.PHONY: dist
+dist:
+	git archive --prefix=#{BASENAME}/ HEAD | bzip2 > #{BASENAME}.tar.bz2
 EOS

@@ -10,12 +10,17 @@ require "#{cwd}/admin/which_qmake.rb"
 require "#{cwd}/admin/utils.rb"
 
 begin
-  h1 'Configuring liblastfm...'
+  IO.read("#{cwd}/src/global.h") =~ /LASTFM_VERSION_STRING\s+"((\d\.)*\d)"/
+  abort "Couldn't determine our version!" if $1.nil?
+  LFM_VERSION=$1
+  ENV['LFM_VERSION']=LFM_VERSION
+
+  h1 "Configuring liblastfm-#{LFM_VERSION}..."
 
   unless ARGV.include? '--skip-checks'
     $qmake=which_qmake
-    pkgconfig 'samplerate', 'libsamplerate'
-    pkgconfig 'fftw3f', 'fftw'
+#    pkgconfig 'samplerate', 'libsamplerate'
+#    pkgconfig 'fftw3f', 'fftw'
 
     puts 'Using '+`which #{$qmake}` unless Platform::IMPL == :mswin
   else
@@ -37,19 +42,23 @@ begin
   h1 'Generating Build System'
 
   h2 'Generating .qmake.env' do
-    f = File.new('.qmake.env', 'w')
+    f = File.new("#{cwd}/.qmake.env", 'w')
     f.write qmake_env('CC', 'QMAKE_CC')
     f.write qmake_env('CXX', 'QMAKE_CXX')
     f.write qmake_env('LDFLAGS', 'QMAKE_LFLAGS_RELEASE')
     f.write qmake_env(['CFLAGS', 'CPPFLAGS'], 'QMAKE_CFLAGS_RELEASE')
     f.write qmake_env(['CXXFLAGS', 'CPPFLAGS'], 'QMAKE_CXXFLAGS_RELEASE')
-    f.write "QMAKE_CXXFLAGS_RELEASE = -O3 -fomit-frame-pointer\n" if `whoami` == "mxcl\n" #OHAI!
     f.close
   end unless Platform::IMPL == :mswin
 
   h2 "Running qpp..." do
-    Dir.chdir('src') { `ruby ../admin/qpp lastfm.pro` }
-    Dir.chdir('src/fingerprint') { `ruby ../../admin/qpp fingerprint.pro` }
+    ['src','src/fingerprint'].each do |d|
+      d="#{cwd}/#{d}"
+      f=File.new "#{d}/_files.qmake", 'w'
+      f.write `ruby admin/qpp #{d}`
+      # on Windows VERSION produces lastfm0.dll, the 0 breaks the build
+      f.puts "VERSION = #{LFM_VERSION}" unless Platform::IMPL == :mswin
+    end
   end
 
   h2 "Configuring qmake..." do
@@ -76,11 +85,16 @@ begin
     hs << 'types/Track.h types/Mbid.h' << 'types/Artist.h' << 'types/Album.h' << 'types/FingerprintId.h' << 'types/Playlist.h' << 'types/Tag.h' << 'types/User.h types/Xspf.h'
     hs << 'ws/ws.h' << 'ws/InternetConnectionMonitor.h' << 'ws/NetworkAccessManager.h'
     
-    File.new('Makefile', 'w').write `ruby admin/Makefile.rb #{hs.join(' ')}`
+    File.new("#{cwd}/Makefile", 'w').write `ruby admin/Makefile.rb #{hs.join(' ')}`
+  end
+
+  case Platform::IMPL
+    when :mswin then make='nmake'
+    else make='make'
   end
 
   puts
-  puts 'Good, your configure is finished! Now type: make'
+  puts "Good, your configure is finished! Now type: #{make}"
   
 rescue QMakeTooOld
 	puts <<-sput

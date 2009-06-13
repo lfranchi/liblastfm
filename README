@@ -13,7 +13,17 @@ Fork it: http://github.com/mxcl/liblastfm
 
 Dependencies
 ============
-The build process requires ruby, Qt>=4.4 and GNU make (or MS nmake).
+liblastfm dynamically links to:
+
+* Qt 4.4
+  http://www.qtsoftware.com
+* FFTW 3.2
+  Compiled with single precision
+  http://www.fftw.org
+* Secret Rabbit code (aka libsamplerate)
+  http://www.mega-nerd.com/SRC
+
+Additionally, to build you will need Ruby and GNU make (or Microsoft nmake).
 
 Mac OS X
 --------
@@ -24,37 +34,48 @@ Mac OS X
 qt4-mac-devel will take a long time to build. So you may want to install the
 Trolltech binary package instead.
 
+Macports carries liblastfm now, so you may have downloaded this package simply
+to perform this next line:
+
+    sudo port install liblastfm
+
 Linux
 -----
-For Ubuntu 9.04 (some are build deps, eg. Ruby is used during configure):
+Do something like this:
 
     sudo apt-get install qt4-qmake pkg-config libsamplerate-dev libfftw3-dev ruby g++ libqt4-dev
 
-The configure process also requires lsb_release on Linux. This is usually
-already installed (correct me if I'm wrong).
+Additionally on Linux the configure process requires lsb_release. This is
+usually already installed (correct me if I'm wrong).
 
 Windows
 -------
-Best of luck to you. You'll need Ruby, GNU Make and the Windows Server 2003
-Platform SDK r2:
+Install Ruby. Install Visual Studio 2005 or higher. Install Qt. Install the
+Windows Server 2003 Platform SDK r2:
 
-http://www.microsoft.com/Downloads/details.aspx?FamilyID=484269e2-3b89-47e3-8eb7-1f2be6d7123a&displaylang=en
+http://www.microsoft.com/Downloads/details.aspx?FamilyID=484269e2-3b89-47e3-8eb7-1f2be6d7123a
 
-liblastfm should build under both cygwin and regular Windows shell.
+Set up your environment variables so all include paths and tools are
+available.
+
+Build and install FFTW and Secret Rabbit Code.
+
+Open a plain Windows shell (Cygwin will work but we don't recommend it), and
+see the next section.
 
 
 Installing liblastfm
 ====================
-    ./configure --release --prefix /usr/local && make && sudo make install
+    ruby configure --release --prefix /usr/local && make && sudo make install
 
 Packaging liblastfm
 -------------------
 DESTDIR is supported.
 
-The library is split into liblastfm and liblastfm_fingerprint. The
-fingerprinting part is separate as it links to libfftw3. So if you want to
-package it separately then you can. Sadly because there is simply no good
-configuration system in the world, you still have to build both…
+liblastfm builds to two dynamic libraries (liblastfm.so and
+liblastfm_fingerprint.so). liblastfm.so links only to Qt, but the
+fingerprinting part has additional dependencies. So ideally, you would
+distribute two packages.
 
 
 Using liblastfm

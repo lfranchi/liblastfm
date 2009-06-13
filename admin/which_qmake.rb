@@ -1,3 +1,5 @@
+require "#{File.dirname __FILE__}/platform.rb"
+
 class QMakeNotFound < RuntimeError; end
 class QMakeTooOld < RuntimeError; end
 
