@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 if ARGV.include? '--help'
-  puts "usage: ./configure [--prefix <dir>] [--no-strip] [--release]"
+  puts "usage: ./configure [--prefix <dir>] [--release] [--no-strip] [--skip-checks]"
   exit
 end
 
@@ -10,9 +10,17 @@ require "#{cwd}/admin/which_qmake.rb"
 require "#{cwd}/admin/utils.rb"
 
 begin
-  h1 'Welcome to liblastfm configure'
-  $qmake = which_qmake
-  puts 'Using '+`which #{$qmake}` unless Platform::IMPL == :mswin
+  h1 'Configuring liblastfm...'
+
+  unless ARGV.include? '--skip-checks'
+    $qmake=which_qmake
+    pkgconfig 'samplerate', 'libsamplerate'
+    pkgconfig 'fftw3f', 'fftw'
+
+    puts 'Using '+`which #{$qmake}` unless Platform::IMPL == :mswin
+  else
+    $qmake='qmake'
+  end
 
   h2 'Determining installation prefix' do
     if ARGV.include? '--prefix'
@@ -76,6 +84,7 @@ begin
   
 rescue QMakeTooOld
 	puts <<-sput
+
   Your version of Qt seems to be too old, we require Qt 4.4 or above.
 
   It is possible you have Qt3 and Qt4 both installed. Locate your Qt4
@@ -88,4 +97,17 @@ rescue QMakeTooOld
 rescue QMakeNotFound
   puts "Sorry, qmake was not found, is Qt4 installed?"
   exit 2
+rescue PkgNotFound => e
+  puts <<-sput
+
+  Sorry, we couldn't find #{e}.
+  You can try to compile anyway by forcing configure to finish:
+
+  	./configure --skip-checks
+
+  sput
+  exit 3
+rescue PkgConfigNotFound
+  puts "Sorry, pkg-config could not be found. You should install it!"
+  exit 4
 end

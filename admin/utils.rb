@@ -29,3 +29,12 @@ def qmake_env(env, qenv)
     nil
   end
 end
+
+class PkgConfigNotFound < RuntimeError; end
+class PkgNotFound < RuntimeError; end
+
+def pkgconfig pkg, prettyname
+  system "pkg-config --exists '#{pkg}'"
+  raise PkgConfigNotFound if $? == 127
+  raise PkgNotFound.new(prettyname) if $? != 0
+end
