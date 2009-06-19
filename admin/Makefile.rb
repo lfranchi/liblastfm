@@ -14,11 +14,15 @@ case Platform::IMPL
   when :mswin
     CP='ruby -e "require \'FileUtils\'; FileUtils.copy_file(ARGV[0], ARGV[1])" --'
     LN=CP
+	RMF='ruby -e "require \'FileUtils\'; FileUtils.rm(ARGV[0], :force => true)" --'
+	RMRF='ruby -e "require \'FileUtils\'; FileUtils.rm_rf ARGV[0]" --'	
     MKDIR='ruby -e "require \'FileUtils\'; FileUtils.mkpath ARGV[0]" --'
     ORDERONLY=''
   else
     CP='cp'
     LN='cp' #'ln -sf' oddly doesn't work, the target is always remade
+	RMF='rm -f'
+	RMRF='rm -rf'	
     MKDIR='mkdir -p'
     ORDERONLY='|'
 end
@@ -71,25 +75,25 @@ demos/Makefile:
 
 .PHONY: clean
 clean:
-	rm -rf _include
-	rm -rf src/_build
-	rm -rf src/fingerprint/_build
-	rm -rf demos/_build
-	rm -rf tests/_build
-	rm -f src/Makefile
-	rm -f src/fingerprint/Makefile
-	rm -f tests/Makefile
-	rm -f demos/Makefile
-	rm -rf _bin
+	#{RMRF} _include
+	#{RMRF} src/_build
+	#{RMRF} src/fingerprint/_build
+	#{RMRF} demos/_build
+	#{RMRF} tests/_build
+	#{RMF} src/Makefile
+	#{RMF} src/fingerprint/Makefile
+	#{RMF} tests/Makefile
+	#{RMF} demos/Makefile
+	#{RMRF} _bin
 
 .PHONY: distclean
 distclean: clean
-	rm -f .qmake.env
-	rm -f src/_files.qmake
-	rm -f src/_version.h
-	rm -f src/fingerprint/_files.qmake
-	rm -f src/fingerprint/_version.h
-	rm -f Makefile
+	#{RMF} .qmake.env
+	#{RMF} src/_files.qmake
+	#{RMF} src/_version.h
+	#{RMF} src/fingerprint/_files.qmake
+	#{RMF} src/fingerprint/_version.h
+	#{RMF} Makefile
 
 EOS
 
