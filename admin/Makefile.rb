@@ -14,15 +14,15 @@ case Platform::IMPL
   when :mswin
     CP='ruby -e "require \'FileUtils\'; FileUtils.copy_file(ARGV[0], ARGV[1])" --'
     LN=CP
-	RMF='ruby -e "require \'FileUtils\'; FileUtils.rm(ARGV[0], :force => true)" --'
-	RMRF='ruby -e "require \'FileUtils\'; FileUtils.rm_rf ARGV[0]" --'	
+    RM='ruby -e "require \'FileUtils\'; FileUtils.rm(ARGV[0], :force => true)" --'
+    RM_RF='ruby -e "require \'FileUtils\'; FileUtils.rm_rf ARGV[0]" --'	
     MKDIR='ruby -e "require \'FileUtils\'; FileUtils.mkpath ARGV[0]" --'
     ORDERONLY=''
   else
     CP='cp'
-    LN='cp' #'ln -sf' oddly doesn't work, the target is always remade
-	RMF='rm -f'
-	RMRF='rm -rf'	
+    LN=CP #'ln -sf' oddly doesn't work, the target is always remade
+    RM='rm -f'
+    RM_RF='rm -rf'	
     MKDIR='mkdir -p'
     ORDERONLY='|'
 end
@@ -75,25 +75,25 @@ demos/Makefile:
 
 .PHONY: clean
 clean:
-	#{RMRF} _include
-	#{RMRF} src/_build
-	#{RMRF} src/fingerprint/_build
-	#{RMRF} demos/_build
-	#{RMRF} tests/_build
-	#{RMF} src/Makefile
-	#{RMF} src/fingerprint/Makefile
-	#{RMF} tests/Makefile
-	#{RMF} demos/Makefile
-	#{RMRF} _bin
+	#{RM_RF} _include
+	#{RM_RF} src/_build
+	#{RM_RF} src/fingerprint/_build
+	#{RM_RF} demos/_build
+	#{RM_RF} tests/_build
+	#{RM} src/Makefile
+	#{RM} src/fingerprint/Makefile
+	#{RM} tests/Makefile
+	#{RM} demos/Makefile
+	#{RM_RF} _bin
 
 .PHONY: distclean
 distclean: clean
-	#{RMF} .qmake.env
-	#{RMF} src/_files.qmake
-	#{RMF} src/_version.h
-	#{RMF} src/fingerprint/_files.qmake
-	#{RMF} src/fingerprint/_version.h
-	#{RMF} Makefile
+	#{RM} .qmake.env
+	#{RM} src/_files.qmake
+	#{RM} src/_version.h
+	#{RM} src/fingerprint/_files.qmake
+	#{RM} src/fingerprint/_version.h
+	#{RM} Makefile
 
 EOS
 
@@ -129,13 +129,30 @@ headers: #{$headers} _include/lastfm.h
 
 .PHONY: install
 install: #{$install_headers} $(DESTDIR)#{INSTALL_PREFIX}/include/lastfm.h
-	cd src && $(MAKE) install "INSTALL_ROOT=$(DESTDIR)#{INSTALL_PREFIX}"
-	cd src/fingerprint && $(MAKE) install "INSTALL_ROOT=$(DESTDIR)#{INSTALL_PREFIX}"
-
 EOS
+
+if Platform::IMPL == :macosx
+  # qmake doesn't do the install_name_tool steps, so we have to do everything
+  dst="$(DESTDIR)#{INSTALL_PREFIX}/lib"
+  v=ENV['LFM_VERSION']
+  vmajor=v[0..0]
+  puts "	mkdir -p #{dst}"
+  ['liblastfm', 'liblastfm_fingerprint'].each do |base|
+    puts "	cp _bin/#{base}.#{v}.dylib '#{dst}'"
+    puts "	cd '#{dst}' && ln -s #{base}.#{v}.dylib #{base}.dylib"
+    puts "	cd '#{dst}' && ln -s #{base}.#{v}.dylib #{base}.#{vmajor}.dylib"
+    puts "	install_name_tool -id '#{dst}/#{base}.#{vmajor}.dylib' '#{dst}/#{base}.#{vmajor}.dylib'"
+  end
+  ext="#{vmajor}.dylib"
+  puts "	install_name_tool -change liblastfm.#{ext} #{dst}/liblastfm.#{ext} #{dst}/liblastfm_fingerprint.#{ext}"
+else 
+  puts %Q[	cd src && $(MAKE) install "INSTALL_ROOT=$(DESTDIR)#{INSTALL_PREFIX}"]
+  puts %Q[	cd src/fingerprint && $(MAKE) install "INSTALL_ROOT=$(DESTDIR)#{INSTALL_PREFIX}"]
+end
 
 BASENAME='liblastfm-'+ENV['LFM_VERSION']
 puts <<-EOS
+
 .PHONY: dist
 dist:
 	git archive --prefix=#{BASENAME}/ HEAD | bzip2 > #{BASENAME}.tar.bz2
