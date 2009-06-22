@@ -9,8 +9,8 @@ INSTALLS = target
 target.path = /lib
 
 win32 {
-    #FIXME which -lfftw* is right?
-    LIBS += -llibsamplerate -llibfftw3f-3 -lfftw3f
+	CONFIG += link_pkgconfig
+	PKGCONFIG += fftw3 libsamplerate
     DEFINES += __NO_THREAD_CHECK
     QMAKE_LFLAGS_DEBUG += /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:libcmt.lib
 }
