@@ -24,7 +24,7 @@
 #include <QDomElement>
 #include <QDomDocument>
 
-
+using namespace lastfm;
 
 ScrobbleCache::ScrobbleCache( const QString& username )
 {

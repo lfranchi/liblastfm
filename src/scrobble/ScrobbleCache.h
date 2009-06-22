@@ -20,14 +20,11 @@
 #ifndef SCROBBLE_CACHE_H
 #define SCROBBLE_CACHE_H
 
-#include "Scrobble.h"
+#include <lastfm/Scrobble>
 #include <QList>
 #include <QString>
-
-// because we are not for public consumption
-using lastfm::Scrobble;
-using lastfm::Track;
  
+namespace lastfm {
 
 /** absolutely not thread-safe */
 class LASTFM_DLLEXPORT ScrobbleCache
@@ -35,8 +32,6 @@ class LASTFM_DLLEXPORT ScrobbleCache
     QString m_username;
 
     void write(); /// writes m_tracks to m_path
-
-    friend class ScrobblerSubmission;
 
 protected:
     ScrobbleCache()
@@ -65,5 +60,7 @@ public:
 private:
     bool operator==( const ScrobbleCache& ); //undefined
 };
+
+}
 
 #endif

@@ -22,7 +22,7 @@
 #include "Scrobble.h"
 
 using lastfm::Track;
-
+using lastfm::Scrobble;
 
 void
 ScrobblerSubmission::setTracks( const QList<Track>& tracks )
