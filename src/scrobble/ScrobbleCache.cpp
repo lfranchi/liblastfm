@@ -24,7 +24,9 @@
 #include <QDomElement>
 #include <QDomDocument>
 
-using namespace lastfm;
+#if LASTFM_VERSION >= 0x00010000
+using lastfm::ScrobbleCache;
+#endif
 
 ScrobbleCache::ScrobbleCache( const QString& username )
 {

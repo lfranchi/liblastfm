@@ -17,14 +17,19 @@
    You should have received a copy of the GNU General Public License
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SCROBBLE_CACHE_H
-#define SCROBBLE_CACHE_H
+#ifndef LASTFM_SCROBBLE_CACHE_H
+#define LASTFM_SCROBBLE_CACHE_H
 
 #include <lastfm/Scrobble>
 #include <QList>
 #include <QString>
- 
+
+#if LASTFM_VERSION >= 0x00010000
 namespace lastfm {
+#else
+using lastfm::Scrobble;
+using lastfm::Track;
+#endif
 
 /** absolutely not thread-safe */
 class LASTFM_DLLEXPORT ScrobbleCache
@@ -61,6 +66,8 @@ private:
     bool operator==( const ScrobbleCache& ); //undefined
 };
 
+#if LASTFM_VERSION >= 0x00010000
 }
+#endif
 
 #endif
