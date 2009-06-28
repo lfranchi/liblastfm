@@ -123,7 +123,7 @@ QDir
 lastfm::dir::cache()
 {
 #ifdef Q_WS_MAC
-    return QDir::home().filePath( "Library/Cache/Last.fm" );
+    return QDir::home().filePath( "Library/Caches/Last.fm" );
 #else
     return runtimeData().filePath( "cache" );
 #endif
