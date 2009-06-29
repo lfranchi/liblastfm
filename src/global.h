@@ -88,6 +88,7 @@ namespace lastfm
     class NetworkAccessManager;
     class Playlist;
     class User;
+    class RadioStation;
     class Scrobble;
     class Tag;
     class Track;
@@ -107,6 +108,7 @@ using lastfm::Mbid;
 using lastfm::MutableTrack;
 using lastfm::Playlist;
 using lastfm::User;
+using lastfm::RadioStation;
 using lastfm::Scrobble;
 using lastfm::Tag;
 using lastfm::Track;
