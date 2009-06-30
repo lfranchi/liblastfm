@@ -110,6 +110,7 @@ inline QDebug operator<<( QDebug d, lastfm::Fingerprint::Error e )
         CASE(BadResponseError)
         CASE(InternalError)
     }
+    #undef CASE
 }
 
 #endif
