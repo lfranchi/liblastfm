@@ -69,6 +69,11 @@ User::getRecentTracks() const
     return ws::get( params( "getRecentTracks" ) );
 }
 
+QNetworkReply* 
+User::getRecentStations() const
+{
+    return ws::post( params( "getRecentStations" ) );
+}
 
 QNetworkReply*
 User::getNeighbours() const

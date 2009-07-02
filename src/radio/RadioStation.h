@@ -73,6 +73,9 @@ namespace lastfm
                    m_url.startsWith( "lastfm://track/" ) ||
                    m_url.startsWith( "lastfm://playlist/" );
         }
+
+        // good for getRecentStations:
+        static QList<RadioStation> list( QNetworkReply* );
     
     private:
         QString m_rql;

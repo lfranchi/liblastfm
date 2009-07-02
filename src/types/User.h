@@ -46,8 +46,9 @@ namespace lastfm
     
         QNetworkReply* getPlaylists() const;
         QNetworkReply* getTopArtists() const;
-        QNetworkReply* getRecentArtists() const;
         QNetworkReply* getRecentTracks() const;
+        QNetworkReply* getRecentArtists() const;
+        QNetworkReply* getRecentStations() const;
     
         static QList<User> list( QNetworkReply* );
     
