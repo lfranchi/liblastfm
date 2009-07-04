@@ -34,19 +34,22 @@ Mac OS X
 qt4-mac-devel will take a long time to build. So you may want to install the
 Trolltech binary package instead.
 
-Macports carries liblastfm now, so you may have downloaded this package simply
+MacPorts carries liblastfm now, so you may have downloaded this package simply
 to perform this next line:
 
     sudo port install liblastfm
 
-Linux
------
+Linux/*NIX
+----------
 Do something like this:
 
     sudo apt-get install qt4-qmake pkg-config libsamplerate-dev libfftw3-dev ruby g++ libqt4-dev
 
 Additionally on Linux the configure process requires lsb_release. This is
 usually already installed (correct me if I'm wrong).
+
+Please note, we have only tested on Linux, but we think it'll work on all
+varieties of UNIX. If it doesn't, report the bug to mxcl on GitHub.
 
 Windows
 -------

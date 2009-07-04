@@ -12,11 +12,12 @@ require "#{cwd}/platform.rb"
 ######################################################################### defs
 case Platform::IMPL
   when :mswin
-    CP='ruby -e "require \'FileUtils\'; FileUtils.copy_file(ARGV[0], ARGV[1])" --'
+    ruby='ruby -rfileutils -e'
+    CP="#{ruby} 'FileUtils.copy_file ARGV[0], ARGV[1]' --"
     LN=CP
-    RM='ruby -e "require \'FileUtils\'; FileUtils.rm(ARGV[0], :force => true)" --'
-    RM_RF='ruby -e "require \'FileUtils\'; FileUtils.rm_rf ARGV[0]" --'	
-    MKDIR='ruby -e "require \'FileUtils\'; FileUtils.mkpath ARGV[0]" --'
+    RM="#{ruby} 'FileUtils.rm ARGV[0], :force => true' --"
+    RM_RF="#{ruby} 'FileUtils.rm_rf ARGV[0]' --"
+    MKDIR="#{ruby} 'FileUtils.mkpath ARGV[0]' --"
     ORDERONLY=''
   else
     CP='cp'

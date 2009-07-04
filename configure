@@ -19,9 +19,8 @@ begin
 
   unless ARGV.include? '--skip-checks'
     $qmake=which_qmake
-#    pkgconfig 'samplerate', 'libsamplerate'
-#    pkgconfig 'fftw3f', 'fftw'
-
+    pkgconfig 'samplerate', 'libsamplerate'
+    pkgconfig 'fftw3f', 'fftw'
     puts 'Using '+`which #{$qmake}` unless Platform::IMPL == :mswin
   else
     $qmake='qmake'
@@ -90,7 +89,7 @@ begin
 
   case Platform::IMPL
     when :mswin then make='nmake'
-    else make='make'
+    else make='make' # NOTE only tested with GNU make, sorry :(
   end
 
   puts
