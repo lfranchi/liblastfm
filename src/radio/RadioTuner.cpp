@@ -31,6 +31,13 @@ using namespace lastfm;
 RadioTuner::RadioTuner( const RadioStation& station )
      : m_retry_counter( 0 )
 {
+    //Empty RadioStation implies that the radio
+    //should tune to the previous station.
+    if( station.url().isEmpty() ) {
+        fetchFiveMoreTracks();
+        return;
+    }
+    
     QMap<QString, QString> map;
     map["method"] = "radio.tune";
     map["station"] = station.url();
