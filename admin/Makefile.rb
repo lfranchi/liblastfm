@@ -15,7 +15,7 @@ case Platform::IMPL
     ruby='ruby -rfileutils -e'
     CP="#{ruby} 'FileUtils.copy_file ARGV[0], ARGV[1]' --"
     LN=CP
-    RM="#{ruby} 'FileUtils.rm ARGV[0], :force => true' --"
+    RM=ruby+' "FileUtils.rm ARGV[0], :force => true" --'
     RM_RF="#{ruby} 'FileUtils.rm_rf ARGV[0]' --"
     MKDIR="#{ruby} 'FileUtils.mkpath ARGV[0]' --"
     ORDERONLY=''
