@@ -45,6 +45,8 @@ namespace lastfm
         static RadioStation lovedTracks( const lastfm::User& user )     { return "lastfm://user/" + user + "/loved"; }
         static RadioStation globalTag( const lastfm::Tag& tag )         { return "lastfm://globaltags/" + tag; }
         static RadioStation similar( const lastfm::Artist& artist )     { return "lastfm://artist/" + artist + "/similarartists"; }
+        static RadioStation userTag( const lastfm::User& user, const lastfm::Tag& tag) { return "lastfm://usertags/" + user + "/" + tag; }
+        static RadioStation playlist( int playlistId )                  { return "lastfm://playlist/" + QString::number(playlistId) + "/shuffle"; }
 
         static RadioStation rql( const QString& rql )
         {
