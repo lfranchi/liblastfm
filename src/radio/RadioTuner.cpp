@@ -27,6 +27,9 @@ using namespace lastfm;
 //TODO multiple locations for the same track
 //TODO set rtp flag in getPlaylist (whether user is scrobbling this radio session or not)
 
+// limit the number of retries following empty playlists:
+#define MAX_TUNING_ATTEMPTS 3
+
 
 RadioTuner::RadioTuner( const RadioStation& station )
      : m_retry_counter( 0 )
@@ -79,7 +82,7 @@ RadioTuner::tryAgain()
 {
     qDebug() << "Bad response count" << m_retry_counter;
     
-    if (++m_retry_counter > 5)
+    if (++m_retry_counter > MAX_TUNING_ATTEMPTS)
         return false;
     fetchFiveMoreTracks();
     return true;
@@ -93,21 +96,22 @@ RadioTuner::onGetPlaylistReturn()
         XmlQuery lfm = ws::parse( (QNetworkReply*)sender() );
         Xspf xspf( lfm["playlist"] );
         QList<Track> tracks( xspf.tracks() );
-        if (tracks.isEmpty()) //often we get empty playlists because php is shit
-            throw ws::TryAgainLater;
-
-        m_retry_counter = 0;
-        foreach (Track t, tracks)
-            MutableTrack( t ).setSource( Track::LastFmRadio );
-        m_queue += tracks;
-        emit trackAvailable();
+        if (tracks.isEmpty()) {
+            // give up after too many empty playlists  :(
+            if (!tryAgain())
+                emit error( ws::NotEnoughContent );
+        } else {
+            m_retry_counter = 0;
+            foreach (Track t, tracks)
+                MutableTrack( t ).setSource( Track::LastFmRadio );
+            m_queue += tracks;
+            emit trackAvailable();
+        }
     }
     catch (ws::ParseError& e) 
     {
         qWarning() << e.what();
-
-        if (e.enumValue() != ws::TryAgainLater || !tryAgain())
-            emit error( e.enumValue() );
+        emit error( e.enumValue() );
     }
 }
 
