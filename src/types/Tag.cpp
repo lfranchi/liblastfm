@@ -49,6 +49,14 @@ Tag::search() const
     return ws::get(map);
 }
 
+//static
+QNetworkReply* 
+Tag::getTopTags()
+{
+    QMap<QString, QString> map;
+    map["method"] = "tag.getTopTags";
+    return ws::get(map);
+}
 
 QMap<int, QString> //static
 Tag::list( QNetworkReply* r )

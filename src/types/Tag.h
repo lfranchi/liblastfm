@@ -44,6 +44,9 @@ namespace lastfm
         QUrl www( const class User& user ) const;
         /** pass the finished QNetworkReply to Tag::list() */
         class QNetworkReply* search() const;
+
+        /** the top global tags on Last.fm, sorted by popularity (number of times used) */
+        static class QNetworkReply* getTopTags();
     
         /** the integer is the weighting, not all list type return requests
           * have a weighting, so the int may just be zero, if you don't care
