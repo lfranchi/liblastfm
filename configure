@@ -88,7 +88,7 @@ begin
   end
 
   case Platform::IMPL
-    when :mswin then make='nmake'
+    when :mswin then make='nmake all'
     else make='make' # NOTE only tested with GNU make, sorry :(
   end
 
