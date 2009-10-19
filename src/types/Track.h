@@ -218,6 +218,7 @@ public:
 
     void setExtra( const QString& key, const QString& value ) { d->extras[key] = value; }
     void removeExtra( QString key ) { d->extras.remove( key ); }
+    void setTimeStamp( const QDateTime& dt ) { d->time = dt; }
 };
 
 
