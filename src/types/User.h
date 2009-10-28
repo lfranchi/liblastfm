@@ -95,6 +95,8 @@ namespace lastfm
         /** a verbose string, eg. "A man with 36,153 scrobbles" */
         static QString getInfoString( QNetworkReply* );
         
+        static bool canBootstrap( QNetworkReply* );
+
         // pass the result to Artist::list(), if you want the other data 
         // you have to parse the lfm() yourself members
         // http://www.last.fm/api/show?service=388
