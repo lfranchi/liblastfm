@@ -24,7 +24,6 @@
 using lastfm::User;
 using lastfm::AuthenticatedUser;
 
-
 QMap<QString, QString>
 User::params(const QString& method) const
 {
@@ -197,4 +196,11 @@ AuthenticatedUser::getInfoString( QNetworkReply* reply )
     return text;
     
     #undef tr
+}
+
+bool //static
+AuthenticatedUser::canBootstrap( QNetworkReply* reply )
+{
+    XmlQuery user = XmlQuery(ws::parse(reply))["user"];
+    return user["bootstrap"].text().toUInt() == 1;
 }
