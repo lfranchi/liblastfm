@@ -29,7 +29,8 @@
 static QNetworkAccessManager* nam = 0;
 
 
-static inline QString host()
+QString 
+lastfm::ws::host()
 {
     QStringList const args = QCoreApplication::arguments();
     if (args.contains( "--debug"))
@@ -46,7 +47,7 @@ static QUrl url()
 {
     QUrl url;
     url.setScheme( "http" );
-    url.setHost( host() );
+    url.setHost( lastfm::ws::host() );
     url.setPath( "/2.0/" );
     return url;
 }

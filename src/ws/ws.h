@@ -108,6 +108,8 @@ namespace lastfm
             /** call QNetworkReply::error() as it's nothing to do with us */
             UnknownError
         };
+        
+        LASTFM_DLLEXPORT QString host();
 
         /** the map needs a method entry, as per http://last.fm/api */
         LASTFM_DLLEXPORT QNetworkReply* get( QMap<QString, QString> );

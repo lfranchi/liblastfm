@@ -201,6 +201,11 @@ AuthenticatedUser::getInfoString( QNetworkReply* reply )
 bool //static
 AuthenticatedUser::canBootstrap( QNetworkReply* reply )
 {
-    XmlQuery user = XmlQuery(ws::parse(reply))["user"];
-    return user["bootstrap"].text().toUInt() == 1;
+    try {
+        XmlQuery user = XmlQuery(ws::parse(reply))["user"];
+        return user["bootstrap"].text().toUInt() == 1;
+    } 
+    catch ( const lastfm::ws::ParseError& e ) {}
+    
+    return false;    
 }
