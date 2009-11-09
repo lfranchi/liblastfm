@@ -57,6 +57,7 @@ namespace lastfm
           */
         XmlQuery operator[]( const QString& name ) const;
         QString text() const { return e.text(); }
+        QString attribute( const QString& name ) const{ return e.attribute( name ); }
         
         /** selects all children with specified name, recursively */
         QList<XmlQuery> children( const QString& named ) const;
