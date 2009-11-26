@@ -63,7 +63,7 @@ void autograph( QMap<QString, QString>& params )
     params["lang"] = iso639();
 }
 
-void sign( QMap<QString, QString>& params )
+static void sign( QMap<QString, QString>& params )
 {
     autograph( params );
     // it's allowed for sk to be null if we this is an auth call for instance
