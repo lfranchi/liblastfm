@@ -34,10 +34,10 @@ Mac OS X
 qt4-mac-devel will take a long time to build. So you may want to install the
 Trolltech binary package instead.
 
-MacPorts carries liblastfm now, so you may have downloaded this package simply
-to perform this next line:
+Both MacPorts and Homebrew carry liblastfm now:
 
-    sudo port install liblastfm
+    brew install liblastfm
+    port install liblastfm
 
 Linux/*NIX
 ----------
