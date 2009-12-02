@@ -102,7 +102,7 @@ lastfm::Audioscrobbler::rehandshake() //public
         d->handshake->request();
     }
     else
-        // if we still have a valid session, np may have been failing, so just
+        // if we still have a valid session, np may have been failing so just
         // send it as it doesn't hurt
         d->np->request();
 }
