@@ -56,8 +56,8 @@ module Platform
       OS = :win32
       IMPL = :mswin
    elsif RUBY_PLATFORM =~ /cygwin/i
-      OS = :unix
-      IMPL = :cygwin
+      OS = :win32
+      IMPL = :mswin
    elsif RUBY_PLATFORM =~ /mingw/i
       OS = :win32
       IMPL = :mingw
