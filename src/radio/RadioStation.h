@@ -39,14 +39,14 @@ namespace lastfm
         explicit RadioStation( const QUrl& u ) : m_url( u.toString() )
         {}
     
-        static RadioStation library( const lastfm::User& user )         { return "lastfm://user/" + user + "/personal"; }
-        static RadioStation recommendations( const lastfm::User& user ) { return "lastfm://user/" + user + "/recommended"; }
-        static RadioStation neighbourhood( const lastfm::User& user )   { return "lastfm://user/" + user + "/neighbours"; }
-        static RadioStation lovedTracks( const lastfm::User& user )     { return "lastfm://user/" + user + "/loved"; }
-        static RadioStation globalTag( const lastfm::Tag& tag )         { return "lastfm://globaltags/" + tag; }
-        static RadioStation similar( const lastfm::Artist& artist )     { return "lastfm://artist/" + artist + "/similarartists"; }
-        static RadioStation userTag( const lastfm::User& user, const lastfm::Tag& tag) { return "lastfm://usertags/" + user + "/" + tag; }
-        static RadioStation playlist( int playlistId )                  { return "lastfm://playlist/" + QString::number(playlistId) + "/shuffle"; }
+        static RadioStation library( const lastfm::User& user )         { return rql( "library:" + user ); }
+        static RadioStation recommendations( const lastfm::User& user ) { return rql( "rec:" + user ); }
+        static RadioStation neighbourhood( const lastfm::User& user )   { return rql( "neigh:" + user ); }
+        static RadioStation lovedTracks( const lastfm::User& user )     { return rql( "loved:" + user ); }
+        static RadioStation globalTag( const lastfm::Tag& tag )         { return rql( "tags:\"" + tag + "\"" ); }
+        static RadioStation similar( const lastfm::Artist& artist )     { return rql( "art:" + artist ); }
+        static RadioStation userTag( const lastfm::User& user, const lastfm::Tag& tag) { return rql( "ptag:\"" + tag + "\"|" + user ); }
+        static RadioStation playlist( int playlistId )                  { return rql( "playlist:" + QString::number(playlistId) ); }
 
         static RadioStation rql( const QString& rql )
         {
