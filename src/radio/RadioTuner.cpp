@@ -48,6 +48,18 @@ RadioTuner::RadioTuner( const RadioStation& station )
     connect( reply, SIGNAL(finished()), SLOT(onTuneReturn()) );
 }
 
+void
+RadioTuner::retune( const RadioStation& station)
+{
+    m_queue.clear();
+
+    QMap<QString, QString> map;
+    map["method"] = "radio.tune";
+    map["station"] = station.url();
+    QNetworkReply* reply = ws::post(map);
+    connect( reply, SIGNAL(finished()), SLOT(onTuneReturn()) );
+}
+
 
 void
 RadioTuner::onTuneReturn()

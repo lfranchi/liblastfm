@@ -41,6 +41,8 @@ namespace lastfm
 
         Track takeNextTrack();
 
+        void retune( const RadioStation& );
+
     signals:
         void title( const QString& );
         void trackAvailable();
