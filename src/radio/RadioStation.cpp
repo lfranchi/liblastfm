@@ -54,7 +54,8 @@ lastfm::RadioStation::list( QNetworkReply* r )
 void
 lastfm::RadioStation::setString( const QString& string )
 {
-    QString decodedString = QUrl::fromPercentEncoding( QUrl::fromPercentEncoding( string.toAscii() ).replace( QChar('+'), QChar(' ') ).toAscii() );
+    QString replaceString( string );
+    QString decodedString = QUrl::fromPercentEncoding( replaceString.replace( QChar('+'), QChar(' ') ).toUtf8() );
 
     QRegExp rxRql(              "lastfm:\\/\\/rql\\/(.+)$" );
     QRegExp rxPersonal(         "lastfm:\\/\\/user\\/(.+)\\/personal" );

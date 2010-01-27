@@ -37,10 +37,6 @@ namespace lastfm
         {
         setString( s );
         }
-        explicit RadioStation( const QUrl& u )
-        {
-        setString( u.toString() );
-        }
     
         static RadioStation library( const lastfm::User& user )         { return rql( libraryStr( user ) ); }
         static RadioStation recommendations( const lastfm::User& user ) { return rql( recommendationsStr( user ) ); }
