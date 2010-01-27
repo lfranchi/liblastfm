@@ -54,33 +54,35 @@ lastfm::RadioStation::list( QNetworkReply* r )
 void
 lastfm::RadioStation::setString( const QString& string )
 {
-    QRegExp rxRql("lastfm:\\/\\/rql\\/(.+)$");
-    QRegExp rxPersonal("lastfm:\\/\\/user\\/(.+)\\/personal");
-    QRegExp rxRecommended("lastfm://user/(.+)\\/recommended");
-    QRegExp rxNeighbours("lastfm:\\/\\/user\\/(.+)\\/neighbours");
-    QRegExp rxLoved("lastfm:\\/\\/user\\/(.+)\\/loved");
-    QRegExp rxGlobalTags("lastfm:\\/\\/globaltags\\/(.+)");
-    QRegExp rxSimilarArtists("lastfm:\\/\\/artist\\/(.+)\\/similarartists");
-    QRegExp rxUserTags("lastfm:\\/\\/usertags\\/(.+)\\/(.+)");
-    QRegExp rxPlaylist("lastfm:\\/\\/playlist/(.+)\\/shuffle");
+    QString decodedString = QUrl::fromPercentEncoding( QUrl::fromPercentEncoding( string.toAscii() ).replace( QChar('+'), QChar(' ') ).toAscii() );
 
-    if (rxRql.indexIn(string) == 0)
+    QRegExp rxRql(              "lastfm:\\/\\/rql\\/(.+)$" );
+    QRegExp rxPersonal(         "lastfm:\\/\\/user\\/(.+)\\/personal" );
+    QRegExp rxRecommended(      "lastfm://user/(.+)\\/recommended" );
+    QRegExp rxNeighbours(       "lastfm:\\/\\/user\\/(.+)\\/neighbours" );
+    QRegExp rxLoved(            "lastfm:\\/\\/user\\/(.+)\\/loved" );
+    QRegExp rxGlobalTags(       "lastfm:\\/\\/globaltags\\/(.+)" );
+    QRegExp rxSimilarArtists(   "lastfm:\\/\\/artist\\/(.+)\\/similarartists" );
+    QRegExp rxUserTags(         "lastfm:\\/\\/usertags\\/(.+)\\/(.+)" );
+    QRegExp rxPlaylist(         "lastfm:\\/\\/playlist/(.+)\\/shuffle" );
+
+    if (rxRql.indexIn(decodedString) == 0)
         setRql( QByteArray::fromBase64( rxRql.capturedTexts()[1].toAscii() ) );
-    else if (rxPersonal.indexIn(string) == 0)
+    else if (rxPersonal.indexIn(decodedString) == 0)
         setRql( libraryStr( rxPersonal.capturedTexts()[1] ) );
-    else if ( rxRecommended.indexIn(string) == 0)
+    else if ( rxRecommended.indexIn(decodedString) == 0)
         setRql( recommendationsStr( rxRecommended.capturedTexts()[1] ) );
-    else if ( rxNeighbours.indexIn(string) == 0)
+    else if ( rxNeighbours.indexIn(decodedString) == 0)
         setRql( neighbourhoodStr( rxNeighbours.capturedTexts()[1] ) );
-    else if ( rxLoved.indexIn(string) == 0)
+    else if ( rxLoved.indexIn(decodedString) == 0)
         setRql( lovedTracksStr( rxLoved.capturedTexts()[1] ) );
-    else if ( rxGlobalTags.indexIn(string) == 0)
+    else if ( rxGlobalTags.indexIn(decodedString) == 0)
         setRql( globalTagStr( rxGlobalTags.capturedTexts()[1] ) );
-    else if ( rxSimilarArtists.indexIn(string) == 0)
+    else if ( rxSimilarArtists.indexIn(decodedString) == 0)
         setRql( similarStr( rxSimilarArtists.capturedTexts()[1] ) );
-    else if ( rxUserTags.indexIn(string) == 0)
+    else if ( rxUserTags.indexIn(decodedString) == 0)
         setRql( userTagStr( rxUserTags.capturedTexts()[1], rxUserTags.capturedTexts()[2] ) );
-    else if ( rxPlaylist.indexIn(string) == 0)
+    else if ( rxPlaylist.indexIn(decodedString) == 0)
         setRql( playlistStr( rxPlaylist.capturedTexts()[1].toInt() ) );
     else
     {

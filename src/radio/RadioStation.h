@@ -102,8 +102,8 @@ namespace lastfm
         static QString recommendationsStr( const lastfm::User& user ) { return "rec:" + user ; }
         static QString neighbourhoodStr( const lastfm::User& user )   { return "neigh:" + user ; }
         static QString lovedTracksStr( const lastfm::User& user )     { return "loved:" + user ; }
-        static QString globalTagStr( const lastfm::Tag& tag )         { return "tags:\"" + tag + "\"" ; }
-        static QString similarStr( const lastfm::Artist& artist )     { return "art:" + artist ; }
+        static QString globalTagStr( const lastfm::Tag& tag )         { return "tag:\"" + tag + "\"" ; }
+        static QString similarStr( const lastfm::Artist& artist )     { return "simart:\"" + artist + "\""; }
         static QString userTagStr( const lastfm::User& user, const lastfm::Tag& tag) { return "ptag:\"" + tag + "\"|" + user ; }
         static QString playlistStr( int playlistId )                  { return "playlist:" + QString::number(playlistId) ; }
     
