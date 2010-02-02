@@ -191,6 +191,12 @@ lastfm::Track::getTags() const
     return ws::get( params("getTags", true) );
 }
 
+QNetworkReply*
+lastfm::Track::getInfo() const
+{
+    return ws::get( params("getInfo", true) );
+}
+
 
 QNetworkReply*
 lastfm::Track::addTags( const QStringList& tags ) const
