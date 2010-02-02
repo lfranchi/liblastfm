@@ -150,6 +150,7 @@ public:
     /** you can get any QNetworkReply TagList using Tag::list( QNetworkReply* ) */
     QNetworkReply* getTags() const; // for the logged in user
     QNetworkReply* getTopTags() const;
+    QNetworkReply* getInfo() const;
 
     /** you can only add 10 tags, we submit everything you give us, but the
       * docs state 10 only. Will return 0 if the list is empty. */
