@@ -45,6 +45,7 @@ namespace lastfm
 
     signals:
         void title( const QString& );
+        void supportsDisco( bool supportsDisco );
         void trackAvailable();
         void error( lastfm::ws::Error );
 

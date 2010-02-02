@@ -69,6 +69,10 @@ RadioTuner::onTuneReturn()
         // TODO: uncomment this is we are to get a radio station
         // name when we tune to an rql radio station
         //emit title( lfm["station"]["name"].text() );
+
+        qDebug() << lfm;
+
+        emit supportsDisco( lfm["station"]["supportsdiscovery"].text() == "1" );
         fetchFiveMoreTracks();
     }
     catch (ws::ParseError& e)
