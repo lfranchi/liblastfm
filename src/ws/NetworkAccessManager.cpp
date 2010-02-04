@@ -24,8 +24,8 @@
 #include <QCoreApplication>
 #include <QNetworkRequest>
 #ifdef WIN32
-#include "win/IeSettings.h"
-#include "win/Pac.h"
+//#include "win/IeSettings.h"
+//#include "win/Pac.h"
 #endif
 #ifdef __APPLE__
 #include "mac/ProxyDict.h"
@@ -44,18 +44,18 @@ static struct NetworkAccessManagerInit
     NetworkAccessManagerInit()
     {
     #ifdef WIN32
-        IeSettings s;
-        // if it's autodetect, we determine the proxy everytime in proxy()
-        // we don't really want to do a PAC lookup here, as it times out
-        // at two seconds, so that hangs startup
-        if (!s.fAutoDetect && s.lpszProxy)
-        {
-            QUrl url( QString::fromUtf16(s.lpszProxy) );
-            QNetworkProxy proxy( QNetworkProxy::HttpProxy );
-            proxy.setHostName( url.host() );
-            proxy.setPort( url.port() );
-            QNetworkProxy::setApplicationProxy( proxy );
-        }
+//        IeSettings s;
+//        // if it's autodetect, we determine the proxy everytime in proxy()
+//        // we don't really want to do a PAC lookup here, as it times out
+//        // at two seconds, so that hangs startup
+//        if (!s.fAutoDetect && s.lpszProxy)
+//        {
+//            QUrl url( QString::fromUtf16(s.lpszProxy) );
+//            QNetworkProxy proxy( QNetworkProxy::HttpProxy );
+//            proxy.setHostName( url.host() );
+//            proxy.setPort( url.port() );
+//            QNetworkProxy::setApplicationProxy( proxy );
+//        }
     #endif
     #ifdef __APPLE__
         ProxyDict dict;
@@ -81,8 +81,8 @@ namespace lastfm
 lastfm::NetworkAccessManager::NetworkAccessManager( QObject* parent )
                : QNetworkAccessManager( parent )
             #ifdef WIN32
-               , m_pac( 0 )
-               , m_monitor( 0 )
+               //, m_pac( 0 )
+               //, m_monitor( 0 )
             #endif
 {
     // can't be done in above init, as applicationName() won't be set
@@ -99,7 +99,7 @@ lastfm::NetworkAccessManager::NetworkAccessManager( QObject* parent )
 lastfm::NetworkAccessManager::~NetworkAccessManager()
 {
 #ifdef WIN32
-    delete m_pac;
+    //delete m_pac;
 #endif
 }
 
@@ -110,16 +110,16 @@ lastfm::NetworkAccessManager::proxy( const QNetworkRequest& request )
     Q_UNUSED( request );
     
 #ifdef WIN32
-    IeSettings s;
-    if (s.fAutoDetect) 
-    {
-        if (!m_pac) {
-            m_pac = new Pac;
-            m_monitor = new InternetConnectionMonitor( this );
-            connect( m_monitor, SIGNAL(connectivityChanged( bool )), SLOT(onConnectivityChanged( bool )) );
-        }
-        return m_pac->resolve( request, s.lpszAutoConfigUrl );
-    } 
+//    IeSettings s;
+//    if (s.fAutoDetect)
+//    {
+//        if (!m_pac) {
+//            m_pac = new Pac;
+//            m_monitor = new InternetConnectionMonitor( this );
+//            connect( m_monitor, SIGNAL(connectivityChanged( bool )), SLOT(onConnectivityChanged( bool )) );
+//        }
+//        return m_pac->resolve( request, s.lpszAutoConfigUrl );
+//    }
 #endif
     
     return QNetworkProxy::applicationProxy();
@@ -134,10 +134,10 @@ lastfm::NetworkAccessManager::createRequest( Operation op, const QNetworkRequest
     request.setRawHeader( "User-Agent", lastfm::UserAgent );
     
 #ifdef WIN32
-    // PAC proxies can vary by domain, so we have to check everytime :(
-    QNetworkProxy proxy = this->proxy( request );
-    if (proxy.type() != QNetworkProxy::NoProxy)
-        QNetworkAccessManager::setProxy( proxy );
+//    // PAC proxies can vary by domain, so we have to check everytime :(
+//    QNetworkProxy proxy = this->proxy( request );
+//    if (proxy.type() != QNetworkProxy::NoProxy)
+//        QNetworkAccessManager::setProxy( proxy );
 #endif
 
     return QNetworkAccessManager::createRequest( op, request, outgoingData );
@@ -150,6 +150,6 @@ lastfm::NetworkAccessManager::onConnectivityChanged( bool up )
     Q_UNUSED( up );
     
 #ifdef WIN32
-    if (up && m_pac) m_pac->resetFailedState();
+    //if (up && m_pac) m_pac->resetFailedState();
 #endif
 }
