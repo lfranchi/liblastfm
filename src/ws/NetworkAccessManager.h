@@ -34,8 +34,8 @@ class LASTFM_DLLEXPORT NetworkAccessManager : public QNetworkAccessManager
     Q_OBJECT
 
 #ifdef Q_WS_WIN
-    class Pac *m_pac;
-    class InternetConnectionMonitor* m_monitor;
+    //class Pac *m_pac;
+    //class InternetConnectionMonitor* m_monitor;
 #endif
 
 public:
