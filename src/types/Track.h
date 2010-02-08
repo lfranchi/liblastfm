@@ -48,6 +48,7 @@ struct TrackData : QSharedData
     uint fpid;
     QUrl url;
     QDateTime time; /// the time the track was started at
+    bool loved;
 
     //FIXME I hate this, but is used for radio trackauth etc.
     QMap<QString,QString> extras;
@@ -122,6 +123,7 @@ public:
     QDateTime timestamp() const { return d->time; }
     Source source() const { return (Source)d->source; }
     uint fingerprintId() const { return d->fpid; }
+    bool isLoved() const { return d->loved; }
 
     QString durationString() const { return durationString( d->duration ); }
     static QString durationString( int seconds );
@@ -204,6 +206,7 @@ public:
     void setDuration( uint duration ) { d->duration = duration; }
     void setUrl( QUrl url ) { d->url = url; }
     void setSource( Source s ) { d->source = s; }
+    void setLoved( bool loved ) { d->loved = loved; }
     
     void setMbid( Mbid id ) { d->mbid = id; }
     void setFingerprintId( uint id ) { d->fpid = id; }
