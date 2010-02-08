@@ -142,7 +142,7 @@ lastfm::ws::parse( QNetworkReply* reply ) throw( ParseError )
 
         // no elements beyond the lfm is perfectably acceptable <-- wtf?
         // if (n == 0) // nothing useful in the response
-        if (status == "failed" || n == 1 && !error.isNull())
+        if (status == "failed" || (n == 1 && !error.isNull()) )
             throw error.isNull()
                     ? MalformedResponse
                     : Error( error.attribute( "code" ).toUInt() );
