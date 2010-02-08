@@ -38,8 +38,8 @@ class LASTFM_DLLEXPORT InternetConnectionMonitor : public QObject
     static void callback( SCNetworkReachabilityRef, SCNetworkConnectionFlags, void* );
 #endif
 #ifdef Q_WS_WIN
-    //class NdisEventsProxy* m_ndisEventsProxy;
-    //friend class NdisEventsProxy;
+    class NdisEventsProxy* m_ndisEventsProxy;
+    friend class NdisEventsProxy;
 #endif
 
     bool m_up;

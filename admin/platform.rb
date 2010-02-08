@@ -54,10 +54,10 @@ module Platform
       IMPL = :netbsd
    elsif RUBY_PLATFORM =~ /mswin/i
       OS = :win32
-      IMPL = :mingw
+      IMPL = :mswin
    elsif RUBY_PLATFORM =~ /cygwin/i
       OS = :win32
-      IMPL = :mingw
+      IMPL = :mswin
    elsif RUBY_PLATFORM =~ /mingw/i
       OS = :win32
       IMPL = :mingw

@@ -26,7 +26,7 @@
   */
 struct IeSettings : WINHTTP_CURRENT_USER_IE_PROXY_CONFIG
 {
-    IeSettings::IeSettings()
+    IeSettings()
     {
         if (!WinHttpGetIEProxyConfigForCurrentUser(this)) {
             fAutoDetect = FALSE;
@@ -34,7 +34,7 @@ struct IeSettings : WINHTTP_CURRENT_USER_IE_PROXY_CONFIG
         }
     }
     
-    IeSettings::~IeSettings()
+    ~IeSettings()
     {
         if (lpszAutoConfigUrl) GlobalFree(lpszAutoConfigUrl);
         if (lpszProxy) GlobalFree(lpszProxy);
