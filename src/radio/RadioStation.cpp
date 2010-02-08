@@ -39,7 +39,7 @@ lastfm::RadioStation::list( QNetworkReply* r )
     QList<lastfm::RadioStation> result;
     try {
         foreach (XmlQuery xq, XmlQuery(ws::parse(r)).children("station")) {
-            lastfm::RadioStation rs(xq["url"].text());
+            lastfm::RadioStation rs( QUrl::fromPercentEncoding( xq["url"].text().toUtf8() ) );
             rs.setTitle(xq["name"].text());
             result.append(rs);
         }
