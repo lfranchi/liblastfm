@@ -186,15 +186,25 @@ lastfm::Track::getTopTags() const
 
 
 QNetworkReply*
+lastfm::Track::getTopFans() const
+{
+    return ws::get( params("getTopFans", true) );
+}
+
+
+QNetworkReply*
 lastfm::Track::getTags() const
 {
     return ws::get( params("getTags", true) );
 }
 
 QNetworkReply*
-lastfm::Track::getInfo() const
+lastfm::Track::getInfo(const QString& user, const QString& sk) const
 {
-    return ws::get( params("getInfo", true) );
+    QMap<QString, QString> map = params("getInfo", true);
+    if (!user.isEmpty()) map["username"] = user;
+    if (!sk.isEmpty()) map["sk"] = sk;
+    return ws::get( map );
 }
 
 

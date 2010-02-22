@@ -52,10 +52,19 @@ Artist::www() const
     return UrlBuilder( "music" ).slash( Artist::name() ).url();
 }
 
-QNetworkReply* 
-Artist::getInfo() const
+QNetworkReply*
+Artist::getEvents() const
 {
-    return ws::get( params("getInfo") );
+    return ws::get( params("getEvents") );
+}
+
+QNetworkReply* 
+Artist::getInfo(const QString& user, const QString& sk) const
+{
+    QMap<QString, QString> map = params("getInfo");
+    if (!user.isEmpty()) map["username"] = user;
+    if (!sk.isEmpty()) map["sk"] = sk;
+    return ws::get( map );
 }
 
 
