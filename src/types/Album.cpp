@@ -29,12 +29,14 @@
 
 
 QNetworkReply*
-lastfm::Album::getInfo() const
+lastfm::Album::getInfo(const QString& user, const QString& sk) const
 {
     QMap<QString, QString> map;
     map["method"] = "album.getInfo";
     map["artist"] = m_artist;
     map["album"] = m_title;
+    if (!user.isEmpty()) map["username"] = user;
+    if (!sk.isEmpty()) map["sk"] = sk;
     return lastfm::ws::get(map);
 }
 
