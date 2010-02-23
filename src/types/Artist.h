@@ -61,7 +61,7 @@ namespace lastfm
     
         QNetworkReply* share( const class User& recipient, const QString& message = "" );
 
-        QNetworkReply* getEvents() const;
+        QNetworkReply* getEvents(int limit = 0) const;
         QNetworkReply* getInfo(const QString& user = "", const QString& sk = "") const;
         static Artist getInfo( QNetworkReply* );
     
