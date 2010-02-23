@@ -53,9 +53,11 @@ Artist::www() const
 }
 
 QNetworkReply*
-Artist::getEvents() const
+Artist::getEvents(int limit) const
 {
-    return ws::get( params("getEvents") );
+    QMap<QString, QString> map = params("getEvents");
+    if (limit) map["limit"] = QString::number(limit);
+    return ws::get( map );
 }
 
 QNetworkReply* 
