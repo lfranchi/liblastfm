@@ -233,7 +233,7 @@ lastfm::Track::removeTag( const QString& tag ) const
 QUrl
 lastfm::Track::www() const
 {
-    return UrlBuilder( "music" ).slash( d->artist ).slash( "_" ).slash( d->title ).url();
+    return UrlBuilder( "music" ).slash( d->artist ).slash( album().isNull() ? QString("_") : album()).slash( d->title ).url();
 }
 
 
