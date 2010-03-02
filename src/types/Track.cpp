@@ -128,10 +128,10 @@ lastfm::Track::durationString( int const duration )
 
 
 QNetworkReply*
-lastfm::Track::share( const User& recipient, const QString& message )
+lastfm::Track::share( const QStringList& recipients, const QString& message ) const
 {
     QMap<QString, QString> map = params("share");
-    map["recipient"] = recipient;
+    map["recipient"] = recipients.join(",");
     if (message.size()) map["message"] = message;
     return ws::post(map);
 }

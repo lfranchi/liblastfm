@@ -27,7 +27,6 @@
 #include <QStringList>
 #include <QTimer>
 
-
 QNetworkReply*
 lastfm::Album::getInfo(const QString& user, const QString& sk) const
 {
@@ -53,13 +52,13 @@ lastfm::Album::getTags() const
 
 
 QNetworkReply*
-lastfm::Album::share( const User& recipient, const QString& message )
+lastfm::Album::share( const QStringList& recipients, const QString& message ) const
 {
     QMap<QString, QString> map;
     map["method"] = "album.share";
     map["artist"] = m_artist;
     map["album"] = m_title;
-    map["recipient"] = recipient;
+    map["recipient"] = recipients.join(",");
     if (message.size()) map["message"] = message;
     return lastfm::ws::post(map);
 }
