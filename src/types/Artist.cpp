@@ -37,10 +37,10 @@ Artist::params( const QString& method ) const
 }
 
 QNetworkReply*
-Artist::share( const User& user, const QString& message )
+Artist::share( const QStringList& recipients, const QString& message ) const
 {
     QMap<QString, QString> map = params("share");
-    map["recipient"] = user;
+    map["recipient"] = recipients.join(",");
     if (message.size()) map["message"] = message;
     return lastfm::ws::post(map);
 }
