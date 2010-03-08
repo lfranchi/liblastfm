@@ -59,7 +59,7 @@ namespace lastfm
         }
         QString name() const { return QString(*this); } 
     
-        QNetworkReply* share( const QStringList& recipients, const QString& message = "" ) const;
+        QNetworkReply* share( const QStringList& recipients, const QString& message = "", bool isPublic = true ) const;
 
         QNetworkReply* getEvents(int limit = 0) const;
         QNetworkReply* getInfo(const QString& user = "", const QString& sk = "") const;

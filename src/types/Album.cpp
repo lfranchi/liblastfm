@@ -52,13 +52,14 @@ lastfm::Album::getTags() const
 
 
 QNetworkReply*
-lastfm::Album::share( const QStringList& recipients, const QString& message ) const
+lastfm::Album::share( const QStringList& recipients, const QString& message, bool isPublic ) const
 {
     QMap<QString, QString> map;
     map["method"] = "album.share";
     map["artist"] = m_artist;
     map["album"] = m_title;
     map["recipient"] = recipients.join(",");
+    map["public"] = isPublic ? "1" : "0";
     if (message.size()) map["message"] = message;
     return lastfm::ws::post(map);
 }

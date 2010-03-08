@@ -147,7 +147,7 @@ public:
 //////////// lastfm::Ws
     
     /** See last.fm/api Track section */
-    QNetworkReply* share( const QStringList& recipients, const QString& message = "" ) const;
+    QNetworkReply* share( const QStringList& recipients, const QString& message = "", bool isPublic = true ) const;
 
     /** you can get any QNetworkReply TagList using Tag::list( QNetworkReply* ) */
     QNetworkReply* getTags() const; // for the logged in user
