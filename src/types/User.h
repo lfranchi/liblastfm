@@ -23,6 +23,7 @@
 #include <lastfm/ws.h>
 #include <QString>
 #include <QUrl>
+#include <lastfm/UserList>
 
 namespace lastfm
 {
@@ -30,9 +31,14 @@ namespace lastfm
     {
         QString m_name;
     
-    public:    
+    public:
+        User() : m_name( lastfm::ws::Username ), m_match( -1.0f )
+        {}
+
         User( const QString& name ) : m_name( name ), m_match( -1.0f )
         {}
+
+        bool operator==(const lastfm::User& that) const { return m_name == that.m_name; }
 
         operator QString() const { return m_name; }
         QString name() const { return m_name; }
@@ -41,7 +47,7 @@ namespace lastfm
         QNetworkReply* getTopTags() const;
 
         /** use User::list() on the response to get a QList<User> */
-        QNetworkReply* getFriends() const;
+        QNetworkReply* getFriends(int perPage = 50, int page = 1) const;
         QNetworkReply* getNeighbours() const;
     
         QNetworkReply* getPlaylists() const;
@@ -50,7 +56,7 @@ namespace lastfm
         QNetworkReply* getRecentArtists() const;
         QNetworkReply* getRecentStations() const;
     
-        static QList<User> list( QNetworkReply* );
+        static UserList list( QNetworkReply* );
     
     //////
         QUrl smallImageUrl() const { return m_smallImage; }
