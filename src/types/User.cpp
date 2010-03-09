@@ -22,6 +22,7 @@
 #include "../core/XmlQuery.h"
 #include <QStringList>
 using lastfm::User;
+using lastfm::UserList;
 using lastfm::AuthenticatedUser;
 
 QMap<QString, QString>
@@ -35,9 +36,12 @@ User::params(const QString& method) const
 
 
 QNetworkReply*
-User::getFriends() const
+User::getFriends( int perPage, int page ) const
 {
-    return ws::get( params( "getFriends" ) );
+    QMap<QString, QString> map = params( "getFriends" );
+    map["limit"] = QString::number(perPage);
+    map["page"] = QString::number(page);
+    return ws::get( map );
 }
 
 
@@ -88,10 +92,10 @@ User::getPlaylists() const
 }
 
 
-QList<User> //static
+UserList //static
 User::list( QNetworkReply* r )
 {
-    QList<User> users;
+    UserList users;
     try {
         XmlQuery lfm = ws::parse(r);
         foreach (XmlQuery e, lfm.children( "user" ))
@@ -103,6 +107,11 @@ User::list( QNetworkReply* r )
             u.m_realName = e["realname"].text();
             users += u;
         }
+
+        users.total = lfm["friends"].attribute("total").toInt();
+        users.page = lfm["friends"].attribute("page").toInt();
+        users.perPage = lfm["friends"].attribute("perPage").toInt();
+        users.totalPages = lfm["friends"].attribute("totalPages").toInt();
     }
     catch (ws::ParseError& e)
     {
