@@ -22,6 +22,7 @@
 
 #include <lastfm/ws.h>
 #include <QString>
+#include <QStringList>
 #include <QUrl>
 #include <lastfm/UserList>
 
@@ -42,6 +43,7 @@ namespace lastfm
 
         operator QString() const { return m_name; }
         QString name() const { return m_name; }
+        
     
         /** use Tag::list() on the response to get a WeightedStringList */
         QNetworkReply* getTopTags() const;
@@ -85,28 +87,67 @@ namespace lastfm
     };
 
 
-    /** The authenticated user is special, as some webservices only work for him */
-    class LASTFM_DLLEXPORT AuthenticatedUser : public User
+    /** The Extended User contains extra information about a user's account */
+    class LASTFM_DLLEXPORT UserDetails : public User
     {
-        using User::match; //hide as not useful
-    
     public:
-        /** the authenticated User */
-        AuthenticatedUser() : User( lastfm::ws::Username )
-        {}    
-
-        /** you can only get information about the autheticated user */
-        static QNetworkReply* getInfo();
+        /** User details */
+        UserDetails( QNetworkReply* );
     
+        /** you can only get information about the any user */
+        static QNetworkReply* getInfo( const QString& username = lastfm::ws::Username );
+
         /** a verbose string, eg. "A man with 36,153 scrobbles" */
-        static QString getInfoString( QNetworkReply* );
-        
-        static bool canBootstrap( QNetworkReply* );
+        QString getInfoString();
+
+        bool isSubscriber() const{ return m_isSubscriber; }
+        bool canBootstrap() const{ return m_canBootstrap; }
 
         // pass the result to Artist::list(), if you want the other data 
         // you have to parse the lfm() yourself members
         // http://www.last.fm/api/show?service=388
-        static QNetworkReply* getRecommendedArtists();
+        // static QNetworkReply* getRecommendedArtists();
+
+    protected:
+            
+        class Gender
+        {
+            QString s;
+
+        public:
+            Gender() :s(/*confused!*/){}
+
+            Gender( const QString& ss ) :s( ss.toLower() )
+            {}
+     
+            bool known() const { return male() || female(); }
+            bool male() const { return s == "m"; }
+            bool female() const { return s == "f"; }
+     
+            QString toString() const
+            {
+                #define tr QObject::tr
+                QStringList list;
+                if (male())
+                    list << tr("boy") << tr("lad") << tr("chap") << tr("guy");
+                else if (female())
+                    // I'm not sexist, it's just I'm gutless and couldn't think
+                    // of any other non offensive terms for women!
+                    list << tr("girl") << tr("lady") << tr("lass");
+                else 
+                    return tr("person");
+                
+                return list.value( QDateTime::currentDateTime().toTime_t() % list.count() );
+                #undef tr
+            }
+        } m_gender;
+
+        unsigned short m_age;
+        unsigned int m_scrobbles;
+        QDateTime m_registered;
+        QString m_country;
+        bool m_isSubscriber;
+        bool m_canBootstrap;
     };
 }
 
