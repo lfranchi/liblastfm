@@ -23,7 +23,7 @@
 #include <QStringList>
 using lastfm::User;
 using lastfm::UserList;
-using lastfm::AuthenticatedUser;
+using lastfm::UserDetails;
 
 QMap<QString, QString>
 User::params(const QString& method) const
@@ -122,22 +122,24 @@ User::list( QNetworkReply* r )
 
 
 QNetworkReply* //static
-AuthenticatedUser::getInfo()
+UserDetails::getInfo( const QString& username )
 {
     QMap<QString, QString> map;
     map["method"] = "user.getInfo";
+    map["user"] = username;
     return ws::post( map );
 }
 
 
+/*
 QNetworkReply* //static
-AuthenticatedUser::getRecommendedArtists()
+UserDetails::getRecommendedArtists()
 {
     QMap<QString, QString> map;
     map["method"] = "user.getRecommendedArtists";
     return ws::post( map );
 }
-
+*/
 
 QUrl
 User::www() const
@@ -146,75 +148,45 @@ User::www() const
 }
 
 
-QString //static
-AuthenticatedUser::getInfoString( QNetworkReply* reply )
+UserDetails::UserDetails( QNetworkReply* reply )
 {
-    #define tr QObject::tr
-    
-    class Gender
-    {
-        QString s;
-
-    public:
-        Gender( const QString& ss ) :s( ss.toLower() )
-        {}
- 
-        bool known() const { return male() || female(); }
-        bool male() const { return s == "m"; }
-        bool female() const { return s == "f"; }
- 
-        QString toString()
-        {
-            QStringList list;
-            if (male())
-                list << tr("boy") << tr("lad") << tr("chap") << tr("guy");
-            else if (female())
-                // I'm not sexist, it's just I'm gutless and couldn't think
-                // of any other non offensive terms for women!
-                list << tr("girl") << tr("lady") << tr("lass");
-            else 
-                return tr("person");
-            
-            return list.value( QDateTime::currentDateTime().toTime_t() % list.count() );
-        }
-    };
-
-    QString text;
     try
     {
         XmlQuery user = XmlQuery(ws::parse(reply))["user"];
-        Gender gender = user["gender"].text();
-        QString age = user["age"].text();
-        uint const scrobbles = user["playcount"].text().toUInt();
-        if (gender.known() && age.size() && scrobbles > 0)
-        {
-            text = tr("A %1, %2 years of age with %L3 scrobbles")
-                    .arg( gender.toString() )
-                    .arg( age )
-                    .arg( scrobbles );
-        }
-        else if (scrobbles > 0)
-        {
-            text = tr("%L1 scrobbles").arg( scrobbles );
-        }    
+        m_age = user["age"].text().toUInt();
+        m_scrobbles = user["playcount"].text().toUInt();
+        m_registered = QDateTime::fromTime_t(user["registered"].attribute("unixtime").toUInt());
+        m_country = user["country"].text();
+        m_isSubscriber = ( user["subscriber"].text() == "1" );
+        m_canBootstrap = ( user["bootstrap"].text() == "1" );
     }
     catch (ws::ParseError& e)
     {
         qWarning() << e.what();
     }
+}
+
+
+QString
+UserDetails::getInfoString()
+{
+    #define tr QObject::tr
+;
+
+    QString text;
+    if (m_gender.known() && m_age > 0 && m_scrobbles > 0)
+    {
+        text = tr("A %1, %2 years of age with %L3 scrobbles")
+                .arg( m_gender.toString() )
+                .arg( m_age )
+                .arg( m_scrobbles );
+    }
+    else if (m_scrobbles > 0)
+    {
+        text = tr("%L1 scrobbles").arg( m_scrobbles );
+    }    
+
     return text;
     
     #undef tr
-}
-
-bool //static
-AuthenticatedUser::canBootstrap( QNetworkReply* reply )
-{
-    try {
-        XmlQuery user = XmlQuery(ws::parse(reply))["user"];
-        return user["bootstrap"].text().toUInt() == 1;
-    } 
-    catch ( const lastfm::ws::ParseError& e ) {}
-    
-    return false;    
 }
