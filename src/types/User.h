@@ -98,7 +98,7 @@ namespace lastfm
         static QNetworkReply* getInfo( const QString& username = lastfm::ws::Username );
 
         /** a verbose string, eg. "A man with 36,153 scrobbles" */
-        QString getInfoString();
+        QString getInfoString() const;
 
         bool isSubscriber() const{ return m_isSubscriber; }
         bool canBootstrap() const{ return m_canBootstrap; }
