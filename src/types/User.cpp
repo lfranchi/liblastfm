@@ -159,6 +159,7 @@ UserDetails::UserDetails( QNetworkReply* reply )
         m_country = user["country"].text();
         m_isSubscriber = ( user["subscriber"].text() == "1" );
         m_canBootstrap = ( user["bootstrap"].text() == "1" );
+        m_gender = ( user["gender"].text());
     }
     catch (ws::ParseError& e)
     {
@@ -168,7 +169,7 @@ UserDetails::UserDetails( QNetworkReply* reply )
 
 
 QString
-UserDetails::getInfoString()
+UserDetails::getInfoString() const
 {
     #define tr QObject::tr
 ;
