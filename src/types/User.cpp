@@ -159,7 +159,11 @@ UserDetails::UserDetails( QNetworkReply* reply )
         m_country = user["country"].text();
         m_isSubscriber = ( user["subscriber"].text() == "1" );
         m_canBootstrap = ( user["bootstrap"].text() == "1" );
-        m_gender = ( user["gender"].text());
+        m_gender = user["gender"].text();
+        m_realName = user["realname"].text();
+        m_name = user["name"].text();
+        m_smallImage = m_mediumImage = m_largeImage = user["image"].text();
+
     }
     catch (ws::ParseError& e)
     {
