@@ -30,8 +30,6 @@ namespace lastfm
 {
     class LASTFM_DLLEXPORT User
     {
-        QString m_name;
-    
     public:
         User() : m_name( lastfm::ws::Username ), m_match( -1.0f )
         {}
@@ -74,7 +72,9 @@ namespace lastfm
           * object represents (if < 0.0f then not set) */
         float match() const { return m_match; }
     
-    private:
+    protected:
+        QString m_name;
+
         QUrl m_smallImage;
         QUrl m_mediumImage;
         QUrl m_largeImage;
