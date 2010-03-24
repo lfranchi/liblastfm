@@ -63,11 +63,11 @@ void autograph( QMap<QString, QString>& params )
     params["lang"] = iso639();
 }
 
-static void sign( QMap<QString, QString>& params )
+static void sign( QMap<QString, QString>& params, bool sk = true )
 {
     autograph( params );
     // it's allowed for sk to be null if we this is an auth call for instance
-    if (lastfm::ws::SessionKey.size())
+    if (sk && lastfm::ws::SessionKey.size())
         params["sk"] = lastfm::ws::SessionKey;
 
     QString s;
@@ -103,9 +103,9 @@ lastfm::ws::get( QMap<QString, QString> params )
 
 
 QNetworkReply*
-lastfm::ws::post( QMap<QString, QString> params )
+lastfm::ws::post( QMap<QString, QString> params, bool sk )
 {   
-    sign( params ); 
+    sign( params, sk ); 
     QByteArray query;
     QMapIterator<QString, QString> i( params );
     while (i.hasNext()) {

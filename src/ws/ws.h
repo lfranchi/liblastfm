@@ -115,7 +115,7 @@ namespace lastfm
         LASTFM_DLLEXPORT QNetworkReply* get( QMap<QString, QString> );
         /** generates api sig, includes api key, and posts, don't add the api
           * key yourself as well--it'll break */
-        LASTFM_DLLEXPORT QNetworkReply* post( QMap<QString, QString> );
+        LASTFM_DLLEXPORT QNetworkReply* post( QMap<QString, QString>, bool sessionKey = true );
 
 
         class ParseError : public std::runtime_error
