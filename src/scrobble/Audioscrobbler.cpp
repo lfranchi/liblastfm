@@ -241,7 +241,7 @@ lastfm::Audioscrobbler::onSubmissionReturn( const QByteArray& result )
         d->cache.remove( d->submitter->batch() );
         d->submitter->submitNextBatch();
 
-        if (d->submitter->batch().isEmpty())
+        if (d->submitter->unsubmittedTracks().isEmpty())
         {
             emit status( Audioscrobbler::TracksScrobbled );
         }
