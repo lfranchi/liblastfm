@@ -162,8 +162,9 @@ UserDetails::UserDetails( QNetworkReply* reply )
         m_gender = user["gender"].text();
         m_realName = user["realname"].text();
         m_name = user["name"].text();
-        m_smallImage = m_mediumImage = m_largeImage = user["image"].text();
-
+        m_smallImage = user["image size=small"].text();
+        m_mediumImage = user["image size=medium"].text();
+        m_largeImage = user["image size=large"].text();
     }
     catch (ws::ParseError& e)
     {
