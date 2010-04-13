@@ -103,6 +103,7 @@ namespace lastfm
         bool isSubscriber() const{ return m_isSubscriber; }
         bool canBootstrap() const{ return m_canBootstrap; }
         quint32 scrobbleCount() const{ return m_scrobbles; }
+        QDateTime dateRegistered() const { return m_registered; }
 
         // pass the result to Artist::list(), if you want the other data 
         // you have to parse the lfm() yourself members
