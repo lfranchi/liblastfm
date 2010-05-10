@@ -18,9 +18,12 @@
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "User.h"
+#include "Track.h"
 #include "../core/UrlBuilder.h"
 #include "../core/XmlQuery.h"
 #include <QStringList>
+
+
 using lastfm::User;
 using lastfm::UserList;
 using lastfm::UserDetails;
@@ -32,6 +35,20 @@ User::params(const QString& method) const
     map["method"] = "user."+method;
     map["user"] = m_name;
     return map;
+}
+
+
+QNetworkReply*
+User::updateNowPlaying(const lastfm::Track& track)
+{
+    QMap<QString, QString> map;
+    map["method"] = "User.updateNowPlaying";
+    map["duration"] = QString::number( track.duration() );
+    map["track"] = track.title();
+    if ( !track.album().isNull() ) map["album"] = track.album();
+    map["artist"] = track.artist();
+    if ( !track.mbid().isNull() ) map["mbid"] = track.mbid();
+    return ws::post(map);
 }
 
 
