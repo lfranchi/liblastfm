@@ -25,6 +25,7 @@
 
 #include "../types/User.h"
 #include "../ws/ws.h"
+#include "../core/XmlQuery.h"
 
 
 namespace lastfm
@@ -32,16 +33,19 @@ namespace lastfm
     struct AudioscrobblerPrivate
     {
         AudioscrobblerPrivate(const QString& id)
-                : id( id )
-                , cache( ws::Username )
+                : m_id( id )
+                , m_cache( ws::Username )
         {}
         
         ~AudioscrobblerPrivate()
         {
         }
 
-        const QString id;
-        ScrobbleCache cache;
+        const QString m_id;
+        ScrobbleCache m_cache;
+        QList<Track> m_batch;
+        QPointer<QNetworkReply> m_nowPlayingReply;
+        QPointer<QNetworkReply> m_scrobbleReply;
     };
 }
 
@@ -62,7 +66,11 @@ lastfm::Audioscrobbler::~Audioscrobbler()
 void
 lastfm::Audioscrobbler::nowPlaying( const Track& track )
 {
-    connect( lastfm::User::updateNowPlaying( track ), SIGNAL(finished()), SLOT(onNowPlayingReturn()));
+    if ( d->m_nowPlayingReply.isNull())
+    {
+        d->m_nowPlayingReply = lastfm::User::updateNowPlaying( track );
+        connect( d->m_nowPlayingReply, SIGNAL(finished()), SLOT(onNowPlayingReturn()));
+    }
 }
 
 
@@ -71,43 +79,45 @@ lastfm::Audioscrobbler::cache( const Track& track )
 {
     QList<Track> tracks;
     tracks.append( track );
-    d->cache.add( tracks );
+    d->m_cache.add( tracks );
 }
 
 
 void
 lastfm::Audioscrobbler::cache( const QList<Track>& tracks )
 {
-    qDebug() << tracks;
-    d->cache.add( tracks );
+    d->m_cache.add( tracks );
 }
 
 
 void
 lastfm::Audioscrobbler::submit()
 {
-    if (d->cache.tracks().isEmpty())
+    if (d->m_cache.tracks().isEmpty() // there are no tracks to submit
+            || !d->m_scrobbleReply.isNull() ) // we are already submitting scrobbles
         return;
 
-    if (d->cache.tracks().count() == 1)
+    // sort in chronological order
+    if ( d->m_cache.tracks().count() > 1)
+        qSort( d->m_cache.tracks().begin(), d->m_cache.tracks().end() );
+
+    // move tracks to be submitted to a temporary list
+    for (int i(0) ; i < d->m_cache.tracks().count() && i < 50 ; ++i)
+        d->m_batch.append( d->m_cache.tracks().takeFirst() );
+
+
+
+    // if there is only one track use track.scrobble, otherwise use track.scrobbleBatch
+    if (d->m_batch.count() == 1)
     {
-        connect( d->cache.tracks()[0].scrobble(), SIGNAL(finished()), SLOT(onSubmissionReturn()));
+        d->m_scrobbleReply = d->m_batch[0].scrobble();
+        connect( d->m_scrobbleReply, SIGNAL(finished()), SLOT(onTrackScrobbleReturn()));
     }
     else
     {
-        // sort in chronological order
-        qSort( d->cache.tracks().begin(), d->cache.tracks().end() );
-        connect(lastfm::Track::scrobbleBatch( d->cache.tracks().mid(0, 50) ), SIGNAL(finished()), SLOT(onSubmissionReturn()));
+        d->m_scrobbleReply = lastfm::Track::scrobbleBatch( d->m_batch );
+        connect( d->m_scrobbleReply, SIGNAL(finished()), SLOT(onTrackScrobbleBatchReturn()));
     }
-
-    emit status( Scrobbling );
-}
-
-
-void
-lastfm::Audioscrobbler::onError( Audioscrobbler::Error code )
-{
-    qDebug() << code; //TODO error text
 }
 
 
@@ -116,12 +126,38 @@ lastfm::Audioscrobbler::onNowPlayingReturn()
 {
     QByteArray data = static_cast<QNetworkReply*>(sender())->readAll();
     qDebug() << data;
+    d->m_nowPlayingReply = 0;
 }
 
 
 void
-lastfm::Audioscrobbler::onSubmissionReturn()
+lastfm::Audioscrobbler::onTrackScrobbleReturn()
 {
-    QByteArray data = static_cast<QNetworkReply*>(sender())->readAll();
-    qDebug() << data;
+    lastfm::XmlQuery lfm = d->m_scrobbleReply->readAll();
+    qDebug() << lfm;
+
+    if (lfm.attribute("status") == "ok")
+    {
+        emit scrobblesSubmitted( d->m_batch.count() );
+        d->m_cache.remove( d->m_batch );
+    }
+
+    d->m_batch.clear();
+    d->m_scrobbleReply = 0;
+}
+
+void
+lastfm::Audioscrobbler::onTrackScrobbleBatchReturn()
+{
+    lastfm::XmlQuery lfm = d->m_scrobbleReply->readAll();
+    qDebug() << lfm;
+
+    if (lfm.attribute("status") == "ok")
+    {
+        emit scrobblesSubmitted( d->m_batch.count() );
+        d->m_cache.remove( d->m_batch );
+    }
+
+    d->m_batch.clear();
+    d->m_scrobbleReply = 0;
 }

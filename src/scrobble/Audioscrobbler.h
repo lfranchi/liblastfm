@@ -45,6 +45,9 @@ namespace lastfm
         Audioscrobbler( const QString& clientId );
         ~Audioscrobbler();
 
+    signals:
+        void scrobblesSubmitted( int numTracks );
+
     public slots:
         /** will ask Last.fm to update the now playing information for the 
           * authenticated user */
@@ -56,51 +59,15 @@ namespace lastfm
 
     public:
         void cache( const QList<Track>& );
-    
-    public:
-        enum Status
-        {
-            Scrobbling,
-            TracksScrobbled,
-        
-            StatusMax
-        };
-
-        enum Error
-        {
-            /** the following will show via the status signal, the scrobbler will
-              * not submit this session (np too), however caching will continue */
-            ErrorBadSession = StatusMax,
-            ErrorBannedClientVersion,
-            ErrorInvalidSessionKey,
-            ErrorBadTime,
-            ErrorThreeHardFailures
-        };
-
-    signals:
-        /** the controller should show status in an appropriate manner */
-        void status( int code );
 
     private slots:
         void onNowPlayingReturn();
-        void onSubmissionReturn();
-
-    private:
-        void onError( Error );
+        void onTrackScrobbleReturn();
+        void onTrackScrobbleBatchReturn();
 
     private:
         class AudioscrobblerPrivate* d;
     };
-}
-
-
-static inline QDebug operator<<( QDebug d, lastfm::Audioscrobbler::Status status )
-{
-    return d << lastfm::qMetaEnumString<lastfm::Audioscrobbler>( status, "Status" );
-}
-static inline QDebug operator<<( QDebug d, lastfm::Audioscrobbler::Error error )
-{
-    return d << lastfm::qMetaEnumString<lastfm::Audioscrobbler>( error, "Status" );
 }
 
 #endif

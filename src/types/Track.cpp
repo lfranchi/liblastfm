@@ -234,7 +234,8 @@ lastfm::Track::removeTag( const QString& tag ) const
 QNetworkReply*
 lastfm::Track::scrobble()
 {
-    QMap<QString, QString> map = params( "scrobble", false );
+    QMap<QString, QString> map;
+    map["method"] = "Track.scrobble";
     map["duration"] = QString::number( d->duration );
     map["timestamp"] = QString::number( d->time.toTime_t() );
     map["track"] = d->title;
