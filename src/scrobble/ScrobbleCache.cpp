@@ -88,13 +88,6 @@ ScrobbleCache::write()
 
 
 void
-ScrobbleCache::add( const Scrobble& track )
-{
-    add( QList<Track>() << track );
-}
-
-
-void
 ScrobbleCache::add( const QList<Track>& tracks )
 {
     foreach (const Track& track, tracks)

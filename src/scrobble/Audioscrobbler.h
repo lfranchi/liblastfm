@@ -56,18 +56,10 @@ namespace lastfm
 
     public:
         void cache( const QList<Track>& );
-
-        /** provided the current session is invalid, we will rehandshake.
-          * if the current session is valid, we do nothing. Basically, I don't want
-          * to write the code to safely delete currently executing submission
-          * requests */
-        void rehandshake();
     
     public:
         enum Status
         {
-            Connecting,
-            Handshaken,
             Scrobbling,
             TracksScrobbled,
         
@@ -90,12 +82,10 @@ namespace lastfm
         void status( int code );
 
     private slots:
-        void onHandshakeReturn( const QByteArray& );
-        void onNowPlayingReturn( const QByteArray& );
-        void onSubmissionReturn( const QByteArray& );
+        void onNowPlayingReturn();
+        void onSubmissionReturn();
 
     private:
-        void handshake();
         void onError( Error );
 
     private:

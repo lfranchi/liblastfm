@@ -42,6 +42,7 @@ namespace lastfm
         operator QString() const { return m_name; }
         QString name() const { return m_name; }
         
+        static QNetworkReply* updateNowPlaying(const lastfm::Track& track);
     
         /** use Tag::list() on the response to get a WeightedStringList */
         QNetworkReply* getTopTags() const;

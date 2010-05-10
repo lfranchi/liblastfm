@@ -168,7 +168,7 @@ QMap<QString, QString>
 lastfm::Track::params( const QString& method, bool use_mbid ) const
 {
     QMap<QString, QString> map;
-    map["method"] = "track."+method;
+    map["method"] = "Track."+method;
     if (d->mbid.size() && use_mbid)
         map["mbid"] = d->mbid;
     else {
@@ -227,6 +227,39 @@ lastfm::Track::removeTag( const QString& tag ) const
         return 0;
     QMap<QString, QString> map = params( "removeTag" );
     map["tags"] = tag;
+    return ws::post(map);
+}
+
+
+QNetworkReply*
+lastfm::Track::scrobble()
+{
+    QMap<QString, QString> map = params( "scrobble", false );
+    map["duration"] = QString::number( d->duration );
+    map["timestamp"] = QString::number( d->time.toTime_t() );
+    map["track"] = d->title;
+    if ( !d->album.isEmpty() ) map["album"] = d->album;
+    map["artist"] = d->artist;
+    if ( !d->mbid.isEmpty() ) map["mbid"] = d->mbid;
+    return ws::post(map);
+}
+
+QNetworkReply*
+lastfm::Track::scrobbleBatch(const QList<lastfm::Track>& tracks)
+{
+    QMap<QString, QString> map;
+    map["method"] = "Track.scrobbleBatch";
+
+    for ( int i(0) ; i < tracks.count() ; ++i )
+    {
+        map["duration[" + QString::number(i) + "]"] = QString::number( tracks[i].duration() );
+        map["timestamp[" + QString::number(i)  + "]"] = QString::number( tracks[i].timestamp().toTime_t() );
+        map["track[" + QString::number(i)  + "]"] = tracks[i].title();
+        if ( !tracks[i].album().isNull() ) map["album[" + QString::number(i)  + "]"] = tracks[i].album();
+        map["artist[" + QString::number(i) + "]"] = tracks[i].artist();
+        if ( !tracks[i].mbid().isNull() ) map["mbid[" + QString::number(i)  + "]"] = tracks[i].mbid();
+    }
+
     return ws::post(map);
 }
 
