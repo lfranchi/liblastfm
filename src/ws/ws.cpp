@@ -120,8 +120,8 @@ lastfm::ws::post( QMap<QString, QString> params, bool sk )
     QUrl asurl = url();
 
     if (method == "User.updateNowPlaying"
-        || method == "track.scrobble"
-        || method == "user.scrobbleBatch")
+        || method == "Track.scrobble"
+        || method == "Track.scrobbleBatch")
         asurl = "http://post.audioscrobbler.com/2.0/"; // TODO: remove this when scrobble 2.0 goes "live"
 
     return nam()->post( QNetworkRequest(asurl), query );
