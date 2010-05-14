@@ -79,7 +79,7 @@ lastfm::Audioscrobbler::cache( const Track& track )
 {
     QList<Track> tracks;
     tracks.append( track );
-    d->m_cache.add( tracks );
+    cache( tracks );
 }
 
 
@@ -87,6 +87,7 @@ void
 lastfm::Audioscrobbler::cache( const QList<Track>& tracks )
 {
     d->m_cache.add( tracks );
+    submit();
 }
 
 
@@ -124,8 +125,15 @@ lastfm::Audioscrobbler::submit()
 void
 lastfm::Audioscrobbler::onNowPlayingReturn()
 {
-    QByteArray data = static_cast<QNetworkReply*>(sender())->readAll();
-    qDebug() << data;
+    lastfm::XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
+    qDebug() << lfm;
+
+
+    if ( lfm.attribute("status") != "ok" )
+    {
+        emit nowPlayingError( lfm["code"].text().toInt(), lfm["error"].text() );
+    }
+
     d->m_nowPlayingReply = 0;
 }
 
@@ -141,6 +149,11 @@ lastfm::Audioscrobbler::onTrackScrobbleReturn()
         emit scrobblesSubmitted( d->m_batch.count() );
         d->m_cache.remove( d->m_batch );
     }
+    else
+    {
+        // there was an error
+        emit scrobbleError( lfm["code"].text().toInt(), lfm["error"].text() );
+    }
 
     d->m_batch.clear();
     d->m_scrobbleReply = 0;
@@ -154,8 +167,13 @@ lastfm::Audioscrobbler::onTrackScrobbleBatchReturn()
 
     if (lfm.attribute("status") == "ok")
     {
-        emit scrobblesSubmitted( d->m_batch.count() );
+        emit scrobblesSubmitted( lfm["submitted"].text().toInt() );
         d->m_cache.remove( d->m_batch );
+    }
+    else
+    {
+        // there was an error
+        emit scrobbleError( lfm["code"].text().toInt(), lfm["error"].text() );
     }
 
     d->m_batch.clear();

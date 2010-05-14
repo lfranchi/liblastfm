@@ -48,6 +48,9 @@ namespace lastfm
     signals:
         void scrobblesSubmitted( int numTracks );
 
+        void nowPlayingError( int code, QString message );
+        void scrobbleError( int code, QString message );
+
     public slots:
         /** will ask Last.fm to update the now playing information for the 
           * authenticated user */
