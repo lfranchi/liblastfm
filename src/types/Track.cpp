@@ -239,6 +239,7 @@ lastfm::Track::scrobble()
     map["duration"] = QString::number( d->duration );
     map["timestamp"] = QString::number( d->time.toTime_t() );
     map["track"] = d->title;
+    map["context"] = extra("playerName");
     if ( !d->album.isEmpty() ) map["album"] = d->album;
     map["artist"] = d->artist;
     if ( !d->mbid.isEmpty() ) map["mbid"] = d->mbid;
@@ -256,6 +257,7 @@ lastfm::Track::scrobbleBatch(const QList<lastfm::Track>& tracks)
         map["duration[" + QString::number(i) + "]"] = QString::number( tracks[i].duration() );
         map["timestamp[" + QString::number(i)  + "]"] = QString::number( tracks[i].timestamp().toTime_t() );
         map["track[" + QString::number(i)  + "]"] = tracks[i].title();
+        map["context[" + QString::number(i)  + "]"] = tracks[i].extra("playerName");
         if ( !tracks[i].album().isNull() ) map["album[" + QString::number(i)  + "]"] = tracks[i].album();
         map["artist[" + QString::number(i) + "]"] = tracks[i].artist();
         if ( !tracks[i].mbid().isNull() ) map["mbid[" + QString::number(i)  + "]"] = tracks[i].mbid();

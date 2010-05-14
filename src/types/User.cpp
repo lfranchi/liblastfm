@@ -45,9 +45,13 @@ User::updateNowPlaying(const lastfm::Track& track)
     map["method"] = "User.updateNowPlaying";
     map["duration"] = QString::number( track.duration() );
     map["track"] = track.title();
+    QString playerId = track.extra("playerName");
     if ( !track.album().isNull() ) map["album"] = track.album();
     map["artist"] = track.artist();
     if ( !track.mbid().isNull() ) map["mbid"] = track.mbid();
+    map["context"] = playerId;
+
+
     return ws::post(map);
 }
 
