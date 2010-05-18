@@ -27,6 +27,8 @@
 using lastfm::User;
 using lastfm::UserList;
 using lastfm::UserDetails;
+using lastfm::XmlQuery;
+using lastfm::ImageSize;
 
 User::User( const XmlQuery& xml ) 
      : m_match( -1.0f )

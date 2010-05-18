@@ -24,8 +24,11 @@
 #include "../ws/ws.h"
 #include <QRegExp>
 #include <QStringList>
+
 using lastfm::Artist;
 using lastfm::User;
+using lastfm::ImageSize;
+using lastfm::XmlQuery;
 
 QUrl
 Artist::imageUrl( ImageSize size, bool square ) const
