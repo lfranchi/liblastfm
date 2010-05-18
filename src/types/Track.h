@@ -161,6 +161,10 @@ public:
     /** will return 0 if the string is "" */
     QNetworkReply* removeTag( const QString& ) const;
 
+    /** scrobble the track */
+    QNetworkReply* scrobble();
+    static QNetworkReply* scrobbleBatch(const QList<lastfm::Track>& tracks);
+
     /** the url for this track's page at last.fm */
     QUrl www() const;
 

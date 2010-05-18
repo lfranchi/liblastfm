@@ -45,6 +45,12 @@ namespace lastfm
         Audioscrobbler( const QString& clientId );
         ~Audioscrobbler();
 
+    signals:
+        void scrobblesSubmitted( int numTracks );
+
+        void nowPlayingError( int code, QString message );
+        void scrobbleError( int code, QString message );
+
     public slots:
         /** will ask Last.fm to update the now playing information for the 
           * authenticated user */
@@ -57,60 +63,14 @@ namespace lastfm
     public:
         void cache( const QList<Track>& );
 
-        /** provided the current session is invalid, we will rehandshake.
-          * if the current session is valid, we do nothing. Basically, I don't want
-          * to write the code to safely delete currently executing submission
-          * requests */
-        void rehandshake();
-    
-    public:
-        enum Status
-        {
-            Connecting,
-            Handshaken,
-            Scrobbling,
-            TracksScrobbled,
-        
-            StatusMax
-        };
-
-        enum Error
-        {
-            /** the following will show via the status signal, the scrobbler will
-              * not submit this session (np too), however caching will continue */
-            ErrorBadSession = StatusMax,
-            ErrorBannedClientVersion,
-            ErrorInvalidSessionKey,
-            ErrorBadTime,
-            ErrorThreeHardFailures
-        };
-
-    signals:
-        /** the controller should show status in an appropriate manner */
-        void status( int code );
-
     private slots:
-        void onHandshakeReturn( const QByteArray& );
-        void onNowPlayingReturn( const QByteArray& );
-        void onSubmissionReturn( const QByteArray& );
-
-    private:
-        void handshake();
-        void onError( Error );
+        void onNowPlayingReturn();
+        void onTrackScrobbleReturn();
+        void onTrackScrobbleBatchReturn();
 
     private:
         class AudioscrobblerPrivate* d;
     };
-}
-
-
-static inline QDebug operator<<( QDebug d, lastfm::Audioscrobbler::Status status )
-{
-    return d << lastfm::qMetaEnumString<lastfm::Audioscrobbler>( status, "Status" );
-}
-static inline QDebug operator<<( QDebug d, lastfm::Audioscrobbler::Error error )
-{
-    return d << lastfm::qMetaEnumString<lastfm::Audioscrobbler>( error, "Status" );
 }
 
 #endif
