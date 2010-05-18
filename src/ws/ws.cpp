@@ -85,7 +85,7 @@ static void sign( QMap<QString, QString>& params, bool sk = true )
 QNetworkReply*
 lastfm::ws::get( QMap<QString, QString> params )
 {
-    autograph( params );
+    sign( params );
     QUrl url = ::url();
     // Qt setQueryItems doesn't encode a bunch of stuff, so we do it manually
     QMapIterator<QString, QString> i( params );

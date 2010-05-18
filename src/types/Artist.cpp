@@ -22,9 +22,36 @@
 #include "../core/UrlBuilder.h"
 #include "../core/XmlQuery.h"
 #include "../ws/ws.h"
+#include <QRegExp>
 #include <QStringList>
 using lastfm::Artist;
 using lastfm::User;
+
+QUrl
+Artist::imageUrl( ImageSize size, bool square ) const
+{
+    if( !square ) return m_images.value( size ); 
+
+    QUrl url = m_images.value( size );
+    QRegExp re( "/serve/(\\d*)s?/" );
+    return QUrl( url.toString().replace( re, "/serve/\\1s/" ));
+}
+
+static inline QList<QUrl> images( const lastfm::XmlQuery& e )
+{
+    QList<QUrl> images;
+    images += e["image size=small"].text();
+    images += e["image size=medium"].text();
+    images += e["image size=large"].text();
+    return images;
+}
+
+
+Artist::Artist( const XmlQuery& xml )
+{
+    m_name = xml["name"].text();
+    m_images = images( xml );
+}
 
 
 QMap<QString, QString> //private
@@ -35,6 +62,7 @@ Artist::params( const QString& method ) const
     map["artist"] = m_name;
     return map;
 }
+
 
 QNetworkReply*
 Artist::share( const QStringList& recipients, const QString& message, bool isPublic ) const
@@ -122,15 +150,6 @@ Artist::getSimilar( QNetworkReply* r )
 }
 
 
-static inline QList<QUrl> images( const lastfm::XmlQuery& e )
-{
-    QList<QUrl> images;
-    images += e["image size=small"].text();
-    images += e["image size=medium"].text();
-    images += e["image size=large"].text();
-    return images;
-}
-
 
 QList<Artist> /* static */
 Artist::list( QNetworkReply* r )
@@ -139,8 +158,7 @@ Artist::list( QNetworkReply* r )
     try {
         XmlQuery lfm = ws::parse(r);
         foreach (XmlQuery xq, lfm.children( "artist" )) {
-            Artist artist = xq["name"].text();
-            artist.m_images = images( xq );
+            Artist artist( xq );
             artists += artist;
         }
     }
