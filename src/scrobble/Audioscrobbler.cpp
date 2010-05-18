@@ -102,11 +102,8 @@ lastfm::Audioscrobbler::submit()
     if ( d->m_cache.tracks().count() > 1)
         qSort( d->m_cache.tracks().begin(), d->m_cache.tracks().end() );
 
-    // move tracks to be submitted to a temporary list
-    for (int i(0) ; i < d->m_cache.tracks().count() && i < 50 ; ++i)
-        d->m_batch.append( d->m_cache.tracks().takeFirst() );
-
-
+    // copy tracks to be submitted to a temporary list
+    d->m_batch = d->m_cache.tracks().mid( 0, 50 );
 
     // if there is only one track use track.scrobble, otherwise use track.scrobbleBatch
     if (d->m_batch.count() == 1)
@@ -146,7 +143,7 @@ lastfm::Audioscrobbler::onTrackScrobbleReturn()
 
     if (lfm.attribute("status") == "ok")
     {
-        emit scrobblesSubmitted( d->m_batch.count() );
+        emit scrobblesSubmitted( d->m_batch, d->m_batch.count() );
         d->m_cache.remove( d->m_batch );
     }
     else
@@ -167,7 +164,7 @@ lastfm::Audioscrobbler::onTrackScrobbleBatchReturn()
 
     if (lfm.attribute("status") == "ok")
     {
-        emit scrobblesSubmitted( lfm["submitted"].text().toInt() );
+        emit scrobblesSubmitted( d->m_batch, lfm["submitted"].text().toInt() );
         d->m_cache.remove( d->m_batch );
     }
     else
