@@ -28,6 +28,28 @@ using lastfm::User;
 using lastfm::UserList;
 using lastfm::UserDetails;
 
+User::User( const XmlQuery& xml ) 
+     : m_match( -1.0f )
+{
+    m_name = xml["name"].text();
+    m_images << xml["image size=small"].text()
+             << xml["image size=medium"].text()
+             << xml["image size=large"].text();
+    m_realName = xml["realname"].text();
+}
+
+
+QUrl 
+User::imageUrl( ImageSize size, bool square ) const
+{
+    if( !square ) return m_images.value( size ); 
+
+    QUrl url = m_images.value( size );
+    QRegExp re( "/serve/(\\d*)s?/" );
+    return QUrl( url.toString().replace( re, "/serve/\\1s/" ));
+}
+
+
 QMap<QString, QString>
 User::params(const QString& method) const
 {
@@ -121,11 +143,7 @@ User::list( QNetworkReply* r )
         XmlQuery lfm = ws::parse(r);
         foreach (XmlQuery e, lfm.children( "user" ))
         {
-            User u( e["name"].text() );
-            u.m_smallImage = e["image size=small"].text();
-            u.m_mediumImage = e["image size=medium"].text();
-            u.m_largeImage = e["image size=large"].text();
-            u.m_realName = e["realname"].text();
+            User u( e );
             users += u;
         }
 
@@ -183,9 +201,9 @@ UserDetails::UserDetails( QNetworkReply* reply )
         m_gender = user["gender"].text();
         m_realName = user["realname"].text();
         m_name = user["name"].text();
-        m_smallImage = user["image size=small"].text();
-        m_mediumImage = user["image size=medium"].text();
-        m_largeImage = user["image size=large"].text();
+        m_images << user["image size=small"].text()
+                 << user["image size=medium"].text()
+                 << user["image size=large"].text();
     }
     catch (ws::ParseError& e)
     {

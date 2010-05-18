@@ -39,8 +39,10 @@ namespace lastfm
         Artist( const QString& name ) : m_name( name )
         {}
 
+        Artist( const class XmlQuery& xml );
+
         /** will be QUrl() unless you got this back from a getInfo or something call */
-        QUrl imageUrl( ImageSize size = Large ) const { return m_images.value( size ); }
+        QUrl imageUrl( ImageSize size = Large, bool square = false ) const;
 
         bool isNull() const { return m_name.isEmpty(); }
         

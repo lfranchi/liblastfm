@@ -37,6 +37,8 @@ namespace lastfm
         User( const QString& name ) : m_name( name ), m_match( -1.0f )
         {}
 
+        User( const class XmlQuery& xml );
+
         bool operator==(const lastfm::User& that) const { return m_name == that.m_name; }
 
         operator QString() const { return m_name; }
@@ -60,10 +62,8 @@ namespace lastfm
         static UserList list( QNetworkReply* );
     
     //////
-        QUrl smallImageUrl() const { return m_smallImage; }
-        QUrl mediumImageUrl() const { return m_mediumImage; }
-        QUrl largeImageUrl() const { return m_largeImage; }
-    
+        QUrl imageUrl( ImageSize size = Large, bool square = false ) const;
+        
         QString realName() const { return m_realName; }
     
         /** the user's profile page at www.last.fm */
@@ -76,9 +76,7 @@ namespace lastfm
     protected:
         QString m_name;
 
-        QUrl m_smallImage;
-        QUrl m_mediumImage;
-        QUrl m_largeImage;
+        QList<QUrl> m_images;
     
         float m_match;
     

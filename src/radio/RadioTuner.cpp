@@ -44,6 +44,7 @@ RadioTuner::RadioTuner( const RadioStation& station )
     QMap<QString, QString> map;
     map["method"] = "radio.tune";
     map["station"] = station.url();
+    map["additional_info"] = "1";
     QNetworkReply* reply = ws::post(map);
     connect( reply, SIGNAL(finished()), SLOT(onTuneReturn()) );
 }
@@ -56,6 +57,7 @@ RadioTuner::retune( const RadioStation& station)
     QMap<QString, QString> map;
     map["method"] = "radio.tune";
     map["station"] = station.url();
+    map["additional_info"] = "1";
     QNetworkReply* reply = ws::post(map);
     connect( reply, SIGNAL(finished()), SLOT(onTuneReturn()) );
 }
@@ -88,6 +90,7 @@ RadioTuner::fetchFiveMoreTracks()
     //TODO check documentation, I figure this needs a session key
     QMap<QString, QString> map;
     map["method"] = "radio.getPlaylist";
+    map["additional_info"] = "1";
     map["rtp"] = "1"; // see above
     QNetworkReply* reply = ws::post( map );
     connect( reply, SIGNAL(finished()), SLOT(onGetPlaylistReturn()) );
