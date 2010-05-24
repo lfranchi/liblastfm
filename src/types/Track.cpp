@@ -98,6 +98,17 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
 }
 
 
+QUrl
+lastfm::Track::imageUrl( lastfm::ImageSize size, bool square ) const
+{
+    if( !square ) return d->m_images.value( size );
+
+    QUrl url = d->m_images.value( size );
+    QRegExp re( "/serve/(\\d*)s?/" );
+    return QUrl( url.toString().replace( re, "/serve/\\1s/" ));
+}
+
+
 QString
 lastfm::Track::toString( const QChar& separator ) const
 {
@@ -135,6 +146,16 @@ lastfm::Track::share( const QStringList& recipients, const QString& message, boo
     map["public"] = isPublic ? "1" : "0";
     if (message.size()) map["message"] = message;
     return ws::post(map);
+}
+
+
+void
+lastfm::MutableTrack::setFromLfm( const XmlQuery& lfm )
+{
+    d->m_images << lfm["image size=small"].text()
+             << lfm["image size=medium"].text()
+             << lfm["image size=large"].text()
+             << lfm["image size=extralarge"].text();
 }
 
 
