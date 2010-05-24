@@ -46,6 +46,7 @@ namespace lastfm
         ~Audioscrobbler();
 
     signals:
+        void scrobblesCached( const QList<lastfm::Track>& tracks );
         void scrobblesSubmitted( const QList<lastfm::Track>& tracks, int succeeded );
 
         void nowPlayingError( int code, QString message );

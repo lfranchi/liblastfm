@@ -87,6 +87,7 @@ void
 lastfm::Audioscrobbler::cache( const QList<Track>& tracks )
 {
     d->m_cache.add( tracks );
+    emit scrobblesCached( tracks );
     submit();
 }
 
@@ -125,7 +126,6 @@ lastfm::Audioscrobbler::onNowPlayingReturn()
     lastfm::XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
     qDebug() << lfm;
 
-
     if ( lfm.attribute("status") != "ok" )
     {
         emit nowPlayingError( lfm["code"].text().toInt(), lfm["error"].text() );
@@ -141,38 +141,33 @@ lastfm::Audioscrobbler::onTrackScrobbleReturn()
     lastfm::XmlQuery lfm = d->m_scrobbleReply->readAll();
     qDebug() << lfm;
 
-    if (lfm.attribute("status") == "ok")
+    if (d->m_scrobbleReply->error() == QNetworkReply::NoError)
     {
-        emit scrobblesSubmitted( d->m_batch, d->m_batch.count() );
+        if (lfm.attribute("status") == "ok")
+            emit scrobblesSubmitted( d->m_batch, d->m_batch.count() );
+        else
+            emit scrobbleError( lfm["code"].text().toInt(), lfm["error"].text() );
+
         d->m_cache.remove( d->m_batch );
+        d->m_batch.clear();
     }
     else
     {
-        // there was an error
-        emit scrobbleError( lfm["code"].text().toInt(), lfm["error"].text() );
+        if ( d->m_scrobbleReply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt() == 400)
+        {
+            d->m_cache.remove( d->m_batch );
+            d->m_batch.clear();
+        }
+
+        emit scrobbleError( d->m_scrobbleReply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt(),
+                            d->m_scrobbleReply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toByteArray() );
     }
 
-    d->m_batch.clear();
     d->m_scrobbleReply = 0;
 }
 
 void
 lastfm::Audioscrobbler::onTrackScrobbleBatchReturn()
 {
-    lastfm::XmlQuery lfm = d->m_scrobbleReply->readAll();
-    qDebug() << lfm;
-
-    if (lfm.attribute("status") == "ok")
-    {
-        emit scrobblesSubmitted( d->m_batch, lfm["submitted"].text().toInt() );
-        d->m_cache.remove( d->m_batch );
-    }
-    else
-    {
-        // there was an error
-        emit scrobbleError( lfm["code"].text().toInt(), lfm["error"].text() );
-    }
-
-    d->m_batch.clear();
-    d->m_scrobbleReply = 0;
+    onTrackScrobbleReturn();
 }
