@@ -49,6 +49,7 @@ struct TrackData : QSharedData
     QUrl url;
     QDateTime time; /// the time the track was started at
     bool loved;
+    QList<QUrl> m_images;
 
     //FIXME I hate this, but is used for radio trackauth etc.
     QMap<QString,QString> extras;
@@ -124,6 +125,7 @@ public:
     Source source() const { return (Source)d->source; }
     uint fingerprintId() const { return d->fpid; }
     bool isLoved() const { return d->loved; }
+    QUrl imageUrl( lastfm::ImageSize size, bool square ) const;
 
     QString durationString() const { return durationString( d->duration ); }
     static QString durationString( int seconds );
@@ -203,6 +205,8 @@ public:
     {
         d->null = false;
     }
+
+    void setFromLfm( const XmlQuery& lfm);
     
     void setArtist( QString artist ) { d->artist = artist.trimmed(); }
     void setAlbum( QString album ) { d->album = album.trimmed(); }
