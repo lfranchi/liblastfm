@@ -51,6 +51,7 @@ static inline QList<QUrl> images( const lastfm::XmlQuery& e )
 
 
 Artist::Artist( const XmlQuery& xml )
+    :AbstractType()
 {
     m_name = xml["name"].text();
     m_images = images( xml );
