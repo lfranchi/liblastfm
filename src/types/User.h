@@ -1,6 +1,6 @@
 /*
-   Copyright 2009 Last.fm Ltd. 
-      - Primarily authored by Max Howell, Jono Cole and Doug Mansell
+   Copyright 2009-2010 Last.fm Ltd.
+      - Primarily authored by Max Howell, Jono Cole, Doug Mansell and Michael Coffey
 
    This file is part of liblastfm.
 
@@ -20,21 +20,24 @@
 #ifndef LASTFM_USER_H
 #define LASTFM_USER_H
 
-#include <lastfm/ws.h>
 #include <QString>
 #include <QStringList>
 #include <QUrl>
+
+#include <lastfm/AbstractType>
 #include <lastfm/UserList>
+#include <lastfm/ws.h>
+
 
 namespace lastfm
 {
-    class LASTFM_DLLEXPORT User
+    class LASTFM_DLLEXPORT User : public AbstractType
     {
     public:
-        User() : m_name( lastfm::ws::Username ), m_match( -1.0f )
+        User() : AbstractType(), m_name( lastfm::ws::Username ), m_match( -1.0f )
         {}
 
-        User( const QString& name ) : m_name( name ), m_match( -1.0f )
+        User( const QString& name ) : AbstractType(), m_name( name ), m_match( -1.0f )
         {}
 
         User( const class XmlQuery& xml );
@@ -60,6 +63,9 @@ namespace lastfm
         QNetworkReply* getRecentStations() const;
     
         static UserList list( QNetworkReply* );
+
+        QString toString() const { return name(); }
+        QDomElement toDomElement( QDomDocument& ) const { return QDomElement(); }
     
     //////
         QUrl imageUrl( ImageSize size = Large, bool square = false ) const;

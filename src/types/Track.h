@@ -1,6 +1,6 @@
 /*
-   Copyright 2009 Last.fm Ltd. 
-      - Primarily authored by Max Howell, Jono Cole and Doug Mansell
+   Copyright 2009-2010 Last.fm Ltd.
+      - Primarily authored by Max Howell, Jono Cole, Doug Mansell and Michael Coffey
 
    This file is part of liblastfm.
 
@@ -20,6 +20,7 @@
 #ifndef LASTFM_TRACK_H
 #define LASTFM_TRACK_H
 
+#include <lastfm/AbstractType>
 #include <lastfm/Album>
 #include <lastfm/Mbid>
 #include <QDateTime>
@@ -67,7 +68,7 @@ struct TrackData : QSharedData
   * detach, which is very handy for our usage in the client, but perhaps not
   * what you want. If you need a deep copy for eg. work in a thread, call 
   * clone(). */
-class LASTFM_DLLEXPORT Track
+class LASTFM_DLLEXPORT Track : public AbstractType
 {
 public:
     enum Source
@@ -131,7 +132,8 @@ public:
     static QString durationString( int seconds );
 
     /** default separator is an en-dash */
-    QString toString( const QChar& separator = QChar(8211) ) const;
+    QString toString() const { return toString( QChar(8211) );}
+    QString toString( const QChar& separator ) const;
     /** the standard representation of this object as an XML node */
     QDomElement toDomElement( class QDomDocument& ) const;
     

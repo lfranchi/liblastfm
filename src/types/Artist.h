@@ -1,6 +1,6 @@
 /*
-   Copyright 2009 Last.fm Ltd. 
-      - Primarily authored by Max Howell, Jono Cole and Doug Mansell
+   Copyright 2009-2010 Last.fm Ltd.
+      - Primarily authored by Max Howell, Jono Cole, Doug Mansell and Michael Coffey
 
    This file is part of liblastfm.
 
@@ -20,23 +20,26 @@
 #ifndef LASTFM_ARTIST_H
 #define LASTFM_ARTIST_H
 
-#include <lastfm/global.h>
 #include <QMap>
 #include <QString>
 #include <QUrl>
 
+#include <lastfm/AbstractType>
+#include <lastfm/global.h>
+
+
 namespace lastfm
 {
-    class LASTFM_DLLEXPORT Artist
+    class LASTFM_DLLEXPORT Artist : public AbstractType
     {
         QString m_name;
         QList<QUrl> m_images;
 
     public:
-        Artist()
+        Artist() : AbstractType()
         {}
 
-        Artist( const QString& name ) : m_name( name )
+        Artist( const QString& name ) : AbstractType(), m_name( name )
         {}
 
         Artist( const class XmlQuery& xml );
@@ -59,7 +62,11 @@ namespace lastfm
               * returns false still. So you should have queried that! */
             return m_name.isEmpty() ? "[unknown]" : m_name;
         }
+
+        QString toString() const { return name(); }
         QString name() const { return QString(*this); } 
+
+        QDomElement toDomElement( QDomDocument& ) const { return QDomElement(); }
     
         QNetworkReply* share( const QStringList& recipients, const QString& message = "", bool isPublic = true ) const;
 

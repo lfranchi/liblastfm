@@ -27,6 +27,7 @@
 
 
 lastfm::Track::Track()
+    :AbstractType()
 {
     d = new TrackData;
     d->null = true;
@@ -34,6 +35,7 @@ lastfm::Track::Track()
 
 
 lastfm::Track::Track( const QDomElement& e )
+    :AbstractType()
 {
     d = new TrackData;
 

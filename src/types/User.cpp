@@ -31,7 +31,7 @@ using lastfm::XmlQuery;
 using lastfm::ImageSize;
 
 User::User( const XmlQuery& xml ) 
-     : m_match( -1.0f )
+     :AbstractType(), m_match( -1.0f )
 {
     m_name = xml["name"].text();
     m_images << xml["image size=small"].text()
