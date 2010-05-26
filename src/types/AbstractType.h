@@ -36,7 +36,7 @@ namespace lastfm
         virtual QDomElement toDomElement( QDomDocument& ) const = 0;
         virtual QUrl www() const = 0;
         virtual QUrl imageUrl( ImageSize size, bool square ) const = 0;
-        virtual ~AbstractType() = 0;
+        virtual ~AbstractType() {;}
     };
 };
 
