@@ -76,6 +76,8 @@ ScrobbleCache::write()
 
         xml.appendChild( e );
 
+        QFileInfo(m_path).dir().mkpath(".");
+
         QFile file( m_path );
         file.open( QIODevice::WriteOnly | QIODevice::Text );
 

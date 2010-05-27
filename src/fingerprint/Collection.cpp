@@ -38,7 +38,9 @@ Collection::Collection()
 {
     m_db = QSqlDatabase::addDatabase( "QSQLITE", "collection" );
     m_db.setDatabaseName( lastfm::dir::runtimeData().filePath( "collection.db" ) );
-    
+
+    QFileInfo(m_db.databaseName()).dir().mkpath(".");
+
     if (!m_db.open()) {
         qDebug() << m_db.lastError();
         return;
