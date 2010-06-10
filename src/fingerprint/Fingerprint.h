@@ -26,7 +26,7 @@
 
 namespace lastfm
 {
-    class LASTFM_DLLEXPORT Fingerprint
+    class LASTFM_FINGERPRINT_DLLEXPORT Fingerprint
     {
         lastfm::Track m_track;
         QByteArray m_data;

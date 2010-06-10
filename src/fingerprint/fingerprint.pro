@@ -3,7 +3,7 @@ TARGET = lastfm_fingerprint
 LIBS += -L$$DESTDIR -llastfm
 QT = core xml network sql
 include( _files.qmake )
-DEFINES += LASTFM_OHAI_QMAKE
+DEFINES += LASTFM_FINGERPRINT_LIB
 
 INSTALLS = target
 target.path = /lib

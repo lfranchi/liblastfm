@@ -26,7 +26,7 @@
 
 namespace lastfm
 {
-    class LASTFM_DLLEXPORT FingerprintableSource
+    class LASTFM_FINGERPRINT_DLLEXPORT FingerprintableSource
     {
     public:
         /** do all initialisation here and throw if there is problems */

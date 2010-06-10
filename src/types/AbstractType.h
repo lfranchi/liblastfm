@@ -29,8 +29,9 @@
 
 namespace lastfm
 {
-    class LASTFM_DLLEXPORT AbstractType
+    class LASTFM_DLLEXPORT AbstractType : public QObject
     {
+        Q_OBJECT
     public:
         virtual QString toString() const = 0;
         virtual QDomElement toDomElement( QDomDocument& ) const = 0;

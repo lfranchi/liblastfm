@@ -50,7 +50,13 @@ lastfm::Track::Track( const QDomElement& e )
     d->rating = e.namedItem( "rating" ).toElement().text().toUInt();
     d->source = e.namedItem( "source" ).toElement().text().toInt(); //defaults to 0, or lastfm::Track::Unknown
     d->time = QDateTime::fromTime_t( e.namedItem( "timestamp" ).toElement().text().toUInt() );
-    
+    d->loved = e.namedItem( "loved" ).toElement().text() != "0";
+
+    for (QDomElement image(e.firstChildElement("image")) ; !image.isNull() ; image = e.nextSiblingElement("image"))
+    {
+        d->m_images[static_cast<lastfm::ImageSize>(image.attribute("size").toInt())] = image.text();
+    }
+
     QDomNodeList nodes = e.namedItem( "extras" ).childNodes();
     for (int i = 0; i < nodes.count(); ++i)
     {
@@ -86,12 +92,23 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
     makeElement( "rating", QString::number(d->rating) );
     makeElement( "fpId", QString::number(d->fpid) );
     makeElement( "mbId", mbid() );
+    makeElement( "loved", QString::number( isLoved() ) );
 
+    // put the images urls in the dom
+    QMapIterator<lastfm::ImageSize, QUrl> imageIter( d->m_images );
+    while (imageIter.hasNext()) {
+        QDomElement e = xml.createElement( "image" );
+        e.appendChild( xml.createTextNode( imageIter.next().value().toString() ) );
+        e.setAttribute( "size", imageIter.key() );
+        item.appendChild( e );
+    }
+
+    // add the extras to the dom
     QDomElement extras = xml.createElement( "extras" );
-    QMapIterator<QString, QString> i( d->extras );
-    while (i.hasNext()) {
-        QDomElement e = xml.createElement( i.next().key() );
-        e.appendChild( xml.createTextNode( i.value() ) );
+    QMapIterator<QString, QString> extrasIter( d->extras );
+    while (extrasIter.hasNext()) {
+        QDomElement e = xml.createElement( extrasIter.next().key() );
+        e.appendChild( xml.createTextNode( extrasIter.value() ) );
         extras.appendChild( e );
     }
     item.appendChild( extras );
@@ -154,10 +171,18 @@ lastfm::Track::share( const QStringList& recipients, const QString& message, boo
 void
 lastfm::MutableTrack::setFromLfm( const XmlQuery& lfm )
 {
-    d->m_images << lfm["image size=small"].text()
-             << lfm["image size=medium"].text()
-             << lfm["image size=large"].text()
-             << lfm["image size=extralarge"].text();
+    QString imageUrl = lfm["image size=small"].text();
+    if ( !imageUrl.isEmpty() ) d->m_images[lastfm::Small] = imageUrl;
+    imageUrl = lfm["image size=medium"].text();
+    if ( !imageUrl.isEmpty() ) d->m_images[lastfm::Medium] = imageUrl;
+    imageUrl = lfm["image size=large"].text();
+    if ( !imageUrl.isEmpty() ) d->m_images[lastfm::Large] = imageUrl;
+    imageUrl = lfm["image size=extralarge"].text();
+    if ( !imageUrl.isEmpty() ) d->m_images[lastfm::ExtraLarge] = imageUrl;
+    imageUrl = lfm["image size=mega"].text();
+    if ( !imageUrl.isEmpty() ) d->m_images[lastfm::Mega] = imageUrl;
+
+    d->loved = lfm["userloved"].text() == "1";
 }
 
 

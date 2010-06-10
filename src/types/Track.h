@@ -50,7 +50,7 @@ struct TrackData : QSharedData
     QUrl url;
     QDateTime time; /// the time the track was started at
     bool loved;
-    QList<QUrl> m_images;
+    QMap<lastfm::ImageSize, QUrl> m_images;
 
     //FIXME I hate this, but is used for radio trackauth etc.
     QMap<QString,QString> extras;
@@ -70,6 +70,7 @@ struct TrackData : QSharedData
   * clone(). */
 class LASTFM_DLLEXPORT Track : public AbstractType
 {
+    Q_OBJECT
 public:
     enum Source
     {
@@ -85,6 +86,7 @@ public:
     };
 
     Track();
+    Track(const Track& that) { *this = that; }
     explicit Track( const QDomElement& );
     
     /** if you plan to use this track in a separate thread, you need to clone it
@@ -104,6 +106,12 @@ public:
     bool operator!=( const Track& that ) const
     {
         return !operator==( that );
+    }
+
+    Track& operator=( const Track& that )
+    {
+        d = that.d;
+        return *this;
     }
 
     /** only a Track() is null */
@@ -193,6 +201,7 @@ private:
   */
 class LASTFM_DLLEXPORT MutableTrack : public Track
 {
+    Q_OBJECT
 public:
     MutableTrack()
     {

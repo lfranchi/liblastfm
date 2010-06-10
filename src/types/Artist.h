@@ -32,6 +32,8 @@ namespace lastfm
 {
     class LASTFM_DLLEXPORT Artist : public AbstractType
     {
+        Q_OBJECT
+    private:
         QString m_name;
         QList<QUrl> m_images;
 
@@ -44,6 +46,8 @@ namespace lastfm
 
         Artist( const class XmlQuery& xml );
 
+        Artist( const Artist& that ) { *this = that; }
+
         /** will be QUrl() unless you got this back from a getInfo or something call */
         QUrl imageUrl( ImageSize size = Large, bool square = false ) const;
 
@@ -54,6 +58,12 @@ namespace lastfm
     
         bool operator==( const Artist& that ) const { return m_name == that.m_name; }
         bool operator!=( const Artist& that ) const { return m_name != that.m_name; }
+        Artist& operator=( const Artist& that )
+        {
+            m_images = that.m_images;
+            m_name = that.m_name;
+            return *this;
+        }
     
         operator QString() const 
         {

@@ -33,6 +33,7 @@ namespace lastfm
 {
     class LASTFM_DLLEXPORT User : public AbstractType
     {
+        Q_OBJECT
     public:
         User() : AbstractType(), m_name( lastfm::ws::Username ), m_match( -1.0f )
         {}
@@ -42,7 +43,18 @@ namespace lastfm
 
         User( const class XmlQuery& xml );
 
+        User( const User& that ) { *this = that; }
+
         bool operator==(const lastfm::User& that) const { return m_name == that.m_name; }
+
+        User& operator=( const User& that)
+        {
+            m_name = that.m_name;
+            m_images = that.m_images;
+            m_match = that.m_match;
+            m_realName = that.m_realName;
+            return *this;
+        }
 
         operator QString() const { return m_name; }
         QString name() const { return m_name; }
