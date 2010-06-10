@@ -25,12 +25,12 @@
 #include <QUrl>
 
 #include <lastfm/AbstractType>
-//#include <lastfm/UserList>
+#include <lastfm/UserList>
 #include <lastfm/ws.h>
+
 
 namespace lastfm
 {
-    class UserList;
     class LASTFM_DLLEXPORT User : public AbstractType
     {
         Q_OBJECT
