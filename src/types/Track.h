@@ -33,10 +33,14 @@
 
 namespace lastfm {
 
-
-struct TrackData : QSharedData
+class TrackData : public QObject, public QSharedData
 {
+    Q_OBJECT
+public:
     TrackData();
+    TrackData(const TrackData& that) { *this = that; }
+
+    TrackData& operator=(const TrackData& that) { return *this = that; }
 
     QString artist;
     QString album;
@@ -56,6 +60,15 @@ struct TrackData : QSharedData
     QMap<QString,QString> extras;
     
     bool null;
+
+public slots:
+    void onLoveFinished();
+    void onUnloveFinished();
+
+signals:
+    void loveToggled( bool love );
+    void loveFinished();
+    void unlovedFinished();
 };
 
 
@@ -70,8 +83,9 @@ struct TrackData : QSharedData
   * clone(). */
 class LASTFM_DLLEXPORT Track : public AbstractType
 {
-    Q_OBJECT
 public:
+    friend class TrackSignalProxy;
+
     enum Source
     {
         // DO NOT UNDER ANY CIRCUMSTANCES CHANGE THE ORDER OR VALUES OF THIS ENUM!
@@ -86,7 +100,6 @@ public:
     };
 
     Track();
-    Track(const Track& that) { *this = that; }
     explicit Track( const QDomElement& );
     
     /** if you plan to use this track in a separate thread, you need to clone it
@@ -108,11 +121,7 @@ public:
         return !operator==( that );
     }
 
-    Track& operator=( const Track& that )
-    {
-        d = that.d;
-        return *this;
-    }
+    QObject* signalProxy() const { return d.data(); }
 
     /** only a Track() is null */
     bool isNull() const { return d->null; }
@@ -201,7 +210,6 @@ private:
   */
 class LASTFM_DLLEXPORT MutableTrack : public Track
 {
-    Q_OBJECT
 public:
     MutableTrack()
     {
@@ -232,11 +240,9 @@ public:
     void setFingerprintId( uint id ) { d->fpid = id; }
     
     /** you also must scrobble this track for the love to become permenant */
-    QNetworkReply* love();
-    QNetworkReply* ban();
-
-    /** currently doesn't work, as there is no webservice */
+    void love();
     void unlove();
+    QNetworkReply* ban();
     
     void stamp() { d->time = QDateTime::currentDateTime(); }
 
@@ -244,17 +250,6 @@ public:
     void removeExtra( QString key ) { d->extras.remove( key ); }
     void setTimeStamp( const QDateTime& dt ) { d->time = dt; }
 };
-
-
-inline 
-TrackData::TrackData() 
-             : trackNumber( 0 ),
-               duration( 0 ),
-               source( Track::Unknown ),
-               rating( 0 ),
-               fpid( -1 ),
-               null( false )
-{}
 
 
 } //namespace lastfm

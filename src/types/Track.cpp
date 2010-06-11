@@ -26,13 +26,42 @@
 #include <QStringList>
 
 
+lastfm::TrackData::TrackData()
+             : trackNumber( 0 ),
+               duration( 0 ),
+               source( Track::Unknown ),
+               rating( 0 ),
+               fpid( -1 ),
+               loved( false ),
+               null( false )
+{}
+
+
+void
+lastfm::TrackData::onLoveFinished()
+{
+    XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
+    if ( lfm.attribute( "status" ) == "ok")
+        loved = true;
+    emit loveToggled( loved );
+}
+
+void
+lastfm::TrackData::onUnloveFinished()
+{
+    XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
+    if ( lfm.attribute( "status" ) == "ok")
+        loved = false;
+    emit loveToggled( loved );
+}
+
+
 lastfm::Track::Track()
     :AbstractType()
 {
     d = new TrackData;
     d->null = true;
 }
-
 
 lastfm::Track::Track( const QDomElement& e )
     :AbstractType()
@@ -186,13 +215,19 @@ lastfm::MutableTrack::setFromLfm( const XmlQuery& lfm )
 }
 
 
-QNetworkReply*
+void
 lastfm::MutableTrack::love()
 {
-    if (d->extras.value("rating").size())
-        return 0;
-    d->extras["rating"] = "L";
-    return ws::post(params("love"));
+    QNetworkReply* reply = ws::post(params("love"));
+    QObject::connect( reply, SIGNAL(finished()), d.data(), SLOT(onLoveFinished()));
+}
+
+
+void
+lastfm::MutableTrack::unlove()
+{
+    QNetworkReply* reply = ws::post(params("unlove"));
+    QObject::connect( reply, SIGNAL(finished()), d.data(), SLOT(onUnloveFinished()));
 }
 
 
@@ -201,14 +236,6 @@ lastfm::MutableTrack::ban()
 {
     d->extras["rating"] = "B";
     return ws::post(params("ban"));
-}
-
-
-void
-lastfm::MutableTrack::unlove()
-{
-    QString& r = d->extras["rating"];
-    if (r == "L") r = "";
 }
 
 
