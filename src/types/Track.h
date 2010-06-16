@@ -33,10 +33,14 @@
 
 namespace lastfm {
 
-
-struct TrackData : QSharedData
+class TrackData : public QObject, public QSharedData
 {
+    Q_OBJECT
+public:
     TrackData();
+    TrackData(const TrackData& that) { *this = that; }
+
+    TrackData& operator=(const TrackData& that) { return *this = that; }
 
     QString artist;
     QString album;
@@ -50,12 +54,21 @@ struct TrackData : QSharedData
     QUrl url;
     QDateTime time; /// the time the track was started at
     bool loved;
-    QList<QUrl> m_images;
+    QMap<lastfm::ImageSize, QUrl> m_images;
 
     //FIXME I hate this, but is used for radio trackauth etc.
     QMap<QString,QString> extras;
     
     bool null;
+
+public slots:
+    void onLoveFinished();
+    void onUnloveFinished();
+
+signals:
+    void loveToggled( bool love );
+    void loveFinished();
+    void unlovedFinished();
 };
 
 
@@ -71,6 +84,8 @@ struct TrackData : QSharedData
 class LASTFM_DLLEXPORT Track : public AbstractType
 {
 public:
+    friend class TrackSignalProxy;
+
     enum Source
     {
         // DO NOT UNDER ANY CIRCUMSTANCES CHANGE THE ORDER OR VALUES OF THIS ENUM!
@@ -105,6 +120,8 @@ public:
     {
         return !operator==( that );
     }
+
+    QObject* signalProxy() const { return d.data(); }
 
     /** only a Track() is null */
     bool isNull() const { return d->null; }
@@ -223,11 +240,9 @@ public:
     void setFingerprintId( uint id ) { d->fpid = id; }
     
     /** you also must scrobble this track for the love to become permenant */
-    QNetworkReply* love();
-    QNetworkReply* ban();
-
-    /** currently doesn't work, as there is no webservice */
+    void love();
     void unlove();
+    QNetworkReply* ban();
     
     void stamp() { d->time = QDateTime::currentDateTime(); }
 
@@ -235,17 +250,6 @@ public:
     void removeExtra( QString key ) { d->extras.remove( key ); }
     void setTimeStamp( const QDateTime& dt ) { d->time = dt; }
 };
-
-
-inline 
-TrackData::TrackData() 
-             : trackNumber( 0 ),
-               duration( 0 ),
-               source( Track::Unknown ),
-               rating( 0 ),
-               fpid( -1 ),
-               null( false )
-{}
 
 
 } //namespace lastfm

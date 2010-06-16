@@ -32,6 +32,7 @@ namespace lastfm
 {
     class LASTFM_DLLEXPORT Artist : public AbstractType
     {
+    private:
         QString m_name;
         QList<QUrl> m_images;
 

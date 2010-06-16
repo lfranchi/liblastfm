@@ -6,7 +6,7 @@ INSTALLS = target
 target.path = /lib
 
 win32{
-    DEFINES += LASTFM_OHAI_QMAKE _ATL_DLL 
+    DEFINES += LASTFM_LIB _ATL_DLL 
     LIBS += winhttp.lib wbemuuid.lib # ws configuration
 }
 mac{

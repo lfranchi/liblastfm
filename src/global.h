@@ -31,16 +31,24 @@
 #include <QtGlobal>
 
 #ifdef Q_CC_MSVC
-    #ifdef LASTFM_OHAI_QMAKE
+    #ifdef LASTFM_LIB
         #define LASTFM_DLLEXPORT __declspec(dllexport)
     #else
         #define LASTFM_DLLEXPORT __declspec(dllimport)
     #endif
+	#ifdef LASTFM_FINGERPRINT_LIB
+        #define LASTFM_FINGERPRINT_DLLEXPORT __declspec(dllexport)
+    #else
+        #define LASTFM_FINGERPRINT_DLLEXPORT __declspec(dllimport)
+    #endif
 #elif __GNUC__ >= 4
     #define LASTFM_DLLEXPORT __attribute__ ((visibility("default")))
+	#define LASTFM_FINGERPRINT_DLLEXPORT __attribute__ ((visibility("default")))
 #else
     #define LASTFM_DLLEXPORT
+	#define LASTFM_FINGERPRINT_DLLEXPORT
 #endif
+
 
 
 #include <QMetaEnum>
@@ -68,10 +76,11 @@ namespace lastfm
 
     enum ImageSize
     {
-        Small = 0,
-        Medium = 1,
-        Large = 2, /** seemingly 174x174 */
-        ExtraLarge = 3
+        Small,
+        Medium,
+        Large, /** seemingly 174x174 */
+        ExtraLarge,
+        Mega
     };
     
     
