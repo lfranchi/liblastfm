@@ -27,11 +27,8 @@
 #include <lastfm/AbstractType>
 #include <lastfm/ws.h>
 
-
 namespace lastfm
 {
-    class UserList;
-
     class LASTFM_DLLEXPORT User : public AbstractType
     {
     public:
