@@ -24,7 +24,7 @@ private slots:
     void testClone()
     {
         Track original = example();
-        Track copy = original.clone();
+        Track copy = original;
         
         #define TEST( x ) QVERIFY( original.x == copy.x )
         TEST( title() );

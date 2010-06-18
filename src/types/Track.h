@@ -36,12 +36,14 @@ namespace lastfm {
 class TrackData : public QObject, public QSharedData
 {
     Q_OBJECT
+
+    friend class Track;
+    friend class MutableTrack;
+    friend class Scrobble;
 public:
     TrackData();
-    TrackData(const TrackData& that) { *this = that; }
 
-    TrackData& operator=(const TrackData& that) { return *this = that; }
-
+private:
     QString artist;
     QString album;
     QString title;
@@ -61,7 +63,10 @@ public:
     
     bool null;
 
-public slots:
+private:
+    void forceLoveToggled( bool love ) { emit loveToggled( love );}
+
+private slots:
     void onLoveFinished();
     void onUnloveFinished();
 
@@ -106,7 +111,7 @@ public:
       * first, otherwise nothing is thread-safe, not this creates a disconnected
       * Track object, modifications to this or that will not effect that or this
       */
-    Track clone() const;
+    //Track clone() const;
 
     /** this track and that track point to the same object, so they are the same
       * in fact. This doesn't do a deep data comparison. So even if all the 
@@ -225,7 +230,7 @@ public:
         d->null = false;
     }
 
-    void setFromLfm( const XmlQuery& lfm);
+    void setFromLfm( const XmlQuery& lfm );
     
     void setArtist( QString artist ) { d->artist = artist.trimmed(); }
     void setAlbum( QString album ) { d->album = album.trimmed(); }
