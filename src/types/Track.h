@@ -39,7 +39,6 @@ class TrackData : public QObject, public QSharedData
 
     friend class Track;
     friend class MutableTrack;
-    friend class Scrobble;
 public:
     TrackData();
 
