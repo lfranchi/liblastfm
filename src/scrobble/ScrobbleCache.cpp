@@ -83,6 +83,7 @@ ScrobbleCache::write()
         stream.setCodec( "UTF-8" );
         stream << "<?xml version='1.0' encoding='utf-8'?>\n";
         stream << xml.toString( 2 );
+        file.close();
     }
 }
 

@@ -31,6 +31,7 @@
 
 namespace lastfm
 {
+    class UserList;
     class LASTFM_DLLEXPORT User : public AbstractType
     {
     public:
