@@ -101,8 +101,7 @@ ScrobbleCache::add( const QList<Track>& tracks )
         }
         else if (track.isNull()) 
             qDebug() << "Will not cache an empty track";
-     
-        else if (!m_tracks.contains( track ))
+        else 
             m_tracks += track;
     }
     write();
