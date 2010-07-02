@@ -26,11 +26,11 @@ using lastfm::Scrobble;
 QByteArray
 Scrobble::sourceString() const
 {
-    switch (d->source)
+    switch ( source() )
     {
-        case LastFmRadio: return "L" + d->extras["trackauth"].toAscii();
-        case Player: return "P" + d->extras["playerId"].toUtf8();
-        case MediaDevice: return "P" + d->extras["mediaDeviceId"].toUtf8();
+        case LastFmRadio: return "L" + extra( "trackauth" ).toAscii();
+        case Player: return "P" + extra( "playerId" ).toUtf8();
+        case MediaDevice: return "P" + extra( "mediaDeviceId" ).toUtf8();
         case NonPersonalisedBroadcast: return "R";
         case PersonalisedRecommendation: return "E";
         default: return "U";
@@ -63,13 +63,13 @@ Scrobble::isValid( Invalidity* v ) const
     TEST( timestamp() < QDateTime::fromString( "2003-01-01", Qt::ISODate ), FromTheDistantPast );
     
     // Check if any required fields are empty
-    TEST( d->artist.isEmpty(), ArtistNameMissing );
-    TEST( d->title.isEmpty(), TrackNameMissing );
+    TEST( artist().isNull(), ArtistNameMissing );
+    TEST( title().isEmpty(), TrackNameMissing );
     
     TEST( (QStringList() << "unknown artist"
                          << "unknown"
                          << "[unknown]"
-                         << "[unknown artist]").contains( d->artist.toLower() ), 
+                         << "[unknown artist]").contains( artist().name().toLower() ), 
            ArtistInvalid );
 
     return true;
