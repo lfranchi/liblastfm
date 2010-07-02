@@ -68,11 +68,13 @@ private:
 private slots:
     void onLoveFinished();
     void onUnloveFinished();
+    void onGotInfo();
 
 signals:
     void loveToggled( bool love );
     void loveFinished();
     void unlovedFinished();
+    void gotInfo( const XmlQuery& );
 };
 
 
@@ -178,7 +180,7 @@ public:
     QNetworkReply* getTags() const; // for the logged in user
     QNetworkReply* getTopTags() const;
     QNetworkReply* getTopFans() const;
-    QNetworkReply* getInfo(const QString& user = "", const QString& sk = "") const;
+    void getInfo(const QString& user = "", const QString& sk = "") const;
 
     /** you can only add 10 tags, we submit everything you give us, but the
       * docs state 10 only. Will return 0 if the list is empty. */

@@ -94,6 +94,28 @@ lastfm::TrackData::onUnloveFinished()
     emit loveToggled( loved );
 }
 
+void
+lastfm::TrackData::onGotInfo()
+{
+    lastfm::XmlQuery lfm( static_cast<QNetworkReply*>(sender())->readAll() );
+
+    QString imageUrl = lfm["track"]["image size=small"].text();
+    if ( !imageUrl.isEmpty() ) m_images[lastfm::Small] = imageUrl;
+    imageUrl = lfm["track"]["image size=medium"].text();
+    if ( !imageUrl.isEmpty() ) m_images[lastfm::Medium] = imageUrl;
+    imageUrl = lfm["track"]["image size=large"].text();
+    if ( !imageUrl.isEmpty() ) m_images[lastfm::Large] = imageUrl;
+    imageUrl = lfm["track"]["image size=extralarge"].text();
+    if ( !imageUrl.isEmpty() ) m_images[lastfm::ExtraLarge] = imageUrl;
+    imageUrl = lfm["track"]["image size=mega"].text();
+    if ( !imageUrl.isEmpty() ) m_images[lastfm::Mega] = imageUrl;
+
+    loved = lfm["track"]["userloved"].text().toInt();
+
+    emit gotInfo( lfm );
+    emit loveToggled( loved );
+}
+
 
 QDomElement
 lastfm::Track::toDomElement( QDomDocument& xml ) const
@@ -275,13 +297,13 @@ lastfm::Track::getTags() const
     return ws::get( params("getTags", true) );
 }
 
-QNetworkReply*
+void
 lastfm::Track::getInfo(const QString& user, const QString& sk) const
 {
     QMap<QString, QString> map = params("getInfo", true);
     if (!user.isEmpty()) map["username"] = user;
     if (!sk.isEmpty()) map["sk"] = sk;
-    return ws::get( map );
+    QObject::connect( ws::get( map ), SIGNAL(finished()), d.data(), SLOT(onGotInfo()));
 }
 
 
