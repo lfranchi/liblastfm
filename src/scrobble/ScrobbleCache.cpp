@@ -83,6 +83,7 @@ ScrobbleCache::write()
         stream.setCodec( "UTF-8" );
         stream << "<?xml version='1.0' encoding='utf-8'?>\n";
         stream << xml.toString( 2 );
+        file.close();
     }
 }
 
@@ -100,8 +101,7 @@ ScrobbleCache::add( const QList<Track>& tracks )
         }
         else if (track.isNull()) 
             qDebug() << "Will not cache an empty track";
-     
-        else if (!m_tracks.contains( track ))
+        else 
             m_tracks += track;
     }
     write();
