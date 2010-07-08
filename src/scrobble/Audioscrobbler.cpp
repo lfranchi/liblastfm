@@ -87,6 +87,7 @@ void
 lastfm::Audioscrobbler::cache( const QList<Track>& tracks )
 {
     d->m_cache.add( tracks );
+    qSort( d->m_cache.tracks().begin(), d->m_cache.tracks().end() );
     emit scrobblesCached( tracks );
     submit();
 }
