@@ -87,7 +87,6 @@ void
 lastfm::Audioscrobbler::cache( const QList<Track>& tracks )
 {
     d->m_cache.add( tracks );
-    qSort( d->m_cache.tracks().begin(), d->m_cache.tracks().end() );
     emit scrobblesCached( tracks );
     submit();
 }
@@ -99,10 +98,6 @@ lastfm::Audioscrobbler::submit()
     if (d->m_cache.tracks().isEmpty() // there are no tracks to submit
             || !d->m_scrobbleReply.isNull() ) // we are already submitting scrobbles
         return;
-
-    // sort in chronological order
-    if ( d->m_cache.tracks().count() > 1)
-        qSort( d->m_cache.tracks().begin(), d->m_cache.tracks().end() );
 
     // copy tracks to be submitted to a temporary list
     d->m_batch = d->m_cache.tracks().mid( 0, 50 );
