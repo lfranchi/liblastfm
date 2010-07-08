@@ -105,9 +105,6 @@ ScrobbleCache::add( const QList<Track>& tracks )
             m_tracks += track;
     }
 
-    if ( m_tracks.count() > 1 )
-        qSort( m_tracks.begin(), m_tracks.end() );
-
     write();
 }
 
