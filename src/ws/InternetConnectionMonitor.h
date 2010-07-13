@@ -17,33 +17,33 @@
    You should have received a copy of the GNU General Public License
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 #ifndef LASTFM_CONNECTION_MONITOR_H
 #define LASTFM_CONNECTION_MONITOR_H
 
 #include <lastfm/global.h>
 #include <QObject>
-#ifdef Q_WS_MAC
-#include <SystemConfiguration/SCNetwork.h> //TODO remove
-typedef const struct __SCNetworkReachability * SCNetworkReachabilityRef;
-#endif
 
+class NetworkConnectionMonitor;
+
+#ifdef Q_WS_X11
+class LNetworkConnectionMonitor;
+#endif
 
 namespace lastfm {
 
 class LASTFM_DLLEXPORT InternetConnectionMonitor : public QObject
 {
     Q_OBJECT
+    enum NMState
+    {
+        Unknown,
+        Asleep,
+        Connecting,
+        Connected,
+        Disconnected
+    };
 
-#ifdef Q_WS_MAC
-    static void callback( SCNetworkReachabilityRef, SCNetworkConnectionFlags, void* );
-#endif
-#ifdef Q_WS_WIN
-    class NdisEventsProxy* m_ndisEventsProxy;
-    friend class NdisEventsProxy;
-#endif
-
-    bool m_up;
-    
 public:
     /** if internet is unavailable you will get a down() signal soon, otherwise
       * you won't get a signal until the net goes down */
@@ -51,7 +51,9 @@ public:
 
     bool isDown() const { return !m_up; }
     bool isUp() const { return m_up; }
-    
+
+    NetworkConnectionMonitor* createNetworkConnectionMonitor();
+
 signals:
     /** yay! internet has returned */
     void up( const QString& connectionName = "" );
@@ -62,6 +64,15 @@ signals:
     
     /** emitted after the above */
     void connectivityChanged( bool );
+
+private slots:
+    void onFinished( QNetworkReply* reply );
+    void onNetworkUp();
+    void onNetworkDown();
+
+private:
+    bool m_up;
+    NetworkConnectionMonitor* m_networkMonitor;
 };
 
 } //namespace lastfm

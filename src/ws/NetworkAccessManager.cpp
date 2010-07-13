@@ -115,8 +115,11 @@ lastfm::NetworkAccessManager::proxy( const QNetworkRequest& request )
     {
         if (!m_pac) {
             m_pac = new Pac;
-            m_monitor = new InternetConnectionMonitor( this );
-            connect( m_monitor, SIGNAL(connectivityChanged( bool )), SLOT(onConnectivityChanged( bool )) );
+            if ( !m_monitor )
+            {
+                m_monitor = new InternetConnectionMonitor( this );
+                connect( m_monitor, SIGNAL( connectivityChanged( bool ) ), SLOT( onConnectivityChanged( bool ) ) );
+            }
         }
         return m_pac->resolve( request, s.lpszAutoConfigUrl );
     } 
