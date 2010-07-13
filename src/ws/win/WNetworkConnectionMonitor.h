@@ -18,29 +18,27 @@
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef NETWORK_CONNECTION_MONITOR_H
-#define NETWORK_CONNECTION_MONITOR_H
+#ifndef WNETWORK_CONNECTION_MONITOR_H
+#define WNETWORK_CONNECTION_MONITOR_H
 
+#include "../NetworkConnectionMonitor.h"
 #include <lastfm/global.h>
 #include <QObject>
 
-class LASTFM_DLLEXPORT NetworkConnectionMonitor : public QObject
+namespace lastfm { class NdisEventsProxy; }
+
+class WNetworkConnectionMonitor : public NetworkConnectionMonitor
 {
     Q_OBJECT
 public:
-    NetworkConnectionMonitor( QObject *parent = 0 );
-    ~NetworkConnectionMonitor();
-    bool isConnected() const;
+    friend class lastfm::NdisEventsProxy;
 
-signals:
-    void networkUp();
-    void networkDown();
-
-protected:
-    void setConnected( bool connected );
+    WNetworkConnectionMonitor( QObject* parent = 0 );
+    ~WNetworkConnectionMonitor();
 
 private:
-    bool m_connected;
+    lastfm::NdisEventsProxy* m_ndisEventsProxy;
 };
 
-#endif // NETWORK_CONNECTION_MONITOR_H
+#endif // WNETWORK_CONNECTION_MONITOR_H
+

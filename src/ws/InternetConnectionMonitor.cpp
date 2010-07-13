@@ -20,6 +20,7 @@
 
 #include "InternetConnectionMonitor.h"
 #include "linux/LNetworkConnectionMonitor.h"
+#include "win/WNetworkConnectionMonitor.h"
 #include "NetworkConnectionMonitor.h"
 #include "ws.h"
 
@@ -91,9 +92,11 @@ lastfm::InternetConnectionMonitor::createNetworkConnectionMonitor()
 {
     NetworkConnectionMonitor* ncm = 0;
 
-    #ifdef Q_WS_X11
+#ifdef Q_WS_X11
     ncm = new LNetworkConnectionMonitor( this );
-    #endif
+#elif defined(Q_WS_WIN)
+    ncm = new WNetworkConnectionMonitor( this );
+#endif
 
     return ncm;
 }
