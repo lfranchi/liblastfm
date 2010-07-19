@@ -36,26 +36,6 @@ lastfm::TrackData::TrackData()
                null( false )
 {}
 
-
-void
-lastfm::TrackData::onLoveFinished()
-{
-    XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
-    if ( lfm.attribute( "status" ) == "ok")
-        loved = true;
-    emit loveToggled( loved );
-}
-
-void
-lastfm::TrackData::onUnloveFinished()
-{
-    XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
-    if ( lfm.attribute( "status" ) == "ok")
-        loved = false;
-    emit loveToggled( loved );
-}
-
-
 lastfm::Track::Track()
     :AbstractType()
 {
@@ -79,7 +59,7 @@ lastfm::Track::Track( const QDomElement& e )
     d->rating = e.namedItem( "rating" ).toElement().text().toUInt();
     d->source = e.namedItem( "source" ).toElement().text().toInt(); //defaults to 0, or lastfm::Track::Unknown
     d->time = QDateTime::fromTime_t( e.namedItem( "timestamp" ).toElement().text().toUInt() );
-    d->loved = e.namedItem( "loved" ).toElement().text() != "0";
+    d->loved = e.namedItem( "loved" ).toElement().text().toInt();
 
     for (QDomElement image(e.firstChildElement("image")) ; !image.isNull() ; image = e.nextSiblingElement("image"))
     {
@@ -93,6 +73,47 @@ lastfm::Track::Track( const QDomElement& e )
         QString key = n.nodeName();
         d->extras[key] = n.toElement().text();
     }
+}
+
+void
+lastfm::TrackData::onLoveFinished()
+{
+    XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
+    if ( lfm.attribute( "status" ) == "ok")
+        loved = true;
+    emit loveToggled( loved );
+}
+
+
+void
+lastfm::TrackData::onUnloveFinished()
+{
+    XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
+    if ( lfm.attribute( "status" ) == "ok")
+        loved = false;
+    emit loveToggled( loved );
+}
+
+void
+lastfm::TrackData::onGotInfo()
+{
+    lastfm::XmlQuery lfm( static_cast<QNetworkReply*>(sender())->readAll() );
+
+    QString imageUrl = lfm["track"]["image size=small"].text();
+    if ( !imageUrl.isEmpty() ) m_images[lastfm::Small] = imageUrl;
+    imageUrl = lfm["track"]["image size=medium"].text();
+    if ( !imageUrl.isEmpty() ) m_images[lastfm::Medium] = imageUrl;
+    imageUrl = lfm["track"]["image size=large"].text();
+    if ( !imageUrl.isEmpty() ) m_images[lastfm::Large] = imageUrl;
+    imageUrl = lfm["track"]["image size=extralarge"].text();
+    if ( !imageUrl.isEmpty() ) m_images[lastfm::ExtraLarge] = imageUrl;
+    imageUrl = lfm["track"]["image size=mega"].text();
+    if ( !imageUrl.isEmpty() ) m_images[lastfm::Mega] = imageUrl;
+
+    loved = lfm["track"]["userloved"].text().toInt();
+
+    emit gotInfo( lfm );
+    emit loveToggled( loved );
 }
 
 
@@ -200,18 +221,20 @@ lastfm::Track::share( const QStringList& recipients, const QString& message, boo
 void
 lastfm::MutableTrack::setFromLfm( const XmlQuery& lfm )
 {
-    QString imageUrl = lfm["image size=small"].text();
+    QString imageUrl = lfm["track"]["image size=small"].text();
     if ( !imageUrl.isEmpty() ) d->m_images[lastfm::Small] = imageUrl;
-    imageUrl = lfm["image size=medium"].text();
+    imageUrl = lfm["track"]["image size=medium"].text();
     if ( !imageUrl.isEmpty() ) d->m_images[lastfm::Medium] = imageUrl;
-    imageUrl = lfm["image size=large"].text();
+    imageUrl = lfm["track"]["image size=large"].text();
     if ( !imageUrl.isEmpty() ) d->m_images[lastfm::Large] = imageUrl;
-    imageUrl = lfm["image size=extralarge"].text();
+    imageUrl = lfm["track"]["image size=extralarge"].text();
     if ( !imageUrl.isEmpty() ) d->m_images[lastfm::ExtraLarge] = imageUrl;
-    imageUrl = lfm["image size=mega"].text();
+    imageUrl = lfm["track"]["image size=mega"].text();
     if ( !imageUrl.isEmpty() ) d->m_images[lastfm::Mega] = imageUrl;
 
-    d->loved = lfm["userloved"].text() == "1";
+    d->loved = lfm["track"]["userloved"].text().toInt();
+
+    d->forceLoveToggled( d->loved );
 }
 
 
@@ -219,7 +242,7 @@ void
 lastfm::MutableTrack::love()
 {
     QNetworkReply* reply = ws::post(params("love"));
-    QObject::connect( reply, SIGNAL(finished()), d.data(), SLOT(onLoveFinished()));
+    QObject::connect( reply, SIGNAL(finished()), signalProxy(), SLOT(onLoveFinished()));
 }
 
 
@@ -227,7 +250,7 @@ void
 lastfm::MutableTrack::unlove()
 {
     QNetworkReply* reply = ws::post(params("unlove"));
-    QObject::connect( reply, SIGNAL(finished()), d.data(), SLOT(onUnloveFinished()));
+    QObject::connect( reply, SIGNAL(finished()), signalProxy(), SLOT(onUnloveFinished()));
 }
 
 
@@ -274,13 +297,13 @@ lastfm::Track::getTags() const
     return ws::get( params("getTags", true) );
 }
 
-QNetworkReply*
+void
 lastfm::Track::getInfo(const QString& user, const QString& sk) const
 {
     QMap<QString, QString> map = params("getInfo", true);
     if (!user.isEmpty()) map["username"] = user;
     if (!sk.isEmpty()) map["sk"] = sk;
-    return ws::get( map );
+    QObject::connect( ws::get( map ), SIGNAL(finished()), d.data(), SLOT(onGotInfo()));
 }
 
 
@@ -357,11 +380,3 @@ lastfm::Track::isMp3() const
            d->url.path().endsWith( ".mp3", Qt::CaseInsensitive );
 }
 
-
-lastfm::Track
-lastfm::Track::clone() const
-{
-    Track copy( *this );
-    copy.d.detach();
-    return copy;
-}

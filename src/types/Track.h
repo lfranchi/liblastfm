@@ -36,12 +36,13 @@ namespace lastfm {
 class TrackData : public QObject, public QSharedData
 {
     Q_OBJECT
+
+    friend class Track;
+    friend class MutableTrack;
 public:
     TrackData();
-    TrackData(const TrackData& that) { *this = that; }
 
-    TrackData& operator=(const TrackData& that) { return *this = that; }
-
+private:
     QString artist;
     QString album;
     QString title;
@@ -61,14 +62,19 @@ public:
     
     bool null;
 
-public slots:
+private:
+    void forceLoveToggled( bool love ) { emit loveToggled( love );}
+
+private slots:
     void onLoveFinished();
     void onUnloveFinished();
+    void onGotInfo();
 
 signals:
     void loveToggled( bool love );
     void loveFinished();
     void unlovedFinished();
+    void gotInfo( const XmlQuery& );
 };
 
 
@@ -106,7 +112,7 @@ public:
       * first, otherwise nothing is thread-safe, not this creates a disconnected
       * Track object, modifications to this or that will not effect that or this
       */
-    Track clone() const;
+    //Track clone() const;
 
     /** this track and that track point to the same object, so they are the same
       * in fact. This doesn't do a deep data comparison. So even if all the 
@@ -174,7 +180,7 @@ public:
     QNetworkReply* getTags() const; // for the logged in user
     QNetworkReply* getTopTags() const;
     QNetworkReply* getTopFans() const;
-    QNetworkReply* getInfo(const QString& user = "", const QString& sk = "") const;
+    void getInfo(const QString& user = "", const QString& sk = "") const;
 
     /** you can only add 10 tags, we submit everything you give us, but the
       * docs state 10 only. Will return 0 if the list is empty. */
@@ -225,7 +231,7 @@ public:
         d->null = false;
     }
 
-    void setFromLfm( const XmlQuery& lfm);
+    void setFromLfm( const XmlQuery& lfm );
     
     void setArtist( QString artist ) { d->artist = artist.trimmed(); }
     void setAlbum( QString album ) { d->album = album.trimmed(); }

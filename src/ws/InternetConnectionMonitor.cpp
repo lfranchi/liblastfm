@@ -20,6 +20,7 @@
 
 #include "InternetConnectionMonitor.h"
 #include "linux/LNetworkConnectionMonitor.h"
+#include "win/WNetworkConnectionMonitor.h"
 #include "NetworkConnectionMonitor.h"
 #include "ws.h"
 
@@ -74,7 +75,7 @@ void
 lastfm::InternetConnectionMonitor::onNetworkUp()
 {
     qDebug() << "Network seems to be up again. Let's try if there's internet connection!";
-    lastfm::nam()->get( QNetworkRequest( QUrl( tr( "http://www.last.fm/" ) ) ) );
+    lastfm::nam()->head( QNetworkRequest( QUrl( tr( "http://www.last.fm/" ) ) ) );
 }
 
 void
@@ -91,9 +92,11 @@ lastfm::InternetConnectionMonitor::createNetworkConnectionMonitor()
 {
     NetworkConnectionMonitor* ncm = 0;
 
-    #ifdef Q_WS_X11
+#ifdef Q_WS_X11
     ncm = new LNetworkConnectionMonitor( this );
-    #endif
+#elif defined(Q_WS_WIN)
+    ncm = new WNetworkConnectionMonitor( this );
+#endif
 
     return ncm;
 }

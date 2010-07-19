@@ -1,6 +1,6 @@
 /*
-   Copyright 2009 Last.fm Ltd.
-      - Primarily authored by Max Howell, Jono Cole and Doug Mansell
+   Copyright 2010 Last.fm Ltd.
+      - Primarily authored by Jono Cole, Michael Coffey, and William Viana
 
    This file is part of liblastfm.
 

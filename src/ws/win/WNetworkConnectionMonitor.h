@@ -1,6 +1,6 @@
 /*
-   Copyright 2009 Last.fm Ltd. 
-      - Primarily authored by Max Howell, Jono Cole and Doug Mansell
+   Copyright 2010 Last.fm Ltd.
+      - Primarily authored by Jono Cole, Michael Coffey, and William Viana
 
    This file is part of liblastfm.
 
@@ -17,24 +17,28 @@
    You should have received a copy of the GNU General Public License
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef LASTFM_USERLIST_H
-#define LASTFM_USERLIST_H
 
+#ifndef WNETWORK_CONNECTION_MONITOR_H
+#define WNETWORK_CONNECTION_MONITOR_H
 
+#include "../NetworkConnectionMonitor.h"
 #include <lastfm/global.h>
-#include <QList>
-#include <lastfm/User>
+#include <QObject>
 
-namespace lastfm
+namespace lastfm { class NdisEventsProxy; }
+
+class WNetworkConnectionMonitor : public NetworkConnectionMonitor
 {
-    class LASTFM_DLLEXPORT UserList : public QList<User>
-    {
-    public:
-        int total;
-        int page;
-        int perPage;
-        int totalPages;
-    };
-}
+    Q_OBJECT
+public:
+    friend class lastfm::NdisEventsProxy;
 
-#endif
+    WNetworkConnectionMonitor( QObject* parent = 0 );
+    ~WNetworkConnectionMonitor();
+
+private:
+    lastfm::NdisEventsProxy* m_ndisEventsProxy;
+};
+
+#endif // WNETWORK_CONNECTION_MONITOR_H
+

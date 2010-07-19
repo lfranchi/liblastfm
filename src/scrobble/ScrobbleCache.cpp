@@ -104,6 +104,7 @@ ScrobbleCache::add( const QList<Track>& tracks )
         else 
             m_tracks += track;
     }
+
     write();
 }
 

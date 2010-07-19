@@ -25,13 +25,12 @@
 #include <QUrl>
 
 #include <lastfm/AbstractType>
-#include <lastfm/UserList>
 #include <lastfm/ws.h>
-
 
 namespace lastfm
 {
     class UserList;
+
     class LASTFM_DLLEXPORT User : public AbstractType
     {
     public:
@@ -156,6 +155,15 @@ namespace lastfm
         QString m_country;
         bool m_isSubscriber;
         bool m_canBootstrap;
+    };
+
+    class LASTFM_DLLEXPORT UserList : public QList<User>
+    {
+    public:
+        int total;
+        int page;
+        int perPage;
+        int totalPages;
     };
 }
 
