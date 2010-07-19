@@ -20,6 +20,7 @@
 
 #include "InternetConnectionMonitor.h"
 #include "linux/LNetworkConnectionMonitor.h"
+#include "mac/MNetworkConnectionMonitor.h"
 #include "win/WNetworkConnectionMonitor.h"
 #include "NetworkConnectionMonitor.h"
 #include "ws.h"
@@ -74,8 +75,16 @@ lastfm::InternetConnectionMonitor::onFinished( QNetworkReply* reply )
 void
 lastfm::InternetConnectionMonitor::onNetworkUp()
 {
+#ifdef Q_OS_MAC
+    // We don't need to check on mac as the
+    // check is done as part of the reach api
+    m_up = true;
+    emit up();
+    emit connectivityChanged( m_up );
+#else
     qDebug() << "Network seems to be up again. Let's try if there's internet connection!";
     lastfm::nam()->head( QNetworkRequest( QUrl( tr( "http://www.last.fm/" ) ) ) );
+#endif
 }
 
 void
@@ -96,6 +105,8 @@ lastfm::InternetConnectionMonitor::createNetworkConnectionMonitor()
     ncm = new LNetworkConnectionMonitor( this );
 #elif defined(Q_WS_WIN)
     ncm = new WNetworkConnectionMonitor( this );
+#elif defined(Q_WS_MAC)
+    ncm = new MNetworkConnectionMonitor( this );
 #endif
 
     return ncm;
