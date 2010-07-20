@@ -44,7 +44,7 @@ MNetworkConnectionMonitor::~MNetworkConnectionMonitor()
 
 void
 MNetworkConnectionMonitor::callback( SCNetworkReachabilityRef target,
-                                     SCNetworkReachabilityFlags flags,
+                                     SCNetworkConnectionFlags flags,
                                      void * )
 {
     static bool up = true;

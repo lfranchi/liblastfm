@@ -1,5 +1,5 @@
 TEMPLATE = lib
-QT = core network xml dbus
+QT = core network xml
 include( _files.qmake )
 
 INSTALLS = target

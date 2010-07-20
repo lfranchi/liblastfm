@@ -20,7 +20,7 @@
 #ifndef __VORBIS_SOURCE_H__
 #define __VORBIS_SOURCE_H__
 
-#include <lastfm/FingerprintableSource>
+#include <FingerprintableSource.h>
 #include <vorbis/vorbisfile.h>
 
 
