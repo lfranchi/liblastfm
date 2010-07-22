@@ -134,6 +134,7 @@ lastfm::NetworkAccessManager::createRequest( Operation op, const QNetworkRequest
 {
     QNetworkRequest request = request_;
 
+    request.setAttribute( QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache );
     request.setRawHeader( "User-Agent", lastfm::UserAgent );
     
 #ifdef WIN32
