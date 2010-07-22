@@ -1,5 +1,5 @@
 TEMPLATE = lib
-QT = core network xml 
+QT = core network xml
 include( _files.qmake )
 
 INSTALLS = target
@@ -15,7 +15,6 @@ mac{
     LIBS += -framework Carbon -framework CoreFoundation # various
 }
 
-linux{
+linux*{
     QT += dbus
 }
-

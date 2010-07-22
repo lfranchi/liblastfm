@@ -51,10 +51,10 @@ begin
   end unless Platform::IMPL == :mswin
 
   h2 "Running qpp..." do
-    ['src','src/fingerprint'].each do |d|
-      d="#{cwd}/#{d}"
+    ['src/lastfm.pro','src/fingerprint/fingerprint.pro'].each do |p|
+      d="#{cwd}/#{File.dirname p}"
       f=File.new "#{d}/_files.qmake", 'w'
-      f.write `ruby admin/qpp #{d}`
+      f.write `ruby admin/qpp #{p}`
       # on Windows VERSION produces lastfm0.dll, the 0 breaks the build
       f.puts "VERSION = #{LFM_VERSION}" unless Platform::OS == :win32
     end

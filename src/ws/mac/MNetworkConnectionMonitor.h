@@ -43,7 +43,7 @@ private slots:
 private:
 #ifdef Q_WS_MAC
     static void callback( SCNetworkReachabilityRef target,
-                          SCNetworkReachabilityFlags flags,
+                          SCNetworkConnectionFlags flags,
                           void *info );
 #endif
 };

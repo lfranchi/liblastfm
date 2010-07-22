@@ -10,8 +10,9 @@ target.path = /lib
 
 mac:CONFIG( app_bundle ) {
     LIBS += libfftw3f.a libsamplerate.a -L/opt/local/include
-    INCLUDEPATH += /opt/local/include
+    INCLUDEPATH += /opt/local/include:/opt/qt/qt-current/lib/QtSql.framework/Include/
 }else{
+    INCLUDEPATH += /opt/qt/qt-current/lib/QtSql.framework/Include/
     CONFIG += link_pkgconfig
     PKGCONFIG += samplerate
     win32 {
