@@ -47,10 +47,7 @@ namespace lastfm
 
     signals:
         void scrobblesCached( const QList<lastfm::Track>& tracks );
-        void scrobblesSubmitted( const QList<lastfm::Track>& tracks, int succeeded );
-
         void nowPlayingError( int code, QString message );
-        void scrobbleError( int code, QString message );
 
     public slots:
         /** will ask Last.fm to update the now playing information for the 

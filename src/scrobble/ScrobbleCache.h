@@ -20,14 +20,13 @@
 #ifndef LASTFM_SCROBBLE_CACHE_H
 #define LASTFM_SCROBBLE_CACHE_H
 
-#include <lastfm/Scrobble>
+#include "lastfm/Track"
 #include <QList>
 #include <QString>
 
 #if LASTFM_VERSION >= 0x00010000
 namespace lastfm {
 #else
-using lastfm::Scrobble;
 using lastfm::Track;
 #endif
 
@@ -63,6 +62,19 @@ public:
 
 private:
     bool operator==( const ScrobbleCache& ); //undefined
+
+    enum Invalidity
+    {
+        TooShort,
+        ArtistNameMissing,
+        TrackNameMissing,
+        ArtistInvalid,
+        NoTimestamp,
+        FromTheFuture,
+        FromTheDistantPast
+    };
+
+    bool isValid( const Track& track, Invalidity* = 0 );
 };
 
 #if LASTFM_VERSION >= 0x00010000

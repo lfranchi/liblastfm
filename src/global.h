@@ -98,7 +98,6 @@ namespace lastfm
     class Playlist;
     class User;
     class RadioStation;
-    class Scrobble;
     class Tag;
     class Track;
     class XmlQuery;
@@ -118,7 +117,6 @@ using lastfm::MutableTrack;
 using lastfm::Playlist;
 using lastfm::User;
 using lastfm::RadioStation;
-using lastfm::Scrobble;
 using lastfm::Tag;
 using lastfm::Track;
 using lastfm::XmlQuery;

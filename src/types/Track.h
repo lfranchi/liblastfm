@@ -56,6 +56,8 @@ private:
     QDateTime time; /// the time the track was started at
     bool loved;
     QMap<lastfm::ImageSize, QUrl> m_images;
+    short scrobbleStatus;
+    short scrobbleError;
 
     //FIXME I hate this, but is used for radio trackauth etc.
     QMap<QString,QString> extras;
@@ -64,6 +66,7 @@ private:
 
 private:
     void forceLoveToggled( bool love ) { emit loveToggled( love );}
+    void forceScrobbleStatusChanged() { emit scrobbleStatusChanged(); }
 
 private slots:
     void onLoveFinished();
@@ -75,6 +78,7 @@ signals:
     void loveFinished();
     void unlovedFinished();
     void gotInfo( const XmlQuery& );
+    void scrobbleStatusChanged();
 };
 
 
@@ -105,14 +109,27 @@ public:
         PersonalisedRecommendation, // eg Pandora, but not Last.fm
     };
 
+    enum ScrobbleStatus
+    {
+        Null = 0,
+        Cached,
+        Submitted,
+        Error
+    };
+
+    enum ScrobbleError
+    {
+        None = 0,
+        FilteredArtistName = 113,
+        FilteredTrackName = 114,
+        FilteredAlbumName = 115,
+        FilteredTimestamp = 116,
+        ExceededMaxDailyScrobbles = 118,
+        InvalidStreamAuth = 119
+    };
+
     Track();
     explicit Track( const QDomElement& );
-    
-    /** if you plan to use this track in a separate thread, you need to clone it
-      * first, otherwise nothing is thread-safe, not this creates a disconnected
-      * Track object, modifications to this or that will not effect that or this
-      */
-    //Track clone() const;
 
     /** this track and that track point to the same object, so they are the same
       * in fact. This doesn't do a deep data comparison. So even if all the 
@@ -120,7 +137,9 @@ public:
       * from the same initial Track object */
     bool operator==( const Track& that ) const
     {
-        return this->d == that.d;
+        return ( this->title() == that.title() &&
+                 this->album() == that.album() &&
+                 this->artist() == that.artist());
     }
     bool operator!=( const Track& that ) const
     {
@@ -146,13 +165,16 @@ public:
     Mbid mbid() const { return Mbid(d->mbid); }
     QUrl url() const { return d->url; }
     QDateTime timestamp() const { return d->time; }
-    Source source() const { return (Source)d->source; }
+    Source source() const { return static_cast<Source>(d->source); }
     uint fingerprintId() const { return d->fpid; }
     bool isLoved() const { return d->loved; }
     QUrl imageUrl( lastfm::ImageSize size, bool square ) const;
 
     QString durationString() const { return durationString( d->duration ); }
     static QString durationString( int seconds );
+
+    ScrobbleStatus scrobbleStatus() const { return static_cast<ScrobbleStatus>(d->scrobbleStatus); }
+    ScrobbleError scrobbleError() const { return static_cast<ScrobbleError>(d->scrobbleError); }
 
     /** default separator is an en-dash */
     QString toString() const { return toString( QChar(8211) );}
@@ -244,6 +266,13 @@ public:
     
     void setMbid( Mbid id ) { d->mbid = id; }
     void setFingerprintId( uint id ) { d->fpid = id; }
+
+    void setScrobbleStatus( ScrobbleStatus scrobbleStatus )
+    {
+        d->scrobbleStatus = scrobbleStatus;
+        d->forceScrobbleStatusChanged();
+    }
+    void setScrobbleError( ScrobbleError scrobbleError ) { d->scrobbleError = scrobbleError; }
     
     /** you also must scrobble this track for the love to become permenant */
     void love();
