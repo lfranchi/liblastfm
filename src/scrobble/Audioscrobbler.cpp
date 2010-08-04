@@ -175,5 +175,38 @@ lastfm::Audioscrobbler::onTrackScrobbleReturn()
 void
 lastfm::Audioscrobbler::onTrackScrobbleBatchReturn()
 {
-    //onTrackScrobbleReturn();
+    lastfm::XmlQuery lfm = d->m_scrobbleReply->readAll();
+    qDebug() << lfm;
+
+    if (d->m_scrobbleReply->error() == QNetworkReply::NoError)
+    {
+        if (lfm.attribute("status") == "ok")
+        {
+            foreach( const Track& track, d->m_batch )
+                MutableTrack( track ).setScrobbleStatus( Track::Submitted );
+        }
+        else
+        {
+            qDebug() << lfm["error"].attribute("code");
+            foreach( const Track& track, d->m_batch )
+            {
+                MutableTrack mutableTrack( track );
+                mutableTrack.setScrobbleError( static_cast<Track::ScrobbleError>(lfm["error"].attribute("code").toInt()) );
+                mutableTrack.setScrobbleStatus( Track::Error );
+            }
+        }
+
+        d->m_cache.remove( d->m_batch );
+        d->m_batch.clear();
+    }
+    else
+    {
+        if ( d->m_scrobbleReply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt() == 400)
+        {
+            d->m_cache.remove( d->m_batch );
+            d->m_batch.clear();
+        }
+    }
+
+    d->m_scrobbleReply = 0;
 }
