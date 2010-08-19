@@ -46,6 +46,7 @@ namespace lastfm
         static RadioStation similar( const lastfm::Artist& artist )     { return rql( similarStr( artist ) ); }
         static RadioStation userTag( const lastfm::User& user, const lastfm::Tag& tag) { return rql( userTagStr( user, tag ) ); }
         static RadioStation playlist( int playlistId )                  { return rql( playlistStr( playlistId ) ); }
+        static RadioStation adventure( const lastfm::User& user )       { return rql( adventureStr( user ) ); }
 
         static RadioStation rql( const QString& rql )
         {
@@ -102,7 +103,7 @@ namespace lastfm
         static QString similarStr( const lastfm::Artist& artist )     { return "simart:\"" + artist + "\""; }
         static QString userTagStr( const lastfm::User& user, const lastfm::Tag& tag) { return "ptag:\"" + tag + "\"|" + user ; }
         static QString playlistStr( int playlistId )                  { return "playlist:" + QString::number(playlistId) ; }
-    
+        static QString adventureStr( const lastfm::User& user )       { return "adv:" + user ; } 
     private:
         QString m_rql;
         QString m_url;

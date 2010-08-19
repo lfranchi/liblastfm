@@ -138,7 +138,7 @@ lastfm::Audioscrobbler::onNowPlayingReturn()
 void
 lastfm::Audioscrobbler::onTrackScrobbleReturn()
 {
-    Q_ASSERT(d->m_batch.count() == 1, "Audioscrobbler", "Not 1 track in batch after track.Scrobble");
+    Q_ASSERT_X(d->m_batch.count() == 1, "Audioscrobbler", "Not 1 track in batch after track.Scrobble");
 
     lastfm::XmlQuery lfm = d->m_scrobbleReply->readAll();
     qDebug() << lfm;
