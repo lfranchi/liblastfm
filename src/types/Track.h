@@ -42,7 +42,7 @@ class TrackData : public QObject, public QSharedData
 public:
     TrackData();
 
-private:
+public:
     QString artist;
     QString album;
     QString title;

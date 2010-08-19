@@ -118,6 +118,9 @@ lastfm::TrackData::onGotInfo()
 
     emit gotInfo( lfm );
     emit loveToggled( loved );
+
+    // you should connect everytime you call getInfo
+    disconnect( this, SIGNAL(gotInfo(const XmlQuery&)), 0, 0);
 }
 
 
