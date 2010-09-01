@@ -46,6 +46,7 @@ namespace lastfm
 
         operator QString() const { return m_name; }
         QString name() const { return m_name; }
+        void setName( const QString& name ){ m_name = name; }
         
         static QNetworkReply* updateNowPlaying(const lastfm::Track& track);
     
@@ -96,6 +97,7 @@ namespace lastfm
     class LASTFM_DLLEXPORT UserDetails : public User
     {
     public:
+        UserDetails();
         /** User details */
         UserDetails( QNetworkReply* );
     
@@ -110,6 +112,17 @@ namespace lastfm
         quint32 scrobbleCount() const{ return m_scrobbles; }
         QDateTime dateRegistered() const { return m_registered; }
 
+        void setScrobbleCount( quint32 scrobblesCount );
+        void setDateRegistered( const QDateTime& date );
+        void setImages( const QList<QUrl>& images );
+        void setRealName( const QString& realName );
+        void setAge( unsigned short age );
+        void setIsSubscriber( bool subscriber );
+        void setCanBootstrap( bool canBootstrap );
+        void setGender( const QString& s );
+        void setCountry( const QString& country );
+
+    
         // pass the result to Artist::list(), if you want the other data 
         // you have to parse the lfm() yourself members
         // http://www.last.fm/api/show?service=388

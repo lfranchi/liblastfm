@@ -172,6 +172,8 @@ UserDetails::getInfo( const QString& username )
 }
 
 
+
+
 /*
 QNetworkReply* //static
 UserDetails::getRecommendedArtists()
@@ -188,6 +190,14 @@ User::www() const
     return UrlBuilder( "user" ).slash( m_name ).url();
 }
 
+UserDetails::UserDetails()
+    : User()
+    , m_age( 0 )
+    , m_scrobbles( 0 )
+    , m_registered( QDateTime() )
+    , m_isSubscriber( false )
+    , m_canBootstrap( false )
+{}
 
 UserDetails::UserDetails( QNetworkReply* reply )
 {
@@ -237,3 +247,58 @@ UserDetails::getInfoString() const
     
     #undef tr
 }
+
+void 
+UserDetails::setScrobbleCount( quint32 scrobbleCount )
+{
+    m_scrobbles = scrobbleCount;
+}
+
+
+void
+UserDetails::setDateRegistered( const QDateTime& date )
+{
+    m_registered = date;
+}
+
+void 
+UserDetails::setImages( const QList<QUrl>& images )
+{
+    m_images = images;
+}
+
+void 
+UserDetails::setRealName( const QString& realName )
+{
+    m_realName = realName;
+}
+void 
+UserDetails::setAge( unsigned short age )
+{
+    m_age = age;
+}
+
+void 
+UserDetails::setIsSubscriber( bool subscriber )
+{
+    m_isSubscriber = subscriber;
+}
+
+void 
+UserDetails::setCanBootstrap( bool canBootstrap )
+{
+    m_canBootstrap = canBootstrap;
+}
+
+void 
+UserDetails::setGender( const QString& s )
+{
+    m_gender = Gender( s );
+}
+
+void 
+UserDetails::setCountry( const QString& country )
+{
+    m_country = country;
+}
+
