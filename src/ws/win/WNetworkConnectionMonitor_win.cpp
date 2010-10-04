@@ -39,12 +39,12 @@ public:
     }
 
     // WmiSink callbacks:
-    void onConnectionUp( BSTR name )
+    void onConnectionUp( BSTR /*name*/ )
     {
         m_icm->setConnected( true );
     }
 
-    void onConnectionDown( BSTR name )
+    void onConnectionDown( BSTR /*name*/ )
     {
         m_icm->setConnected( false );
     }

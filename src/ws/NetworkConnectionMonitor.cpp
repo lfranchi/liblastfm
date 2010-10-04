@@ -20,7 +20,7 @@
 
 #include "NetworkConnectionMonitor.h"
 
-NetworkConnectionMonitor::NetworkConnectionMonitor( QObject* parent )
+NetworkConnectionMonitor::NetworkConnectionMonitor( QObject* /*parent*/ )
     : m_connected( true )
 {
 }

@@ -30,8 +30,9 @@
 
 namespace lastfm
 {
-    struct AudioscrobblerPrivate
+    class AudioscrobblerPrivate
     {
+    public:
         AudioscrobblerPrivate(const QString& id)
                 : m_id( id )
                 , m_cache( ws::Username )
