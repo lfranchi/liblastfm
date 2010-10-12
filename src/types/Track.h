@@ -46,6 +46,9 @@ public:
     QString artist;
     QString album;
     QString title;
+    QString correctedArtist;
+    QString correctedAlbum;
+    QString correctedTitle;
     uint trackNumber;
     uint duration;
     short source;
@@ -67,6 +70,7 @@ public:
 private:
     void forceLoveToggled( bool love ) { emit loveToggled( love );}
     void forceScrobbleStatusChanged() { emit scrobbleStatusChanged(); }
+    void forceCorrected( QString correction ) { emit corrected( correction ); }
 
 private slots:
     void onLoveFinished();
@@ -79,6 +83,7 @@ signals:
     void unlovedFinished();
     void gotInfo( const XmlQuery& );
     void scrobbleStatusChanged();
+    void corrected( QString correction );
 };
 
 
@@ -117,6 +122,12 @@ public:
         Error
     };
 
+    enum Corrections
+    {
+        Original = 0,
+        Corrected
+    };
+
     enum ScrobbleError
     {
         None = 0,
@@ -135,6 +146,11 @@ public:
       * in fact. This doesn't do a deep data comparison. So even if all the 
       * fields are the same it will return false if they aren't in fact spawned
       * from the same initial Track object */
+    bool sameObject( const Track& that )
+    {
+        return (this->d == that.d);
+    }
+
     bool operator==( const Track& that ) const
     {
         return ( this->title() == that.title() &&
@@ -151,15 +167,12 @@ public:
     /** only a Track() is null */
     bool isNull() const { return d->null; }
 
-    Artist artist() const { return Artist( d->artist ); }
-    Album album() const { return Album( artist(), d->album ); }
-    QString title() const
-    {
-        /** if no title is set, return the musicbrainz unknown identifier
-          * in case some part of the GUI tries to display it anyway. Note isNull
-          * returns false still. So you should have queried this! */
-        return d->title.isEmpty() ? "[unknown]" : d->title;
-    }
+    bool corrected() const;
+
+    Artist artist( Corrections corrected = Original ) const;
+    Album album( Corrections corrected = Original ) const;
+    QString title( Corrections corrected = Original ) const;
+
     uint trackNumber() const { return d->trackNumber; }
     uint duration() const { return d->duration; } /// in seconds
     Mbid mbid() const { return Mbid(d->mbid); }
@@ -177,8 +190,9 @@ public:
     ScrobbleError scrobbleError() const { return static_cast<ScrobbleError>(d->scrobbleError); }
 
     /** default separator is an en-dash */
-    QString toString() const { return toString( QChar(8211) );}
-    QString toString( const QChar& separator ) const;
+    QString toString() const { return toString( Corrected ); }
+    QString toString( Corrections corrections ) const { return toString( QChar(8211), corrections );}
+    QString toString( const QChar& separator, Corrections corrections = Original ) const;
     /** the standard representation of this object as an XML node */
     QDomElement toDomElement( class QDomDocument& ) const;
     
@@ -258,6 +272,7 @@ public:
     void setArtist( QString artist ) { d->artist = artist.trimmed(); }
     void setAlbum( QString album ) { d->album = album.trimmed(); }
     void setTitle( QString title ) { d->title = title.trimmed(); }
+    void setCorrections( QString title, QString album, QString artist );
     void setTrackNumber( uint n ) { d->trackNumber = n; }
     void setDuration( uint duration ) { d->duration = duration; }
     void setUrl( QUrl url ) { d->url = url; }

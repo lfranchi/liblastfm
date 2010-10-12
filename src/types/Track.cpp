@@ -55,6 +55,9 @@ lastfm::Track::Track( const QDomElement& e )
     d->artist = e.namedItem( "artist" ).toElement().text();
     d->album =  e.namedItem( "album" ).toElement().text();
     d->title = e.namedItem( "track" ).toElement().text();
+    d->correctedArtist = e.namedItem( "correctedArtist" ).toElement().text();
+    d->correctedAlbum =  e.namedItem( "correctedAlbum" ).toElement().text();
+    d->correctedTitle = e.namedItem( "correctedTrack" ).toElement().text();
     d->trackNumber = 0;
     d->duration = e.namedItem( "duration" ).toElement().text().toInt();
     d->url = e.namedItem( "url" ).toElement().text();
@@ -142,6 +145,9 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
     makeElement( "artist", d->artist );
     makeElement( "album", d->album );
     makeElement( "track", d->title );
+    makeElement( "correctedArtist", d->correctedArtist );
+    makeElement( "correctedAlbum", d->correctedAlbum );
+    makeElement( "correctedTrack", d->correctedTitle );
     makeElement( "duration", QString::number( d->duration ) );
     makeElement( "timestamp", QString::number( d->time.toTime_t() ) );
     makeElement( "url", d->url.toString() );
@@ -176,6 +182,48 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
 }
 
 
+bool
+lastfm::Track::corrected() const
+{
+    // If any of the corrected string have been set and they are different
+    // from the initial strings then this track has been corrected.
+    return ( (!d->correctedTitle.isEmpty() && (d->correctedTitle != d->title))
+            || (!d->correctedAlbum.isEmpty() && (d->correctedAlbum != d->album))
+            || (!d->correctedArtist.isEmpty() && (d->correctedArtist != d->artist)));
+}
+
+lastfm::Artist
+lastfm::Track::artist( Corrections corrected ) const
+{
+    if ( corrected == Corrected && !d->correctedArtist.isEmpty() )
+        return Artist( d->correctedArtist );
+
+    return Artist( d->artist );
+}
+
+lastfm::Album
+lastfm::Track::album( Corrections corrected ) const
+{
+    if ( corrected == Corrected && !d->correctedAlbum.isEmpty() )
+        return Album( artist( corrected ), d->correctedAlbum );
+
+    return Album( artist( corrected ), d->album );
+}
+
+QString
+lastfm::Track::title( Corrections corrected ) const
+{
+    /** if no title is set, return the musicbrainz unknown identifier
+      * in case some part of the GUI tries to display it anyway. Note isNull
+      * returns false still. So you should have queried this! */
+
+    if ( corrected == Corrected && !d->correctedTitle.isEmpty() )
+        return d->correctedTitle;
+
+    return d->title.isEmpty() ? "[unknown]" : d->title;
+}
+
+
 QUrl
 lastfm::Track::imageUrl( lastfm::ImageSize size, bool square ) const
 {
@@ -188,20 +236,20 @@ lastfm::Track::imageUrl( lastfm::ImageSize size, bool square ) const
 
 
 QString
-lastfm::Track::toString( const QChar& separator ) const
+lastfm::Track::toString( const QChar& separator, Corrections corrections ) const
 {
     if ( d->artist.isEmpty() )
     {
         if ( d->title.isEmpty() )
             return QFileInfo( d->url.path() ).fileName();
         else
-            return d->title;
+            return title( corrections );
     }
 
     if ( d->title.isEmpty() )
-        return d->artist;
+        return artist( corrections );
 
-    return d->artist + ' ' + separator + ' ' + d->title;
+    return artist( corrections ) + ' ' + separator + ' ' + title( corrections );
 }
 
 
@@ -387,5 +435,15 @@ lastfm::Track::isMp3() const
     //FIXME really we should check the file header?
     return d->url.scheme() == "file" &&
            d->url.path().endsWith( ".mp3", Qt::CaseInsensitive );
+}
+
+void
+lastfm::MutableTrack::setCorrections( QString title, QString album, QString artist )
+{
+    d->correctedTitle = title;
+    d->correctedAlbum = album;
+    d->correctedArtist = artist;
+
+    d->forceCorrected( toString() );
 }
 

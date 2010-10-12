@@ -24,6 +24,7 @@
 #include "ScrobbleCache.h"
 
 #include "../types/User.h"
+#include "../types/Track.h"
 #include "../ws/ws.h"
 #include "../core/XmlQuery.h"
 
@@ -47,6 +48,7 @@ namespace lastfm
         QList<Track> m_batch;
         QPointer<QNetworkReply> m_nowPlayingReply;
         QPointer<QNetworkReply> m_scrobbleReply;
+        Track m_nowPlayingTrack;
     };
 }
 
@@ -69,6 +71,7 @@ lastfm::Audioscrobbler::nowPlaying( const Track& track )
 {
     if ( d->m_nowPlayingReply.isNull())
     {
+        d->m_nowPlayingTrack = track;
         d->m_nowPlayingReply = lastfm::User::updateNowPlaying( track );
         connect( d->m_nowPlayingReply, SIGNAL(finished()), SLOT(onNowPlayingReturn()));
     }
@@ -127,11 +130,22 @@ lastfm::Audioscrobbler::onNowPlayingReturn()
     lastfm::XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
     qDebug() << lfm;
 
-    if ( lfm.attribute("status") != "ok" )
+    if ( lfm.attribute("status") == "ok" )
+    {
+        if ( lfm["nowplaying"].attribute("corrected") == "1" )
+        {
+            MutableTrack nowPlayingTrack = MutableTrack( d->m_nowPlayingTrack );
+            nowPlayingTrack.setCorrections(lfm["nowplaying"]["track"].text(),
+                                           lfm["nowplaying"]["album"].text(),
+                                           lfm["nowplaying"]["artist"].text());
+        }
+    }
+        else
     {
         emit nowPlayingError( lfm["code"].text().toInt(), lfm["error"].text() );
     }
 
+    d->m_nowPlayingTrack = Track();
     d->m_nowPlayingReply = 0;
 }
 

@@ -116,10 +116,7 @@ lastfm::ws::post( QMap<QString, QString> params, bool sk )
                + '&';
     }
 
-    QString method = params.value("method");
-    QUrl asurl = url();
-
-    return nam()->post( QNetworkRequest(asurl), query );
+    return nam()->post( QNetworkRequest(url()), query );
 }
 
 
