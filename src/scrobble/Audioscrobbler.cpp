@@ -72,7 +72,7 @@ lastfm::Audioscrobbler::nowPlaying( const Track& track )
     if ( d->m_nowPlayingReply.isNull())
     {
         d->m_nowPlayingTrack = track;
-        d->m_nowPlayingReply = lastfm::User::updateNowPlaying( track );
+        d->m_nowPlayingReply = track.updateNowPlaying();
         connect( d->m_nowPlayingReply, SIGNAL(finished()), SLOT(onNowPlayingReturn()));
     }
 }
@@ -118,7 +118,7 @@ lastfm::Audioscrobbler::submit()
     }
     else
     {
-        d->m_scrobbleReply = lastfm::Track::scrobbleBatch( d->m_batch );
+        d->m_scrobbleReply = lastfm::Track::scrobble( d->m_batch );
         connect( d->m_scrobbleReply, SIGNAL(finished()), SLOT(onTrackScrobbleBatchReturn()));
     }
 }
@@ -132,7 +132,9 @@ lastfm::Audioscrobbler::onNowPlayingReturn()
 
     if ( lfm.attribute("status") == "ok" )
     {
-        if ( lfm["nowplaying"].attribute("corrected") == "1" )
+        if ( lfm["nowplaying"]["track"].attribute("corrected") == "1"
+             || lfm["nowplaying"]["artist"].attribute("corrected") == "1"
+             || lfm["nowplaying"]["album"].attribute("corrected") == "1" )
         {
             MutableTrack nowPlayingTrack = MutableTrack( d->m_nowPlayingTrack );
             nowPlayingTrack.setCorrections(lfm["nowplaying"]["track"].text(),
@@ -140,7 +142,7 @@ lastfm::Audioscrobbler::onNowPlayingReturn()
                                            lfm["nowplaying"]["artist"].text());
         }
     }
-        else
+    else
     {
         emit nowPlayingError( lfm["code"].text().toInt(), lfm["error"].text() );
     }
