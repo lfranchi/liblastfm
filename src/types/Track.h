@@ -44,9 +44,11 @@ public:
 
 public:
     QString artist;
+    QString albumArtist;
     QString album;
     QString title;
     QString correctedArtist;
+    QString correctedAlbumArtist;
     QString correctedAlbum;
     QString correctedTitle;
     uint trackNumber;
@@ -170,6 +172,7 @@ public:
     bool corrected() const;
 
     Artist artist( Corrections corrected = Original ) const;
+    Artist albumArtist( Corrections corrected = Original ) const;
     Album album( Corrections corrected = Original ) const;
     QString title( Corrections corrected = Original ) const;
 
@@ -271,9 +274,10 @@ public:
     void setFromLfm( const XmlQuery& lfm );
     
     void setArtist( QString artist ) { d->artist = artist.trimmed(); }
+    void setAlbumArtist( QString albumArtist ) { d->albumArtist = albumArtist.trimmed(); }
     void setAlbum( QString album ) { d->album = album.trimmed(); }
     void setTitle( QString title ) { d->title = title.trimmed(); }
-    void setCorrections( QString title, QString album, QString artist );
+    void setCorrections( QString title, QString album, QString artist, QString albumArtist );
     void setTrackNumber( uint n ) { d->trackNumber = n; }
     void setDuration( uint duration ) { d->duration = duration; }
     void setUrl( QUrl url ) { d->url = url; }

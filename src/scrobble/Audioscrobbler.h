@@ -64,7 +64,9 @@ namespace lastfm
     private slots:
         void onNowPlayingReturn();
         void onTrackScrobbleReturn();
-        void onTrackScrobbleBatchReturn();
+
+    private:
+        void parseTrack( const XmlQuery& trackXml, const Track& track );
 
     private:
         class AudioscrobblerPrivate* d;

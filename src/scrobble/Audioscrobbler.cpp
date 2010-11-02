@@ -112,17 +112,41 @@ lastfm::Audioscrobbler::submit()
 
     // if there is only one track use track.scrobble, otherwise use track.scrobbleBatch
     if (d->m_batch.count() == 1)
-    {
         d->m_scrobbleReply = d->m_batch[0].scrobble();
-        connect( d->m_scrobbleReply, SIGNAL(finished()), SLOT(onTrackScrobbleReturn()));
-    }
     else
-    {
         d->m_scrobbleReply = lastfm::Track::scrobble( d->m_batch );
-        connect( d->m_scrobbleReply, SIGNAL(finished()), SLOT(onTrackScrobbleBatchReturn()));
-    }
+
+    connect( d->m_scrobbleReply, SIGNAL(finished()), SLOT(onTrackScrobbleReturn()));
 }
 
+void
+lastfm::Audioscrobbler::parseTrack( const XmlQuery& trackXml, const Track& track )
+{
+    MutableTrack mTrack = MutableTrack( track );
+    bool isScrobble = QDomElement(trackXml).tagName() == "scrobble";
+
+    if ( trackXml["ignoredMessage"].attribute("code") == "0" )
+    {
+        if ( isScrobble ) mTrack.setScrobbleStatus( Track::Submitted );
+
+        // corrections!
+        if ( trackXml["track"].attribute("corrected") == "1"
+             || trackXml["artist"].attribute("corrected") == "1"
+             || trackXml["album"].attribute("corrected") == "1"
+             || trackXml["albumArtist"].attribute("corrected") == "1")
+        {
+            mTrack.setCorrections(trackXml["track"].text(),
+                                           trackXml["album"].text(),
+                                           trackXml["artist"].text(),
+                                           trackXml["albumArtist"].text());
+        }
+    }
+    else if ( isScrobble )
+    {
+        mTrack.setScrobbleError( static_cast<Track::ScrobbleError>(trackXml["ignoredMessage"].attribute("code").toInt()) );
+        mTrack.setScrobbleStatus( Track::Error );
+    }
+}
 
 void
 lastfm::Audioscrobbler::onNowPlayingReturn()
@@ -131,21 +155,9 @@ lastfm::Audioscrobbler::onNowPlayingReturn()
     qDebug() << lfm;
 
     if ( lfm.attribute("status") == "ok" )
-    {
-        if ( lfm["nowplaying"]["track"].attribute("corrected") == "1"
-             || lfm["nowplaying"]["artist"].attribute("corrected") == "1"
-             || lfm["nowplaying"]["album"].attribute("corrected") == "1" )
-        {
-            MutableTrack nowPlayingTrack = MutableTrack( d->m_nowPlayingTrack );
-            nowPlayingTrack.setCorrections(lfm["nowplaying"]["track"].text(),
-                                           lfm["nowplaying"]["album"].text(),
-                                           lfm["nowplaying"]["artist"].text());
-        }
-    }
+        parseTrack( lfm["nowplaying"], d->m_nowPlayingTrack );
     else
-    {
         emit nowPlayingError( lfm["code"].text().toInt(), lfm["error"].text() );
-    }
 
     d->m_nowPlayingTrack = Track();
     d->m_nowPlayingReply = 0;
@@ -155,8 +167,6 @@ lastfm::Audioscrobbler::onNowPlayingReturn()
 void
 lastfm::Audioscrobbler::onTrackScrobbleReturn()
 {
-    Q_ASSERT_X(d->m_batch.count() == 1, "Audioscrobbler", "Not 1 track in batch after track.Scrobble");
-
     lastfm::XmlQuery lfm = d->m_scrobbleReply->readAll();
     qDebug() << lfm;
 
@@ -164,57 +174,14 @@ lastfm::Audioscrobbler::onTrackScrobbleReturn()
     {
         if (lfm.attribute("status") == "ok")
         {
-            MutableTrack( d->m_batch.at(0) ).setScrobbleStatus( Track::Submitted );
-        }
-        else
-        {
-            qDebug() << lfm["error"].attribute("code");
-            MutableTrack track = MutableTrack( d->m_batch.at(0) );
-            track.setScrobbleError( static_cast<Track::ScrobbleError>(lfm["error"].attribute("code").toInt()) );
-            track.setScrobbleStatus( Track::Error );
-        }
+            int index = 0;
 
-        d->m_cache.remove( d->m_batch );
-        d->m_batch.clear();
-    }
-    else
-    {
-        if ( d->m_scrobbleReply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt() == 400)
-        {
+            foreach ( const XmlQuery& scrobble, lfm["scrobbles"].children("scrobble") )
+                parseTrack( scrobble, d->m_batch.at( index++ ) );
+
             d->m_cache.remove( d->m_batch );
             d->m_batch.clear();
         }
-    }
-
-    d->m_scrobbleReply = 0;
-}
-
-void
-lastfm::Audioscrobbler::onTrackScrobbleBatchReturn()
-{
-    lastfm::XmlQuery lfm = d->m_scrobbleReply->readAll();
-    qDebug() << lfm;
-
-    if (d->m_scrobbleReply->error() == QNetworkReply::NoError)
-    {
-        if (lfm.attribute("status") == "ok")
-        {
-            foreach( const Track& track, d->m_batch )
-                MutableTrack( track ).setScrobbleStatus( Track::Submitted );
-        }
-        else
-        {
-            qDebug() << lfm["error"].attribute("code");
-            foreach( const Track& track, d->m_batch )
-            {
-                MutableTrack mutableTrack( track );
-                mutableTrack.setScrobbleError( static_cast<Track::ScrobbleError>(lfm["error"].attribute("code").toInt()) );
-                mutableTrack.setScrobbleStatus( Track::Error );
-            }
-        }
-
-        d->m_cache.remove( d->m_batch );
-        d->m_batch.clear();
     }
     else
     {

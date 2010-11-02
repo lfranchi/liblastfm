@@ -53,9 +53,11 @@ lastfm::Track::Track( const QDomElement& e )
     if (e.isNull()) { d->null = true; return; }
     
     d->artist = e.namedItem( "artist" ).toElement().text();
+    d->albumArtist = e.namedItem( "albumArtist" ).toElement().text();
     d->album =  e.namedItem( "album" ).toElement().text();
     d->title = e.namedItem( "track" ).toElement().text();
     d->correctedArtist = e.namedItem( "correctedArtist" ).toElement().text();
+    d->correctedAlbumArtist = e.namedItem( "correctedAlbumArtist" ).toElement().text();
     d->correctedAlbum =  e.namedItem( "correctedAlbum" ).toElement().text();
     d->correctedTitle = e.namedItem( "correctedTrack" ).toElement().text();
     d->trackNumber = 0;
@@ -143,9 +145,11 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
     }
 
     makeElement( "artist", d->artist );
+    makeElement( "albumArtist", d->albumArtist );
     makeElement( "album", d->album );
     makeElement( "track", d->title );
     makeElement( "correctedArtist", d->correctedArtist );
+    makeElement( "correctedAlbumArtist", d->correctedAlbumArtist );
     makeElement( "correctedAlbum", d->correctedAlbum );
     makeElement( "correctedTrack", d->correctedTitle );
     makeElement( "duration", QString::number( d->duration ) );
@@ -189,7 +193,8 @@ lastfm::Track::corrected() const
     // from the initial strings then this track has been corrected.
     return ( (!d->correctedTitle.isEmpty() && (d->correctedTitle != d->title))
             || (!d->correctedAlbum.isEmpty() && (d->correctedAlbum != d->album))
-            || (!d->correctedArtist.isEmpty() && (d->correctedArtist != d->artist)));
+            || (!d->correctedArtist.isEmpty() && (d->correctedArtist != d->artist))
+            || (!d->correctedAlbumArtist.isEmpty() && (d->correctedAlbumArtist != d->albumArtist)));
 }
 
 lastfm::Artist
@@ -199,6 +204,15 @@ lastfm::Track::artist( Corrections corrected ) const
         return Artist( d->correctedArtist );
 
     return Artist( d->artist );
+}
+
+lastfm::Artist
+lastfm::Track::albumArtist( Corrections corrected ) const
+{
+    if ( corrected == Corrected && !d->correctedAlbumArtist.isEmpty() )
+        return Artist( d->correctedAlbumArtist );
+
+    return Artist( d->albumArtist );
 }
 
 lastfm::Album
@@ -393,7 +407,7 @@ lastfm::Track::updateNowPlaying() const
     map["method"] = "track.updateNowPlaying";
     map["duration"] = QString::number( duration() );
     if ( !album().isNull() ) map["album"] = album();
-    map["context"] = extra("playerName");
+    map["context"] = extra("playerId");
 
     qDebug() << map;
 
@@ -407,7 +421,8 @@ lastfm::Track::scrobble() const
     QMap<QString, QString> map = params("scrobble");
     map["duration"] = QString::number( d->duration );
     map["timestamp"] = QString::number( d->time.toTime_t() );
-    map["context"] = extra("playerName");
+    map["context"] = extra("playerId");
+    map["albumArtist"] = d->albumArtist;
     if ( !d->album.isEmpty() ) map["album"] = d->album;
 
     qDebug() << map;
@@ -426,9 +441,10 @@ lastfm::Track::scrobble(const QList<lastfm::Track>& tracks)
         map["duration[" + QString::number(i) + "]"] = QString::number( tracks[i].duration() );
         map["timestamp[" + QString::number(i)  + "]"] = QString::number( tracks[i].timestamp().toTime_t() );
         map["track[" + QString::number(i)  + "]"] = tracks[i].title();
-        map["context[" + QString::number(i)  + "]"] = tracks[i].extra("playerName");
+        map["context[" + QString::number(i)  + "]"] = tracks[i].extra("playerId");
         if ( !tracks[i].album().isNull() ) map["album[" + QString::number(i)  + "]"] = tracks[i].album();
         map["artist[" + QString::number(i) + "]"] = tracks[i].artist();
+        map["albumArtist[" + QString::number(i) + "]"] = tracks[i].albumArtist();
         if ( !tracks[i].mbid().isNull() ) map["mbid[" + QString::number(i)  + "]"] = tracks[i].mbid();
     }
 
@@ -454,11 +470,12 @@ lastfm::Track::isMp3() const
 }
 
 void
-lastfm::MutableTrack::setCorrections( QString title, QString album, QString artist )
+lastfm::MutableTrack::setCorrections( QString title, QString album, QString artist, QString albumArtist )
 {
     d->correctedTitle = title;
     d->correctedAlbum = album;
     d->correctedArtist = artist;
+    d->correctedAlbumArtist = albumArtist;
 
     d->forceCorrected( toString() );
 }
