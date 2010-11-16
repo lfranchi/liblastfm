@@ -157,7 +157,7 @@ lastfm::Audioscrobbler::onNowPlayingReturn()
     if ( lfm.attribute("status") == "ok" )
         parseTrack( lfm["nowplaying"], d->m_nowPlayingTrack );
     else
-        emit nowPlayingError( lfm["code"].text().toInt(), lfm["error"].text() );
+        emit nowPlayingError( lfm["error"].attribute("code").toInt(), lfm["error"].text() );
 
     d->m_nowPlayingTrack = Track();
     d->m_nowPlayingReply = 0;
@@ -170,25 +170,31 @@ lastfm::Audioscrobbler::onTrackScrobbleReturn()
     lastfm::XmlQuery lfm = d->m_scrobbleReply->readAll();
     qDebug() << lfm;
 
-    if (d->m_scrobbleReply->error() == QNetworkReply::NoError)
+    if (lfm.attribute("status") == "ok")
     {
-        if (lfm.attribute("status") == "ok")
-        {
-            int index = 0;
+        int index = 0;
 
-            foreach ( const XmlQuery& scrobble, lfm["scrobbles"].children("scrobble") )
-                parseTrack( scrobble, d->m_batch.at( index++ ) );
+        foreach ( const XmlQuery& scrobble, lfm["scrobbles"].children("scrobble") )
+            parseTrack( scrobble, d->m_batch.at( index++ ) );
 
-            d->m_cache.remove( d->m_batch );
-            d->m_batch.clear();
-        }
+        d->m_cache.remove( d->m_batch );
+        d->m_batch.clear();
     }
     else
     {
-        if ( d->m_scrobbleReply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt() == 400)
+        // The scrobble submission failed
+
+        if ( !(lfm["error"].attribute("code") == "9" // Bad session
+            || lfm["error"].attribute("code") == "11" // Service offline
+            || lfm["error"].attribute("code") == "16") ) // Service temporarily unavailable
         {
+            // clear the cache if it was not one of these error codes
             d->m_cache.remove( d->m_batch );
             d->m_batch.clear();
+        }
+        else
+        {
+            Q_ASSERT(false);
         }
     }
 
