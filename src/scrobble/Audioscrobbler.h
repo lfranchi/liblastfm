@@ -53,13 +53,12 @@ namespace lastfm
         /** will ask Last.fm to update the now playing information for the 
           * authenticated user */
         void nowPlaying( const Track& );
-        /** will cache the track, but we won't submit it until you call submit() */
+        /** will cache the track and call submit() */
         void cache( const Track& );
+        void cacheBatch( const QList<Track>& );
+
         /** will submit the submission cache for this user */
         void submit();
-
-    public:
-        void cache( const QList<Track>& );
 
     private slots:
         void onNowPlayingReturn();
