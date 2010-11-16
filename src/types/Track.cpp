@@ -404,7 +404,6 @@ QNetworkReply*
 lastfm::Track::updateNowPlaying() const
 {
     QMap<QString, QString> map = params("updateNowPlaying");
-    map["method"] = "track.updateNowPlaying";
     map["duration"] = QString::number( duration() );
     if ( !album().isNull() ) map["album"] = album();
     map["context"] = extra("playerId");
