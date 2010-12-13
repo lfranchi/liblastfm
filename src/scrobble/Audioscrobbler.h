@@ -55,7 +55,7 @@ namespace lastfm
         void nowPlaying( const Track& );
         /** will cache the track and call submit() */
         void cache( const Track& );
-        void cacheBatch( const QList<Track>& );
+        void cacheBatch( const QList<lastfm::Track>& );
 
         /** will submit the submission cache for this user */
         void submit();

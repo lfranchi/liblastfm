@@ -88,7 +88,7 @@ lastfm::Audioscrobbler::cache( const Track& track )
 
 
 void
-lastfm::Audioscrobbler::cacheBatch( const QList<Track>& tracks )
+lastfm::Audioscrobbler::cacheBatch( const QList<lastfm::Track>& tracks )
 {
     d->m_cache.add( tracks );
 
