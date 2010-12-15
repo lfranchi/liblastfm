@@ -17,13 +17,17 @@
    You should have received a copy of the GNU General Public License
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+#include <QFileInfo>
+#include <QStringList>
+#include <QAbstractNetworkCache>
+
 #include "Track.h"
 #include "User.h"
 #include "../core/UrlBuilder.h"
 #include "../core/XmlQuery.h"
 #include "../ws/ws.h"
-#include <QFileInfo>
-#include <QStringList>
+
 
 
 lastfm::TrackData::TrackData()
@@ -290,6 +294,21 @@ lastfm::Track::share( const QStringList& recipients, const QString& message, boo
 
 
 void
+lastfm::Track::invalidateGetInfo()
+{
+    // invalidate the track.getInfo cache
+    QAbstractNetworkCache* cache = lastfm::nam()->cache();
+    if ( cache )
+    {
+        QMap<QString, QString> map = params("getInfo", true);
+        if (!lastfm::ws::Username.isEmpty()) map["username"] = lastfm::ws::Username;
+        if (!lastfm::ws::SessionKey.isEmpty()) map["sk"] = lastfm::ws::SessionKey;
+        cache->remove( lastfm::ws::url( map ) );
+    }
+}
+
+
+void
 lastfm::MutableTrack::setFromLfm( const XmlQuery& lfm )
 {
     QString imageUrl = lfm["track"]["image size=small"].text();
@@ -314,6 +333,8 @@ lastfm::MutableTrack::love()
 {
     QNetworkReply* reply = ws::post(params("love"));
     QObject::connect( reply, SIGNAL(finished()), signalProxy(), SLOT(onLoveFinished()));
+
+    invalidateGetInfo();
 }
 
 
@@ -322,8 +343,9 @@ lastfm::MutableTrack::unlove()
 {
     QNetworkReply* reply = ws::post(params("unlove"));
     QObject::connect( reply, SIGNAL(finished()), signalProxy(), SLOT(onUnloveFinished()));
-}
 
+    invalidateGetInfo();
+}
 
 QNetworkReply*
 lastfm::MutableTrack::ban()
@@ -369,11 +391,11 @@ lastfm::Track::getTags() const
 }
 
 void
-lastfm::Track::getInfo(const QString& user, const QString& sk) const
+lastfm::Track::getInfo() const
 {
     QMap<QString, QString> map = params("getInfo", true);
-    if (!user.isEmpty()) map["username"] = user;
-    if (!sk.isEmpty()) map["sk"] = sk;
+    if (!lastfm::ws::Username.isEmpty()) map["username"] = lastfm::ws::Username;
+    if (!lastfm::ws::SessionKey.isEmpty()) map["sk"] = lastfm::ws::SessionKey;
     QObject::connect( ws::get( map ), SIGNAL(finished()), d.data(), SLOT(onGotInfo()));
 }
 

@@ -219,7 +219,7 @@ public:
     QNetworkReply* getTags() const; // for the logged in user
     QNetworkReply* getTopTags() const;
     QNetworkReply* getTopFans() const;
-    void getInfo(const QString& user = "", const QString& sk = "") const;
+    void getInfo() const;
 
     /** you can only add 10 tags, we submit everything you give us, but the
       * docs state 10 only. Will return 0 if the list is empty. */
@@ -238,7 +238,7 @@ public:
 protected:
     QExplicitlySharedDataPointer<TrackData> d;
     QMap<QString, QString> params( const QString& method, bool use_mbid = false ) const;
-    
+    void invalidateGetInfo();
 private:
     Track( TrackData* that_d ) : d( that_d )
     {}

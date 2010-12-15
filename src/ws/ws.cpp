@@ -43,7 +43,7 @@ lastfm::ws::host()
     return LASTFM_WS_HOSTNAME;
 }
 
-static QUrl url()
+static QUrl baseUrl()
 {
     QUrl url;
     url.setScheme( "http" );
@@ -82,11 +82,11 @@ static void sign( QMap<QString, QString>& params, bool sk = true )
 }
 
 
-QNetworkReply*
-lastfm::ws::get( QMap<QString, QString> params )
+QUrl
+lastfm::ws::url( QMap<QString, QString> params )
 {
     sign( params );
-    QUrl url = ::url();
+    QUrl url = ::baseUrl();
     // Qt setQueryItems doesn't encode a bunch of stuff, so we do it manually
     QMapIterator<QString, QString> i( params );
     while (i.hasNext()) {
@@ -95,10 +95,15 @@ lastfm::ws::get( QMap<QString, QString> params )
         QByteArray const value = QUrl::toPercentEncoding( i.value() );
         url.addEncodedQueryItem( key, value );
     }
-    
-    qDebug() << url;
-    
-    return nam()->get( QNetworkRequest(url) );
+
+    return url;
+}
+
+
+QNetworkReply*
+lastfm::ws::get( QMap<QString, QString> params )
+{
+    return nam()->get( QNetworkRequest( url( params ) ) );
 }
 
 
@@ -116,7 +121,7 @@ lastfm::ws::post( QMap<QString, QString> params, bool sk )
                + '&';
     }
 
-    return nam()->post( QNetworkRequest(url()), query );
+    return nam()->post( QNetworkRequest(baseUrl()), query );
 }
 
 
