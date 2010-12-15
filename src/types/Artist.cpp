@@ -94,11 +94,11 @@ Artist::getEvents(int limit) const
 }
 
 QNetworkReply* 
-Artist::getInfo(const QString& user, const QString& sk) const
+Artist::getInfo() const
 {
     QMap<QString, QString> map = params("getInfo");
-    if (!user.isEmpty()) map["username"] = user;
-    if (!sk.isEmpty()) map["sk"] = sk;
+    if (!lastfm::ws::Username.isEmpty()) map["username"] = lastfm::ws::Username;
+    if (!lastfm::ws::SessionKey.isEmpty()) map["sk"] = lastfm::ws::SessionKey;
     return ws::get( map );
 }
 
