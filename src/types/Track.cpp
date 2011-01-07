@@ -478,7 +478,7 @@ lastfm::Track::scrobble(const QList<lastfm::Track>& tracks)
 QUrl
 lastfm::Track::www() const
 {
-    return UrlBuilder( "music" ).slash( d->artist ).slash( album().isNull() ? QString("_") : album()).slash( d->title ).url();
+    return UrlBuilder( "music" ).slash( artist( Corrected ) ).slash( album(  Corrected  ).isNull() ? QString("_") : album( Corrected )).slash( title( Corrected ) ).url();
 }
 
 
