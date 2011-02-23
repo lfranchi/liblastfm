@@ -413,6 +413,17 @@ lastfm::Track::updateNowPlaying() const
     return ws::post(map);
 }
 
+QNetworkReply* 
+lastfm::Track::removeNowPlaying() const
+{
+    QMap<QString, QString> map;
+    map["method"] = "track.removeNowPlaying";
+
+    qDebug() << map;
+
+    return ws::post(map);
+}
+
 
 QNetworkReply*
 lastfm::Track::scrobble() const
