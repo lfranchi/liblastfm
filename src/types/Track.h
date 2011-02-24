@@ -229,6 +229,7 @@ public:
 
     /** scrobble the track */
     QNetworkReply* updateNowPlaying() const;
+    QNetworkReply* updateNowPlaying( int duration ) const;
     QNetworkReply* removeNowPlaying() const;
     QNetworkReply* scrobble() const;
     static QNetworkReply* scrobble(const QList<lastfm::Track>& tracks);

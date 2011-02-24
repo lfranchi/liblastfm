@@ -58,8 +58,6 @@ MNetworkConnectionMonitor::callback( SCNetworkReachabilityRef target,
     else
         b = flags & (kSCNetworkFlagsReachable | kSCNetworkFlagsTransientConnection | kSCNetworkFlagsConnectionAutomatic);
 
-    qDebug() << "Can reach " LASTFM_WS_HOSTNAME ":" << b << ", flags:" << flags;
-
     // basically, avoids telling everyone that we're up already on startup
     if (up == b)
         return;
