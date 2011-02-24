@@ -38,15 +38,16 @@ namespace lastfm
         setString( s );
         }
     
-        static RadioStation library( const lastfm::User& user )         { return rql( libraryStr( user ) ); }
-        static RadioStation recommendations( const lastfm::User& user ) { return rql( recommendationsStr( user ) ); }
-        static RadioStation neighbourhood( const lastfm::User& user )   { return rql( neighbourhoodStr( user ) ); }
-        static RadioStation lovedTracks( const lastfm::User& user )     { return rql( lovedTracksStr( user ) ); }
-        static RadioStation globalTag( const lastfm::Tag& tag )         { return rql( globalTagStr( tag ) ); }
-        static RadioStation similar( const lastfm::Artist& artist )     { return rql( similarStr( artist ) ); }
-        static RadioStation userTag( const lastfm::User& user, const lastfm::Tag& tag) { return rql( userTagStr( user, tag ) ); }
-        static RadioStation playlist( int playlistId )                  { return rql( playlistStr( playlistId ) ); }
-        static RadioStation adventure( const lastfm::User& user )       { return rql( adventureStr( user ) ); }
+        static RadioStation library( const lastfm::User& user );
+        static RadioStation recommendations( const lastfm::User& user );
+        static RadioStation friends( const lastfm::User& user );
+        static RadioStation neighbourhood( const lastfm::User& user );
+        static RadioStation lovedTracks( const lastfm::User& user );
+        static RadioStation globalTag( const lastfm::Tag& tag );
+        static RadioStation similar( const lastfm::Artist& artist );
+        static RadioStation userTag( const lastfm::User& user, const lastfm::Tag& tag);
+        static RadioStation playlist( int playlistId );
+        static RadioStation mix( const lastfm::User& user );
 
         static RadioStation rql( const QString& rql )
         {
@@ -86,6 +87,8 @@ namespace lastfm
         // good for getRecentStations:
         static QList<RadioStation> list( QNetworkReply* );
 
+        bool operator==( const RadioStation& that ) const;
+
     private:
         void setRql( const QString& rql )
         {
@@ -97,13 +100,14 @@ namespace lastfm
 
         static QString libraryStr( const lastfm::User& user )         { return "library:" + user ; }
         static QString recommendationsStr( const lastfm::User& user ) { return "rec:" + user ; }
+        static QString friendsStr( const lastfm::User& user )         { return "lastfm://user/" + user + "/friends" ; }
         static QString neighbourhoodStr( const lastfm::User& user )   { return "neigh:" + user ; }
         static QString lovedTracksStr( const lastfm::User& user )     { return "loved:" + user ; }
         static QString globalTagStr( const lastfm::Tag& tag )         { return "tag:\"" + tag + "\"" ; }
         static QString similarStr( const lastfm::Artist& artist )     { return "simart:\"" + artist + "\""; }
         static QString userTagStr( const lastfm::User& user, const lastfm::Tag& tag) { return "ptag:\"" + tag + "\"|" + user ; }
         static QString playlistStr( int playlistId )                  { return "playlist:" + QString::number(playlistId) ; }
-        static QString adventureStr( const lastfm::User& user )       { return "adv:" + user ; } 
+        static QString mixStr( const lastfm::User& user )             { return "mix:" + user ; }
     private:
         QString m_rql;
         QString m_url;
