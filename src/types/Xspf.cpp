@@ -44,6 +44,7 @@ lastfm::Xspf::Xspf( const QDomElement& playlist_node )
         t.setAlbum( e["album"].text() );
         t.setDuration( e["duration"].text().toInt() / 1000 );
         t.setLoved( e["extension"]["loved"].text() == "1" );
+        t.setContext( e["extension"]["context"].text() );
         m_tracks += t; // outside try block since location is enough basically
     }
 }
