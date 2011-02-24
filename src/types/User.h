@@ -52,14 +52,16 @@ namespace lastfm
         QNetworkReply* getTopTags() const;
 
         /** use User::list() on the response to get a QList<User> */
-        QNetworkReply* getFriends(int perPage = 50, int page = 1) const;
-        QNetworkReply* getNeighbours() const;
+        QNetworkReply* getFriends( int limit = 50, int page = 1 ) const;
+        QNetworkReply* getFriendsListeningNow( int limit = 50, int page = 1 ) const;
+        QNetworkReply* getNeighbours( int limit = 50, int page = 1 ) const;
     
         QNetworkReply* getPlaylists() const;
-        QNetworkReply* getTopArtists() const;
+        QNetworkReply* getTopArtists( QString period = "overall", int limit = 50, int page = 1 ) const;
         QNetworkReply* getRecentTracks() const;
         QNetworkReply* getRecentArtists() const;
         QNetworkReply* getRecentStations() const;
+        QNetworkReply* getRecommendedArtists( int limit = 50, int page = 1 ) const;
     
         static UserList list( QNetworkReply* );
 

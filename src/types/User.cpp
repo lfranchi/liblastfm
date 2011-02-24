@@ -63,11 +63,21 @@ User::params(const QString& method) const
 
 
 QNetworkReply*
-User::getFriends( int perPage, int page ) const
+User::getFriends( int limit, int page ) const
 {
     QMap<QString, QString> map = params( "getFriends" );
-    map["limit"] = QString::number(perPage);
-    map["page"] = QString::number(page);
+    map["limit"] = QString::number( limit );
+    map["page"] = QString::number( page );
+    return ws::get( map );
+}
+
+
+QNetworkReply*
+User::getFriendsListeningNow( int limit, int page ) const
+{
+    QMap<QString, QString> map = params( "getFriendsListeningNow" );
+    map["limit"] = QString::number( limit );
+    map["page"] = QString::number( page );
     return ws::get( map );
 }
 
@@ -80,9 +90,13 @@ User::getTopTags() const
 
 
 QNetworkReply*
-User::getTopArtists() const
+User::getTopArtists( QString period, int limit, int page ) const
 {
-    return ws::get( params( "getTopArtists" ) );
+    QMap<QString, QString> map = params( "getTopArtists" );
+    map["period"] = period;
+    map["limit"] = QString::number( limit );
+    map["page"] = QString::number( page );
+    return ws::get( map );
 }
 
 
@@ -105,10 +119,24 @@ User::getRecentStations() const
     return ws::post( params( "getRecentStations" ) );
 }
 
+
 QNetworkReply*
-User::getNeighbours() const
+User::getRecommendedArtists( int limit, int page ) const
 {
-    return ws::get( params( "getNeighbours" ) );
+    QMap<QString, QString> map = params( "getRecommendedArtists" );
+    map["limit"] = QString::number( limit );
+    map["page"] = QString::number( page );
+    return ws::get( map );
+}
+
+
+QNetworkReply*
+User::getNeighbours( int limit, int page ) const
+{
+    QMap<QString, QString> map = params( "getNeighbours" );
+    map["limit"] = QString::number( limit );
+    map["page"] = QString::number( page );
+    return ws::get( map );
 }
 
 
