@@ -425,10 +425,27 @@ lastfm::Track::removeTag( const QString& tag ) const
 QNetworkReply*
 lastfm::Track::updateNowPlaying() const
 {
+    return updateNowPlaying(duration());
+}
+
+QNetworkReply* 
+lastfm::Track::updateNowPlaying( int duration ) const
+{
     QMap<QString, QString> map = params("updateNowPlaying");
-    map["duration"] = QString::number( duration() );
+    map["duration"] = QString::number( duration );
     if ( !album().isNull() ) map["album"] = album();
     map["context"] = extra("playerId");
+
+    qDebug() << map;
+
+    return ws::post(map);
+}
+
+QNetworkReply* 
+lastfm::Track::removeNowPlaying() const
+{
+    QMap<QString, QString> map;
+    map["method"] = "track.removeNowPlaying";
 
     qDebug() << map;
 

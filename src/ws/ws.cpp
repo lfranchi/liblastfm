@@ -48,7 +48,7 @@ static QUrl baseUrl()
     QUrl url;
     url.setScheme( "http" );
     url.setHost( lastfm::ws::host() );
-    url.setPath( "/2.0/" );
+    url.setEncodedPath( "/2.0/" );
     return url;
 }
 
