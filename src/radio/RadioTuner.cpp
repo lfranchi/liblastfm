@@ -40,6 +40,8 @@ RadioTuner::RadioTuner( const RadioStation& station )
         fetchFiveMoreTracks();
         return;
     }
+
+    qDebug() << station.url();
     
     QMap<QString, QString> map;
     map["method"] = "radio.tune";
@@ -53,6 +55,8 @@ void
 RadioTuner::retune( const RadioStation& station)
 {
     m_queue.clear();
+
+    qDebug() << station.url();
 
     QMap<QString, QString> map;
     map["method"] = "radio.tune";
@@ -68,9 +72,7 @@ RadioTuner::onTuneReturn()
 {
     try {
         XmlQuery lfm = ws::parse( (QNetworkReply*)sender() );
-        // TODO: uncomment this is we are to get a radio station
-        // name when we tune to an rql radio station
-        //emit title( lfm["station"]["name"].text() );
+        emit title( lfm["station"]["name"].text() );
 
         qDebug() << lfm;
 
@@ -115,6 +117,9 @@ RadioTuner::onGetPlaylistReturn()
 {   
     try {
         XmlQuery lfm = ws::parse( (QNetworkReply*)sender() );
+
+        qDebug() << lfm;
+
         Xspf xspf( lfm["playlist"] );
         QList<Track> tracks( xspf.tracks() );
         if (tracks.isEmpty()) {

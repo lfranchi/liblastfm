@@ -53,8 +53,10 @@ namespace lastfm
         /** the url for this artist's page at www.last.fm */
         QUrl www() const;
     
+        Artist operator=( const Artist& that ) const { return Artist( that.name() ); }
         bool operator==( const Artist& that ) const { return m_name == that.m_name; }
         bool operator!=( const Artist& that ) const { return m_name != that.m_name; }
+        bool operator<( const Artist& that ) const { return m_name < that.m_name; }
     
         operator QString() const 
         {
