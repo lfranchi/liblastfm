@@ -23,10 +23,6 @@
 #include "RadioStation.h"
 #include "../core/XmlQuery.h"
 
-QRegExp rxDisco("opt:discovery\\|(\\S+)", Qt::CaseSensitive, QRegExp::RegExp2);
-QRegExp rxRep("opt:rep\\|([\\d\\.]+)", Qt::CaseSensitive, QRegExp::RegExp2);
-QRegExp rxMainstr("opt:mainstr\\|([\\d\\.]+)", Qt::CaseSensitive, QRegExp::RegExp2);
-
 
 const float k_defaultRep(0.5);
 const float k_defaultMainstr(0.5);
@@ -35,70 +31,86 @@ const bool k_defaultDisco(false);
 lastfm::RadioStation
 lastfm::RadioStation::library( const lastfm::User& user )
 {
-    return rql( libraryStr( user ) );
+    QList<lastfm::User> users;
+    users << user;
+    return library( users );
+}
+
+lastfm::RadioStation
+lastfm::RadioStation::library( const QList<lastfm::User>& users )
+{
+    return RadioStation( libraryStr( users ) );
 }
 
 
 lastfm::RadioStation
 lastfm::RadioStation::recommendations( const lastfm::User& user )
 {
-    return rql( recommendationsStr( user ) );
+    return RadioStation( recommendationsStr( user ) );
 }
 
 lastfm::RadioStation
 lastfm::RadioStation::friends( const lastfm::User& user )
 {
-    return rql( friendsStr( user ) );
+    return RadioStation( friendsStr( user ) );
 }
 
 lastfm::RadioStation
 lastfm::RadioStation::neighbourhood( const lastfm::User& user )
 {
-    return rql( neighbourhoodStr( user ) );
+    return RadioStation( neighbourhoodStr( user ) );
 }
 
 
 lastfm::RadioStation
-lastfm::RadioStation::lovedTracks( const lastfm::User& user )
+lastfm::RadioStation::tag( const lastfm::Tag& tag )
 {
-    return rql( lovedTracksStr( user ) );
+    QList<lastfm::Tag> tags;
+    tags << tag;
+    return lastfm::RadioStation::tag( tags );
 }
 
 
 lastfm::RadioStation
-lastfm::RadioStation::globalTag( const lastfm::Tag& tag )
+lastfm::RadioStation::tag( const QList<lastfm::Tag>& tag )
 {
-    return rql( globalTagStr( tag ) );
+    return RadioStation( tagStr( tag ) );
 }
 
 
 lastfm::RadioStation
 lastfm::RadioStation::similar( const lastfm::Artist& artist )
 {
-    return rql( similarStr( artist ) );
+    QList<lastfm::Artist> artists;
+    artists << artist;
+    return similar( artists );
 }
 
 
 lastfm::RadioStation
-lastfm::RadioStation::userTag( const lastfm::User& user, const lastfm::Tag& tag)
+lastfm::RadioStation::similar( const QList<lastfm::Artist>& artists )
 {
-    return rql( userTagStr( user, tag ) );
-}
-
-
-lastfm::RadioStation
-lastfm::RadioStation::playlist( int playlistId )
-{
-    return rql( playlistStr( playlistId ) );
+    return RadioStation( similarStr( artists ) );
 }
 
 
 lastfm::RadioStation
 lastfm::RadioStation::mix( const lastfm::User& user )
 {
-    return rql( mixStr( user ) );
+    return RadioStation( mixStr( user ) );
 }
 
+
+QNetworkReply*
+lastfm::RadioStation::getSampleArtists( int limit, int page ) const
+{
+    QMap<QString, QString> map;
+    map["method"] = "radio.getSampleArtists";
+    map["station"] = m_url.toString();
+    map["limit"] = QString::number( limit );
+    map["page"] = QString::number( page );
+    return ws::get( map );
+}
 
 //static 
 QList<lastfm::RadioStation> 
@@ -119,160 +131,106 @@ lastfm::RadioStation::list( QNetworkReply* r )
     return result;
 }
 
+
 bool
 lastfm::RadioStation::operator==( const RadioStation& that ) const
 {
-    return this->m_title == that.m_title;
+    return this->m_url == that.m_url;
 }
+
 
 void
 lastfm::RadioStation::setString( const QString& string )
 {
-    QString replaceString( string );
-    QString decodedString = QUrl::fromPercentEncoding( replaceString.replace( QChar('+'), QChar(' ') ).toUtf8() );
-
-    QRegExp rxRql(              "lastfm:\\/\\/rql\\/(.+)$" );
-    QRegExp rxPersonal(         "lastfm:\\/\\/user\\/(.+)\\/personal" );
-    QRegExp rxRecommended(      "lastfm://user/(.+)\\/recommended" );
-    QRegExp rxNeighbours(       "lastfm:\\/\\/user\\/(.+)\\/neighbours" );
-    QRegExp rxLoved(            "lastfm:\\/\\/user\\/(.+)\\/loved" );
-    QRegExp rxMix(            "lastfm:\\/\\/user\\/(.+)\\/mix" );
-    QRegExp rxGlobalTags(       "lastfm:\\/\\/globaltags\\/(.+)" );
-    QRegExp rxSimilarArtists(   "lastfm:\\/\\/artist\\/(.+)\\/similarartists" );
-    QRegExp rxUserTags(         "lastfm:\\/\\/usertags\\/(.+)\\/(.+)" );
-    QRegExp rxPlaylist(         "lastfm:\\/\\/playlist/(.+)\\/shuffle" );
-
-    if (rxRql.indexIn(decodedString) == 0)
-        setRql( QByteArray::fromBase64( rxRql.capturedTexts()[1].toAscii() ) );
-    else if (rxPersonal.indexIn(decodedString) == 0)
-        setRql( libraryStr( rxPersonal.capturedTexts()[1] ) );
-    else if ( rxRecommended.indexIn(decodedString) == 0)
-        setRql( recommendationsStr( rxRecommended.capturedTexts()[1] ) );
-    else if ( rxNeighbours.indexIn(decodedString) == 0)
-        setRql( neighbourhoodStr( rxNeighbours.capturedTexts()[1] ) );
-    else if ( rxLoved.indexIn(decodedString) == 0)
-        setRql( lovedTracksStr( rxLoved.capturedTexts()[1] ) );
-    else if ( rxMix.indexIn(decodedString) == 0)
-        setRql( mixStr( rxMix.capturedTexts()[1] ) );
-    else if ( rxGlobalTags.indexIn(decodedString) == 0)
-        setRql( globalTagStr( rxGlobalTags.capturedTexts()[1] ) );
-    else if ( rxSimilarArtists.indexIn(decodedString) == 0)
-        setRql( similarStr( rxSimilarArtists.capturedTexts()[1] ) );
-    else if ( rxUserTags.indexIn(decodedString) == 0)
-        setRql( userTagStr( rxUserTags.capturedTexts()[1], rxUserTags.capturedTexts()[2] ) );
-    else if ( rxPlaylist.indexIn(decodedString) == 0)
-        setRql( playlistStr( rxPlaylist.capturedTexts()[1].toInt() ) );
-    else
-    {
-        m_url = string;
-    }
+    m_url = string;
 }
 
-bool
+
+void
 lastfm::RadioStation::setRep(float rep)
 {
-    if ( m_rql.isEmpty() )
-        return false;
-
-    int indexIn = rxRep.indexIn(m_rql);
-
-    if ( indexIn != -1 )
-    {
-        if (rep != k_defaultRep)
-            m_rql.replace( indexIn, rxRep.capturedTexts()[0].length(), QString("opt:rep|%1").arg(rep) );
-        else
-            m_rql.replace( indexIn, rxRep.capturedTexts()[0].length(), "" );
-    }
-    else
-    {
-        // the rql doesn't have rep in it
-        // so append it to the end
-        if (rep != k_defaultRep)
-            m_rql.append( QString(" opt:rep|%1").arg(rep) );
-    }
-
-    setRql(m_rql);
-
-    return true;
+    m_rep = rep;
 }
 
-bool
+
+void
 lastfm::RadioStation::setMainstr(float mainstr)
 {
-    if ( m_rql.isEmpty() )
-        return false;
-
-    int indexIn = rxMainstr.indexIn(m_rql);
-
-    if ( indexIn != -1 )
-    {
-        if (mainstr != k_defaultMainstr)
-            m_rql.replace( indexIn, rxMainstr.capturedTexts()[0].length(), QString("opt:mainstr|%1").arg(mainstr) );
-        else
-            m_rql.replace( indexIn, rxMainstr.capturedTexts()[0].length(), "" );
-    }
-    else
-    {
-        // the rql doesn't have rep in it
-        // so append it to the end
-        if ( mainstr != k_defaultMainstr )
-            m_rql.append( QString(" opt:mainstr|%1").arg(mainstr) );
-    }
-
-    setRql(m_rql);
-
-    return true;
+    m_mainstr = mainstr;
 }
 
-bool
+
+void
 lastfm::RadioStation::setDisco(bool disco)
 {
-    if ( m_rql.isEmpty() )
-        return false;
-
-    int indexIn = rxDisco.indexIn(m_rql);
-
-    if ( indexIn != -1 )
-    {
-        if (disco)
-            m_rql.replace( indexIn, rxDisco.capturedTexts()[0].length(), "opt:discovery|true" );
-        else
-            m_rql.replace( indexIn, rxDisco.capturedTexts()[0].length(), "" );
-    }
-    else
-    {
-        // the rql doesn't have disco in it
-        // so append it to the end if it is set
-
-        if (disco)
-            m_rql.append( " opt:discovery|true" );
-    }
-
-    setRql(m_rql);
-
-    return true;
+    m_disco = disco;
 }
+
 
 float lastfm::RadioStation::rep() const
 {
-    if ( rxRep.indexIn(m_rql) != -1 )
-        return rxRep.capturedTexts()[1].toFloat();
-
-    return k_defaultRep;
+    return m_rep;
 }
+
 
 float lastfm::RadioStation::mainstr() const
 {
-    if ( rxMainstr.indexIn(m_rql) != -1 )
-        return rxMainstr.capturedTexts()[1].toFloat();
-
-    return k_defaultMainstr;
+    return m_mainstr;
 }
+
 
 bool lastfm::RadioStation::disco() const
 {
-    if ( rxDisco.indexIn(m_rql) != -1 )
-        return rxDisco.capturedTexts()[1] == "true";
+    return m_disco;
+}
 
-    return k_defaultDisco;
+
+QString lastfm::RadioStation::libraryStr( const QList<lastfm::User>& users )
+{
+    qSort(users.begin(), users.end());
+
+    QString url = (users.count() > 1) ? "lastfm://users/" : "lastfm://user/";
+
+    url.append( users[0].name() );
+
+    for ( int i = 1 ; i < users.count() ; ++i )
+        url.append( "," + users[i].name() );
+
+    if ( users.count() == 1 )
+        url.append("/personal");
+
+    return url;
+}
+
+
+QString lastfm::RadioStation::tagStr( const QList<lastfm::Tag>& tags )
+{
+    qSort(tags.begin(), tags.end());
+
+    QString url = (tags.count() > 1) ? "lastfm://tag/" : "lastfm://globaltags/";
+
+    url.append( tags[0].name() );
+
+    for ( int i = 1 ; i < tags.count() ; ++i )
+        url.append( "," + tags[i].name() );
+
+    return url;
+}
+
+
+QString lastfm::RadioStation::similarStr( const QList<lastfm::Artist>& artists )
+{
+    qSort(artists.begin(), artists.end());
+
+    QString url = (artists.count() > 1) ? "lastfm://artistnames/" : "lastfm://artist/";
+
+    url.append( artists[0].name() );
+
+    for ( int i = 1 ; i < artists.count() ; ++i )
+        url.append( "," + artists[i].name() );
+
+    if (artists.count() == 1)
+        url.append( "/similarartists" );
+
+    return url;
 }
