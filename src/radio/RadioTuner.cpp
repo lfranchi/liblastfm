@@ -118,8 +118,6 @@ RadioTuner::onGetPlaylistReturn()
     try {
         XmlQuery lfm = ws::parse( (QNetworkReply*)sender() );
 
-        qDebug() << lfm;
-
         Xspf xspf( lfm["playlist"] );
         QList<Track> tracks( xspf.tracks() );
         if (tracks.isEmpty()) {
