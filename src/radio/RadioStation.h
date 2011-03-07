@@ -53,18 +53,21 @@ namespace lastfm
 
         static RadioStation mix( const lastfm::User& user );
 
-        QNetworkReply* getSampleArtists( int limit = 50, int page = 1 ) const;
+        QNetworkReply* getSampleArtists( int limit = 50 ) const;
+        QNetworkReply* getTagSuggestions( int limit = 50 ) const;
 
         /** eg. "mxcl's Loved Tracks"
           * It is worth noting that the Radio doesn't set the title of RadioStation 
           * object until we have tuned to it, and then we only set the one we give 
           * you back.
           */    
-        QString title() const { return m_title; }
+        QString title() const;
         /** the Last.fm url, eg. lastfm://user/mxcl/loved */
-        QString url() const { return m_url.toString(); }
+        QString url() const;
 
-        void setTitle( const QString& s ) { m_title = s; }
+        void setTitle( const QString& title );
+
+        void setTagFilter( const QString& tag );
 
         void setRep(float rep);
         void setMainstr(float mainstr);
@@ -100,6 +103,7 @@ namespace lastfm
     private:
         QUrl m_url;
         QString m_title;
+        QString m_tagFilter;
 
         float m_rep;
         float m_mainstr;

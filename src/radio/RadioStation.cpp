@@ -101,16 +101,72 @@ lastfm::RadioStation::mix( const lastfm::User& user )
 }
 
 
+QString
+lastfm::RadioStation::url() const
+{
+    return m_url.toString() + (m_tagFilter.isEmpty() ? "" : "/tag/" + m_tagFilter);
+}
+
+
+void
+lastfm::RadioStation::setTitle( const QString& s )
+{
+    QString title = s.trimmed();
+
+    if ( title.compare( QObject::tr("%1%2s Library Radio").arg( lastfm::ws::Username, QChar(0x2019) ) ) == 0 )
+        title = QObject::tr("My Library Radio");
+    else if ( title.compare( QObject::tr("%1%2s Mix Radio").arg( lastfm::ws::Username, QChar(0x2019) ) ) == 0  )
+        title = QObject::tr("My Mix Radio");
+    else if ( title.compare( QObject::tr("%1%2s Recommended Radio").arg( lastfm::ws::Username, QChar(0x2019) ) ) == 0  )
+        title = QObject::tr("My Recommended Radio");
+    else if ( title.compare( QObject::tr("%1%2s Friends%2 Radio").arg( lastfm::ws::Username, QChar(0x2019) ) ) == 0  )
+        title = QObject::tr("My Friends%1 Radio").arg( QChar( 0x2019 ) );
+    else if ( title.compare( QObject::tr("%1%2s Friends Radio").arg( lastfm::ws::Username, QChar(0x2019) ) ) == 0  )
+        title = QObject::tr("My Friends%1 Radio").arg( QChar( 0x2019 ) );
+    else if ( title.compare( QObject::tr("%1%2s Neighbours%2 Radio").arg( lastfm::ws::Username, QChar(0x2019) ) ) == 0  )
+        title = QObject::tr("My Neighbours%1 Radio").arg( QChar( 0x2019 ) );
+    else if ( title.compare( QObject::tr("%1%2s Neighbours Radio").arg( lastfm::ws::Username ) ) == 0  )
+        title = QObject::tr("My Neighbours%1 Radio").arg( QChar( 0x2019 ) );
+
+    m_title = title;
+}
+
+
+QString
+lastfm::RadioStation::title() const
+{
+    return m_title + (m_tagFilter.isEmpty() ? "" : ": " + m_tagFilter);
+}
+
+
+void
+lastfm::RadioStation::setTagFilter( const QString& tag )
+{
+    m_tagFilter = tag;
+}
+
+
 QNetworkReply*
-lastfm::RadioStation::getSampleArtists( int limit, int page ) const
+lastfm::RadioStation::getSampleArtists( int limit ) const
 {
     QMap<QString, QString> map;
     map["method"] = "radio.getSampleArtists";
     map["station"] = m_url.toString();
     map["limit"] = QString::number( limit );
-    map["page"] = QString::number( page );
     return ws::get( map );
 }
+
+
+QNetworkReply*
+lastfm::RadioStation::getTagSuggestions( int limit ) const
+{
+    QMap<QString, QString> map;
+    map["method"] = "radio.getTagSuggestions";
+    map["station"] = m_url.toString();
+    map["limit"] = QString::number( limit );
+    return ws::get( map );
+}
+
 
 //static 
 QList<lastfm::RadioStation> 
@@ -135,14 +191,28 @@ lastfm::RadioStation::list( QNetworkReply* r )
 bool
 lastfm::RadioStation::operator==( const RadioStation& that ) const
 {
-    return this->m_url == that.m_url;
+    return this->m_url == that.m_url && this->m_tagFilter == that.m_tagFilter;
 }
 
 
 void
 lastfm::RadioStation::setString( const QString& string )
 {
-    m_url = string;
+    // If it's a tag filtered station then extract that part
+    QString tempString = string;
+
+    if ( !tempString.startsWith("lastfm://tag/") )
+    {
+        int index = tempString.indexOf("/tag/");
+
+        if ( index != -1 )
+        {
+            m_tagFilter = tempString.mid( index + 5, tempString.count() - (index + 5) );
+            tempString = tempString.mid( 0, index );
+        }
+    }
+
+    m_url = tempString;
 }
 
 
