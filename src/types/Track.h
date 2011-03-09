@@ -51,7 +51,7 @@ public:
     QString correctedAlbumArtist;
     QString correctedAlbum;
     QString correctedTitle;
-    QString context;
+    QList<QVariant> context;
     uint trackNumber;
     uint duration;
     short source;
@@ -200,7 +200,7 @@ public:
     /** the standard representation of this object as an XML node */
     QDomElement toDomElement( class QDomDocument& ) const;
 
-    QString context() const { return d->context; }
+    QList<QVariant> context() const { return d->context; }
     
     QString extra( const QString& key ) const{ return d->extras[ key ]; }
 
@@ -310,7 +310,7 @@ public:
     void removeExtra( QString key ) { d->extras.remove( key ); }
     void setTimeStamp( const QDateTime& dt ) { d->time = dt; }
 
-    void setContext( QString context ) { d->context = context;}
+    void setContext( QList<QVariant> context ) { d->context = context;}
 };
 
 

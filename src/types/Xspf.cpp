@@ -44,7 +44,16 @@ lastfm::Xspf::Xspf( const QDomElement& playlist_node )
         t.setAlbum( e["album"].text() );
         t.setDuration( e["duration"].text().toInt() / 1000 );
         t.setLoved( e["extension"]["loved"].text() == "1" );
-        t.setContext( e["extension"]["context"].text() );
+
+        QList<QVariant> contexts;
+
+//        foreach ( XmlQuery context, e["extension"]["context"].children("artist") )
+//            contexts.append( QVariant( Artist( context.text() ) ) );
+
+//        foreach ( XmlQuery context, e["extension"]["context"].children("user") )
+//            contexts.append( QVariant( User( context.text() ) ) );
+
+        t.setContext( contexts );
         m_tracks += t; // outside try block since location is enough basically
     }
 }
