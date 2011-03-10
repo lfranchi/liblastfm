@@ -139,8 +139,8 @@ if Platform::IMPL == :macosx
   puts "	mkdir -p #{dst}"
   ['liblastfm', 'liblastfm_fingerprint'].each do |base|
     puts "	cp _bin/#{base}.#{v}.dylib '#{dst}'"
-    puts "	cd '#{dst}' && ln -s #{base}.#{v}.dylib #{base}.dylib"
-    puts "	cd '#{dst}' && ln -s #{base}.#{v}.dylib #{base}.#{vmajor}.dylib"
+    puts "	cd '#{dst}' && ln -fs #{base}.#{v}.dylib #{base}.dylib"
+    puts "	cd '#{dst}' && ln -fs #{base}.#{v}.dylib #{base}.#{vmajor}.dylib"
     puts "	install_name_tool -id '#{dst}/#{base}.#{vmajor}.dylib' '#{dst}/#{base}.#{vmajor}.dylib'"
   end
   ext="#{vmajor}.dylib"
