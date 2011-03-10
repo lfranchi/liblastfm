@@ -53,7 +53,7 @@ namespace lastfm
         /** the url for this artist's page at www.last.fm */
         QUrl www() const;
     
-        Artist operator=( const Artist& that ) const { return Artist( that.name() ); }
+        Artist& operator=( const Artist& that ) { m_name = that.name(); m_images = that.m_images; return *this; }
         bool operator==( const Artist& that ) const { return m_name == that.m_name; }
         bool operator!=( const Artist& that ) const { return m_name != that.m_name; }
         bool operator<( const Artist& that ) const { return m_name < that.m_name; }
