@@ -114,9 +114,12 @@ User::getRecentTracks() const
 }
 
 QNetworkReply* 
-User::getRecentStations() const
+User::getRecentStations(  int limit, int page ) const
 {
-    return ws::post( params( "getRecentStations" ) );
+    QMap<QString, QString> map = params( "getRecentStations" );
+    map["limit"] = QString::number( limit );
+    map["page"] = QString::number( page );
+    return ws::get( map );
 }
 
 
