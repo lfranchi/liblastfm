@@ -117,9 +117,11 @@ RadioTuner::onGetPlaylistReturn()
 {   
     try {
         XmlQuery lfm = ws::parse( (QNetworkReply*)sender() );
+        emit title( lfm["playlist"]["title"].text() );
 
         Xspf xspf( lfm["playlist"] );
         QList<Track> tracks( xspf.tracks() );
+
         if (tracks.isEmpty()) {
             // give up after too many empty playlists  :(
             if (!tryAgain())
