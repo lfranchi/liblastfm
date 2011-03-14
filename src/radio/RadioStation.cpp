@@ -37,7 +37,7 @@ lastfm::RadioStation::library( const lastfm::User& user )
 }
 
 lastfm::RadioStation
-lastfm::RadioStation::library( const QList<lastfm::User>& users )
+lastfm::RadioStation::library( QList<lastfm::User>& users )
 {
     return RadioStation( libraryStr( users ) );
 }
@@ -72,7 +72,7 @@ lastfm::RadioStation::tag( const lastfm::Tag& tag )
 
 
 lastfm::RadioStation
-lastfm::RadioStation::tag( const QList<lastfm::Tag>& tag )
+lastfm::RadioStation::tag( QList<lastfm::Tag>& tag )
 {
     return RadioStation( tagStr( tag ) );
 }
@@ -88,7 +88,7 @@ lastfm::RadioStation::similar( const lastfm::Artist& artist )
 
 
 lastfm::RadioStation
-lastfm::RadioStation::similar( const QList<lastfm::Artist>& artists )
+lastfm::RadioStation::similar( QList<lastfm::Artist>& artists )
 {
     return RadioStation( similarStr( artists ) );
 }
@@ -255,7 +255,7 @@ bool lastfm::RadioStation::disco() const
 }
 
 
-QString lastfm::RadioStation::libraryStr( const QList<lastfm::User>& users )
+QString lastfm::RadioStation::libraryStr( QList<lastfm::User>& users )
 {
     qSort(users.begin(), users.end());
 
@@ -273,7 +273,7 @@ QString lastfm::RadioStation::libraryStr( const QList<lastfm::User>& users )
 }
 
 
-QString lastfm::RadioStation::tagStr( const QList<lastfm::Tag>& tags )
+QString lastfm::RadioStation::tagStr( QList<lastfm::Tag>& tags )
 {
     qSort(tags.begin(), tags.end());
 
@@ -288,7 +288,7 @@ QString lastfm::RadioStation::tagStr( const QList<lastfm::Tag>& tags )
 }
 
 
-QString lastfm::RadioStation::similarStr( const QList<lastfm::Artist>& artists )
+QString lastfm::RadioStation::similarStr( QList<lastfm::Artist>& artists )
 {
     qSort(artists.begin(), artists.end());
 
