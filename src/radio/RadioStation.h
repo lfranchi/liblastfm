@@ -39,13 +39,13 @@ namespace lastfm
         }
     
         static RadioStation library( const lastfm::User& user );
-        static RadioStation library( const QList<lastfm::User>& users );
+        static RadioStation library( QList<lastfm::User>& users );
 
         static RadioStation similar( const lastfm::Artist& artist );
-        static RadioStation similar( const QList<lastfm::Artist>& artist );
+        static RadioStation similar( QList<lastfm::Artist>& artist );
 
         static RadioStation tag( const lastfm::Tag& tag );
-        static RadioStation tag( const QList<lastfm::Tag>& tag );
+        static RadioStation tag( QList<lastfm::Tag>& tag );
 
         static RadioStation recommendations( const lastfm::User& user );
         static RadioStation friends( const lastfm::User& user );
@@ -93,12 +93,12 @@ namespace lastfm
     private:
         void setString( const QString& s );
 
-        static QString libraryStr( const QList<lastfm::User>& user );
+        static QString libraryStr( QList<lastfm::User>& user );
         static QString recommendationsStr( const lastfm::User& user ) { return "lastfm://user/" + user + "/recommended"; }
         static QString friendsStr( const lastfm::User& user )         { return "lastfm://user/" + user + "/friends"; }
         static QString neighbourhoodStr( const lastfm::User& user )   { return "lastfm://user/" + user + "/neighbours"; }
-        static QString tagStr( const QList<lastfm::Tag>& tag );
-        static QString similarStr( const QList<lastfm::Artist>& artist );
+        static QString tagStr( QList<lastfm::Tag>& tag );
+        static QString similarStr( QList<lastfm::Artist>& artist );
         static QString mixStr( const lastfm::User& user )             { return "lastfm://user/" + user + "/mix"; }
     private:
         QUrl m_url;
