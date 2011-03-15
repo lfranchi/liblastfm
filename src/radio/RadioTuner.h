@@ -22,6 +22,7 @@
 
 #include <lastfm/RadioStation>
 #include <lastfm/Track>
+#include <lastfm/Xspf>
 #include <lastfm/ws.h>
 #include <QList>
 
@@ -52,6 +53,7 @@ namespace lastfm
     private slots:
         void onTuneReturn();
         void onGetPlaylistReturn();
+        void onXspfExpired();
 
     private:
         /** Tries again up to 5 times 
@@ -68,8 +70,10 @@ namespace lastfm
           */
         bool fetchFiveMoreTracks();
 
-        QList<Track> m_queue;
+    private:
+        QList<Xspf*> m_playlistQueue;
         uint m_retry_counter;
+        bool m_fetchingPlaylist;
     };
 }
 

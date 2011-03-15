@@ -32,7 +32,7 @@ using namespace lastfm;
 
 
 RadioTuner::RadioTuner( const RadioStation& station )
-     : m_retry_counter( 0 )
+     : m_retry_counter( 0 ), m_fetchingPlaylist( false )
 {
     //Empty RadioStation implies that the radio
     //should tune to the previous station.
@@ -54,7 +54,7 @@ RadioTuner::RadioTuner( const RadioStation& station )
 void
 RadioTuner::retune( const RadioStation& station)
 {
-    m_queue.clear();
+    m_playlistQueue.clear();
 
     qDebug() << station.url();
 
@@ -94,8 +94,8 @@ RadioTuner::fetchFiveMoreTracks()
     map["method"] = "radio.getPlaylist";
     map["additional_info"] = "1";
     map["rtp"] = "1"; // see above
-    QNetworkReply* reply = ws::post( map );
-    connect( reply, SIGNAL(finished()), SLOT(onGetPlaylistReturn()) );
+    connect( ws::post( map ), SIGNAL(finished()), SLOT(onGetPlaylistReturn()) );
+    m_fetchingPlaylist = true;
     return true;
 }
 
@@ -115,22 +115,26 @@ RadioTuner::tryAgain()
 void
 RadioTuner::onGetPlaylistReturn()
 {   
+    m_fetchingPlaylist = false;
     try {
         XmlQuery lfm = ws::parse( (QNetworkReply*)sender() );
         emit title( lfm["playlist"]["title"].text() );
 
-        Xspf xspf( lfm["playlist"] );
-        QList<Track> tracks( xspf.tracks() );
+        qDebug() << lfm;
 
-        if (tracks.isEmpty()) {
+        Xspf* xspf = new Xspf( lfm["playlist"], this );
+        connect( xspf, SIGNAL(expired()), SLOT(onXspfExpired()) );
+
+        if ( xspf->isEmpty() )
+        {
             // give up after too many empty playlists  :(
             if (!tryAgain())
                 emit error( ws::NotEnoughContent );
-        } else {
+        }
+        else
+        {
             m_retry_counter = 0;
-            foreach (Track t, tracks)
-                MutableTrack( t ).setSource( Track::LastFmRadio );
-            m_queue += tracks;
+            m_playlistQueue += xspf;
             emit trackAvailable();
         }
     }
@@ -141,16 +145,33 @@ RadioTuner::onGetPlaylistReturn()
     }
 }
 
+void
+RadioTuner::onXspfExpired()
+{
+    int index = m_playlistQueue.indexOf( static_cast<Xspf*>(sender()) );
+    if ( index != -1 )
+        m_playlistQueue.takeAt( index )->deleteLater();
+}
 
 Track
 RadioTuner::takeNextTrack()
 {
-    //TODO presumably, we should check if fetchMoreTracks is working?
-    if (m_queue.isEmpty())
+    if ( m_playlistQueue.isEmpty() )
+    {
+        // If there are no tracks here and we're not fetching tracks
+        // it's probably because the playlist expired so fetch more now
+        if ( !m_fetchingPlaylist )
+            fetchFiveMoreTracks();
+
         return Track();
-    
-    Track result = m_queue.takeFirst();
-    if (m_queue.isEmpty())
+    }
+
+    Track result = m_playlistQueue[0]->takeFirst();
+
+    if ( m_playlistQueue[0]->isEmpty() )
+        m_playlistQueue.removeFirst();
+
+    if ( m_playlistQueue.isEmpty() )
         fetchFiveMoreTracks();
 
     return result;
