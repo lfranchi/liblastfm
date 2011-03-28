@@ -55,15 +55,14 @@ lastfm::Xspf::Xspf( const QDomElement& playlist_node, QObject* parent )
         t.setLoved( e["extension"]["loved"].text() == "1" );
         t.setSource( Track::LastFmRadio );
 
-        QList<QVariant> contexts;
+        QList<QString> contexts;
+        QDomNodeList contextsNodeList = QDomElement(e["extension"]["context"]).childNodes();
 
-//        foreach ( XmlQuery context, e["extension"]["context"].children("artist") )
-//            contexts.append( QVariant( Artist( context.text() ) ) );
+        for ( int i = 0 ; i < contextsNodeList.count() ; ++i )
+            contexts.append( contextsNodeList.item(i).toElement().text() );
 
-//        foreach ( XmlQuery context, e["extension"]["context"].children("user") )
-//            contexts.append( QVariant( User( context.text() ) ) );
-
-        t.setContext( contexts );
+        if ( contexts.count() > 0 )
+            t.setContext( TrackContext( contextsNodeList.item(0).toElement().tagName(), contexts ) );
 
         m_tracks << t; // outside try block since location is enough basically
     }

@@ -55,6 +55,8 @@ namespace lastfm
         void onGetPlaylistReturn();
         void onXspfExpired();
 
+        void onTwoSecondTimeout();
+
     private:
         /** Tries again up to 5 times 
           * @returns true if we tried again, otherwise you should emit error */
@@ -68,12 +70,14 @@ namespace lastfm
           * is also not allowed according to our terms and conditions, which you
           * already agreed to in order to get your API key. Sorry about that dude. 
           */
-        bool fetchFiveMoreTracks();
+        void fetchFiveMoreTracks();
 
     private:
         QList<Xspf*> m_playlistQueue;
         uint m_retry_counter;
         bool m_fetchingPlaylist;
+        bool m_requestedPlaylist;
+        class QTimer* m_twoSecondTimer;
     };
 }
 

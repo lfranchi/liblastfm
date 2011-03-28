@@ -29,6 +29,47 @@
 #include "../ws/ws.h"
 
 
+lastfm::TrackContext::TrackContext()
+    :m_type( Unknown )
+{
+
+}
+
+lastfm::TrackContext::TrackContext( const QString& type, const QList<QString>& values )
+    :m_type( getType( type ) ), m_values( values )
+{
+}
+
+lastfm::TrackContext::Type
+lastfm::TrackContext::getType( const QString& typeString )
+{
+    Type type = Unknown;
+
+    if ( typeString == "artist" )
+        type = Artist;
+    else if ( typeString == "user" )
+        type = User;
+    else if ( typeString == "neighbour" )
+        type = Neighbour;
+    else if ( typeString == "friend" )
+        type = Friend;
+
+    return type;
+}
+
+lastfm::TrackContext::Type
+lastfm::TrackContext::type() const
+{
+    return m_type;
+}
+
+
+QList<QString>
+lastfm::TrackContext::values() const
+{
+    return m_values;
+}
+
 
 lastfm::TrackData::TrackData()
              : trackNumber( 0 ),

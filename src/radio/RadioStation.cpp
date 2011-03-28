@@ -111,6 +111,10 @@ lastfm::RadioStation::url() const
 void
 lastfm::RadioStation::setTitle( const QString& s )
 {
+    // Stop the radio station getting renamed when the web services don't know what it's called
+    if ( !m_title.isEmpty() && s.compare( "a radio station", Qt::CaseInsensitive ) == 0 )
+        return;
+
     QString title = s.trimmed();
 
     if ( title.compare( QObject::tr("%1%2s Library Radio").arg( lastfm::ws::Username, QChar(0x2019) ), Qt::CaseInsensitive ) == 0 )
