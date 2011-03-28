@@ -111,21 +111,25 @@ lastfm::RadioStation::url() const
 void
 lastfm::RadioStation::setTitle( const QString& s )
 {
+    // Stop the radio station getting renamed when the web services don't know what it's called
+    if ( !m_title.isEmpty() && s.compare( "a radio station", Qt::CaseInsensitive ) == 0 )
+        return;
+
     QString title = s.trimmed();
 
-    if ( title.compare( QObject::tr("%1%2s Library Radio").arg( lastfm::ws::Username, QChar(0x2019) ) ) == 0 )
+    if ( title.compare( QObject::tr("%1%2s Library Radio").arg( lastfm::ws::Username, QChar(0x2019) ), Qt::CaseInsensitive ) == 0 )
         title = QObject::tr("My Library Radio");
-    else if ( title.compare( QObject::tr("%1%2s Mix Radio").arg( lastfm::ws::Username, QChar(0x2019) ) ) == 0  )
+    else if ( title.compare( QObject::tr("%1%2s Mix Radio").arg( lastfm::ws::Username, QChar(0x2019) ), Qt::CaseInsensitive ) == 0  )
         title = QObject::tr("My Mix Radio");
-    else if ( title.compare( QObject::tr("%1%2s Recommended Radio").arg( lastfm::ws::Username, QChar(0x2019) ) ) == 0  )
+    else if ( title.compare( QObject::tr("%1%2s Recommended Radio").arg( lastfm::ws::Username, QChar(0x2019) ), Qt::CaseInsensitive ) == 0  )
         title = QObject::tr("My Recommended Radio");
-    else if ( title.compare( QObject::tr("%1%2s Friends%2 Radio").arg( lastfm::ws::Username, QChar(0x2019) ) ) == 0  )
+    else if ( title.compare( QObject::tr("%1%2s Friends%2 Radio").arg( lastfm::ws::Username, QChar(0x2019) ), Qt::CaseInsensitive ) == 0  )
         title = QObject::tr("My Friends%1 Radio").arg( QChar( 0x2019 ) );
-    else if ( title.compare( QObject::tr("%1%2s Friends Radio").arg( lastfm::ws::Username, QChar(0x2019) ) ) == 0  )
+    else if ( title.compare( QObject::tr("%1%2s Friends Radio").arg( lastfm::ws::Username, QChar(0x2019) ), Qt::CaseInsensitive ) == 0  )
         title = QObject::tr("My Friends%1 Radio").arg( QChar( 0x2019 ) );
-    else if ( title.compare( QObject::tr("%1%2s Neighbours%2 Radio").arg( lastfm::ws::Username, QChar(0x2019) ) ) == 0  )
+    else if ( title.compare( QObject::tr("%1%2s Neighbours%2 Radio").arg( lastfm::ws::Username, QChar(0x2019) ), Qt::CaseInsensitive ) == 0  )
         title = QObject::tr("My Neighbours%1 Radio").arg( QChar( 0x2019 ) );
-    else if ( title.compare( QObject::tr("%1%2s Neighbours Radio").arg( lastfm::ws::Username ) ) == 0  )
+    else if ( title.compare( QObject::tr("%1%2s Neighbours Radio").arg( lastfm::ws::Username ), Qt::CaseInsensitive ) == 0  )
         title = QObject::tr("My Neighbours%1 Radio").arg( QChar( 0x2019 ) );
 
     m_title = title;
@@ -135,7 +139,7 @@ lastfm::RadioStation::setTitle( const QString& s )
 QString
 lastfm::RadioStation::title() const
 {
-    return m_title + (m_tagFilter.isEmpty() ? "" : ": " + m_tagFilter);
+    return m_title; // + (m_tagFilter.isEmpty() ? "" : ": " + m_tagFilter);
 }
 
 

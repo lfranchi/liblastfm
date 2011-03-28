@@ -33,6 +33,31 @@
 
 namespace lastfm {
 
+class LASTFM_DLLEXPORT TrackContext
+{
+public:
+    enum Type
+    {
+        Unknown,
+        User,
+        Friend,
+        Neighbour,
+        Artist
+    };
+
+    TrackContext();
+    TrackContext( const QString& type, const QList<QString>& values );
+
+    Type type() const;
+    QList<QString> values() const;
+private:
+    static Type getType( const QString& type );
+
+private:
+    Type m_type;
+    QList<QString> m_values;
+};
+
 class TrackData : public QObject, public QSharedData
 {
     Q_OBJECT
@@ -51,7 +76,7 @@ public:
     QString correctedAlbumArtist;
     QString correctedAlbum;
     QString correctedTitle;
-    QList<QVariant> context;
+    TrackContext context;
     uint trackNumber;
     uint duration;
     short source;
@@ -88,7 +113,6 @@ signals:
     void scrobbleStatusChanged();
     void corrected( QString correction );
 };
-
 
 
 /** Our track type. It's quite good, you may want to use it as your track type
@@ -200,7 +224,7 @@ public:
     /** the standard representation of this object as an XML node */
     QDomElement toDomElement( class QDomDocument& ) const;
 
-    QList<QVariant> context() const { return d->context; }
+    TrackContext context() const { return d->context; }
     
     QString extra( const QString& key ) const{ return d->extras[ key ]; }
 
@@ -310,7 +334,7 @@ public:
     void removeExtra( QString key ) { d->extras.remove( key ); }
     void setTimeStamp( const QDateTime& dt ) { d->time = dt; }
 
-    void setContext( QList<QVariant> context ) { d->context = context;}
+    void setContext( TrackContext context ) { d->context = context;}
 };
 
 

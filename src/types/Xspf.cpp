@@ -17,13 +17,22 @@
    You should have received a copy of the GNU General Public License
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "Xspf.h"
-#include "../core/XmlQuery.h"
+
+#include <QTimer>
 #include <QUrl>
 
-lastfm::Xspf::Xspf( const QDomElement& playlist_node )
+#include "../core/XmlQuery.h"
+
+#include "Xspf.h"
+
+
+lastfm::Xspf::Xspf( const QDomElement& playlist_node, QObject* parent )
+    :QObject( parent )
 {
     XmlQuery e( playlist_node );
+
+    int expirySeconds = e["link rel=http://www.last.fm/expiry"].text().toInt();
+    QTimer::singleShot( expirySeconds * 1000, this, SLOT(onExpired()));
     
     m_title = e["title"].text();
         
@@ -44,16 +53,23 @@ lastfm::Xspf::Xspf( const QDomElement& playlist_node )
         t.setAlbum( e["album"].text() );
         t.setDuration( e["duration"].text().toInt() / 1000 );
         t.setLoved( e["extension"]["loved"].text() == "1" );
+        t.setSource( Track::LastFmRadio );
 
-        QList<QVariant> contexts;
+        QList<QString> contexts;
+        QDomNodeList contextsNodeList = QDomElement(e["extension"]["context"]).childNodes();
 
-//        foreach ( XmlQuery context, e["extension"]["context"].children("artist") )
-//            contexts.append( QVariant( Artist( context.text() ) ) );
+        for ( int i = 0 ; i < contextsNodeList.count() ; ++i )
+            contexts.append( contextsNodeList.item(i).toElement().text() );
 
-//        foreach ( XmlQuery context, e["extension"]["context"].children("user") )
-//            contexts.append( QVariant( User( context.text() ) ) );
+        if ( contexts.count() > 0 )
+            t.setContext( TrackContext( contextsNodeList.item(0).toElement().tagName(), contexts ) );
 
-        t.setContext( contexts );
-        m_tracks += t; // outside try block since location is enough basically
+        m_tracks << t; // outside try block since location is enough basically
     }
+}
+
+void
+lastfm::Xspf::onExpired()
+{
+    emit expired();
 }

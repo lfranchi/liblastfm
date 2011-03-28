@@ -22,6 +22,7 @@
 
 #include <lastfm/RadioStation>
 #include <lastfm/Track>
+#include <lastfm/Xspf>
 #include <lastfm/ws.h>
 #include <QList>
 
@@ -52,6 +53,9 @@ namespace lastfm
     private slots:
         void onTuneReturn();
         void onGetPlaylistReturn();
+        void onXspfExpired();
+
+        void onTwoSecondTimeout();
 
     private:
         /** Tries again up to 5 times 
@@ -66,10 +70,14 @@ namespace lastfm
           * is also not allowed according to our terms and conditions, which you
           * already agreed to in order to get your API key. Sorry about that dude. 
           */
-        bool fetchFiveMoreTracks();
+        void fetchFiveMoreTracks();
 
-        QList<Track> m_queue;
+    private:
+        QList<Xspf*> m_playlistQueue;
         uint m_retry_counter;
+        bool m_fetchingPlaylist;
+        bool m_requestedPlaylist;
+        class QTimer* m_twoSecondTimer;
     };
 }
 
