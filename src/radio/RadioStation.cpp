@@ -286,7 +286,7 @@ QString lastfm::RadioStation::tagStr( QList<lastfm::Tag>& tags )
     url.append( tags[0].name() );
 
     for ( int i = 1 ; i < tags.count() ; ++i )
-        url.append( "," + tags[i].name() );
+        url.append( "*" + tags[i].name() );
 
     return url;
 }
