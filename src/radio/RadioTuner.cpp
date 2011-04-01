@@ -90,7 +90,7 @@ RadioTuner::onTuneReturn()
     }
     catch (ws::ParseError& e)
     {
-        emit error( e.enumValue() );
+        emit error( e.enumValue(), e.message() );
     }
 }
 
@@ -149,7 +149,7 @@ RadioTuner::onGetPlaylistReturn()
         {
             // give up after too many empty playlists  :(
             if (!tryAgain())
-                emit error( ws::NotEnoughContent );
+                emit error( ws::NotEnoughContent, tr("Not enough content") );
         }
         else
         {
@@ -161,7 +161,7 @@ RadioTuner::onGetPlaylistReturn()
     catch (ws::ParseError& e) 
     {
         qWarning() << e.what();
-        emit error( e.enumValue() );
+        emit error( e.enumValue(), e.message() );
     }
 }
 

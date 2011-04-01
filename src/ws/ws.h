@@ -122,10 +122,13 @@ namespace lastfm
         class ParseError : public std::runtime_error
         {
             Error e;
+            QString m_message;
         public:
-            explicit ParseError(Error e) : std::runtime_error("lastfm::ws::Error"), e(e)
+            explicit ParseError( Error e, QString message )
+                :std::runtime_error("lastfm::ws::Error"), e(e), m_message(message)
             {}
             Error enumValue() const { return e; }
+            QString message() const { return m_message; }
         };
 
         /** Generally you don't use this, eg. if you called Artist::getInfo(),

@@ -132,15 +132,16 @@ lastfm::ws::parse( QNetworkReply* reply ) throw( ParseError )
     {
         QByteArray data = reply->readAll();
 
-        if (!data.size())
+        if (!data.size()) {
             throw MalformedResponse;
+        }
             
         QDomDocument xml;
         xml.setContent( data );
         QDomElement lfm = xml.documentElement();
 
         if (lfm.isNull())
-            throw MalformedResponse;
+            throw ParseError( MalformedResponse, "" );
 
         QString const status = lfm.attribute( "status" );
         QDomElement error = lfm.firstChildElement( "error" );
@@ -150,8 +151,8 @@ lastfm::ws::parse( QNetworkReply* reply ) throw( ParseError )
         // if (n == 0) // nothing useful in the response
         if (status == "failed" || (n == 1 && !error.isNull()) )
             throw error.isNull()
-                    ? MalformedResponse
-                    : Error( error.attribute( "code" ).toUInt() );
+                    ? ParseError( MalformedResponse, "" )
+                    : ParseError( Error( error.attribute( "code" ).toUInt() ), error.text() );
 
         switch (reply->error())
         {
@@ -173,9 +174,9 @@ lastfm::ws::parse( QNetworkReply* reply ) throw( ParseError )
         //FIXME pretty wasteful to parse XML document twice..
         return data;
     }
-    catch (Error e)
+    catch (ParseError e)
     {
-        switch (e)
+        switch ( e.enumValue() )
         {
             case OperationFailed:
             case InvalidApiKey:
@@ -183,9 +184,9 @@ lastfm::ws::parse( QNetworkReply* reply ) throw( ParseError )
                 // NOTE will never be received during the LoginDialog stage
                 // since that happens before this slot is registered with
                 // QMetaObject in App::App(). Neat :)
-                QMetaObject::invokeMethod( qApp, "onWsError", Q_ARG( lastfm::ws::Error, e ) );
+                QMetaObject::invokeMethod( qApp, "onWsError", Q_ARG( lastfm::ws::Error, e.enumValue() ) );
             default:
-                throw ParseError(e);
+                throw e;
         }
     }
 

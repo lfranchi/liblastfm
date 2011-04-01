@@ -48,7 +48,7 @@ namespace lastfm
         void title( const QString& );
         void supportsDisco( bool supportsDisco );
         void trackAvailable();
-        void error( lastfm::ws::Error );
+        void error( lastfm::ws::Error, const QString& message );
 
     private slots:
         void onTuneReturn();
