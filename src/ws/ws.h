@@ -129,6 +129,8 @@ namespace lastfm
             {}
             Error enumValue() const { return e; }
             QString message() const { return m_message; }
+
+            ~ParseError() throw() {;}
         };
 
         /** Generally you don't use this, eg. if you called Artist::getInfo(),
