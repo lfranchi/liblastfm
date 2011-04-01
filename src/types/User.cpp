@@ -63,11 +63,12 @@ User::params(const QString& method) const
 
 
 QNetworkReply*
-User::getFriends( int limit, int page ) const
+User::getFriends( bool recentTracks, int limit, int page ) const
 {
     QMap<QString, QString> map = params( "getFriends" );
     map["limit"] = QString::number( limit );
     map["page"] = QString::number( page );
+    if ( recentTracks ) map["recenttracks"] = "1";
     return ws::get( map );
 }
 
@@ -114,7 +115,7 @@ User::getRecentTracks() const
 }
 
 QNetworkReply* 
-User::getRecentStations(  int limit, int page ) const
+User::getRecentStations( int limit, int page ) const
 {
     QMap<QString, QString> map = params( "getRecentStations" );
     map["limit"] = QString::number( limit );

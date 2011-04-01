@@ -54,7 +54,7 @@ namespace lastfm
         QNetworkReply* getTopTags() const;
 
         /** use User::list() on the response to get a QList<User> */
-        QNetworkReply* getFriends( int limit = 50, int page = 1 ) const;
+        QNetworkReply* getFriends(  bool recentTracks = false, int limit = 50, int page = 1 ) const;
         QNetworkReply* getFriendsListeningNow( int limit = 50, int page = 1 ) const;
         QNetworkReply* getNeighbours( int limit = 50, int page = 1 ) const;
     
