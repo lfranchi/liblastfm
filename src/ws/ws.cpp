@@ -133,7 +133,7 @@ lastfm::ws::parse( QNetworkReply* reply ) throw( ParseError )
         QByteArray data = reply->readAll();
 
         if (!data.size()) {
-            throw MalformedResponse;
+            throw ParseError( MalformedResponse, "No data");
         }
             
         QDomDocument xml;
