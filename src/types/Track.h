@@ -89,6 +89,7 @@ public:
     QMap<lastfm::ImageSize, QUrl> m_images;
     short scrobbleStatus;
     short scrobbleError;
+    QString scrobbleErrorText;
 
     //FIXME I hate this, but is used for radio trackauth etc.
     QMap<QString,QString> extras;
@@ -216,6 +217,7 @@ public:
 
     ScrobbleStatus scrobbleStatus() const { return static_cast<ScrobbleStatus>(d->scrobbleStatus); }
     ScrobbleError scrobbleError() const { return static_cast<ScrobbleError>(d->scrobbleError); }
+    QString scrobbleErrorText() const { return d->scrobbleErrorText; }
 
     /** default separator is an en-dash */
     QString toString() const { return toString( Corrected ); }
@@ -322,6 +324,7 @@ public:
         d->forceScrobbleStatusChanged();
     }
     void setScrobbleError( ScrobbleError scrobbleError ) { d->scrobbleError = scrobbleError; }
+    void setScrobbleErrorText( const QString& scrobbleErrorText ) { d->scrobbleErrorText = scrobbleErrorText; }
     
     /** you also must scrobble this track for the love to become permenant */
     void love();

@@ -188,6 +188,14 @@ lastfm::Audioscrobbler::onTrackScrobbleReturn()
             || lfm["error"].attribute("code") == "11" // Service offline
             || lfm["error"].attribute("code") == "16") ) // Service temporarily unavailable
         {
+            foreach ( const Track& track, d->m_batch )
+            {
+                MutableTrack mTrack = MutableTrack( track );
+                mTrack.setScrobbleError( static_cast<Track::ScrobbleError>(lfm["error"].attribute("code").toInt()) );
+                mTrack.setScrobbleErrorText( lfm["error"].text() );
+                mTrack.setScrobbleStatus( Track::Error );
+            }
+
             // clear the cache if it was not one of these error codes
             d->m_cache.remove( d->m_batch );
             d->m_batch.clear();
