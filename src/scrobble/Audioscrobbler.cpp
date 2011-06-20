@@ -180,9 +180,9 @@ lastfm::Audioscrobbler::onTrackScrobbleReturn()
         d->m_cache.remove( d->m_batch );
         d->m_batch.clear();
     }
-    else
+    else if ( d->m_scrobbleReply->error() == QNetworkReply::NoError )
     {
-        // The scrobble submission failed
+        // The scrobble submission failed, but the http request was sucessful
 
         if ( !(lfm["error"].attribute("code") == "9" // Bad session
             || lfm["error"].attribute("code") == "11" // Service offline
