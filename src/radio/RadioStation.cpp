@@ -39,26 +39,52 @@ lastfm::RadioStation::library( const lastfm::User& user )
 lastfm::RadioStation
 lastfm::RadioStation::library( QList<lastfm::User>& users )
 {
-    return RadioStation( libraryStr( users ) );
+    RadioStation s( libraryStr( users ) );
+    if( users.count() == 1 ) 
+        s.setTitle( QObject::tr( "%1%2s Library Radio").arg( lastfm::ws::Username, QChar(0x2019) ));
+
+    else {
+        QString title;
+        for( QList<lastfm::User>::const_iterator i = users.begin(); i != users.end(); i++ ) {
+            if( i == users.end() - 1 )
+                title += " and " + *i;
+            else
+                title += ", " + *i;
+        }
+
+        s.setTitle( title );
+    }
+
+    return s;
 }
 
 
 lastfm::RadioStation
 lastfm::RadioStation::recommendations( const lastfm::User& user )
 {
-    return RadioStation( recommendationsStr( user ) );
+    RadioStation s( recommendationsStr( user ) );
+    
+    s.setTitle( QObject::tr( "%1%2s Recommended Radio").arg( lastfm::ws::Username, QChar(0x2019) ));
+
+    return s;
 }
 
 lastfm::RadioStation
 lastfm::RadioStation::friends( const lastfm::User& user )
 {
-    return RadioStation( friendsStr( user ) );
+    RadioStation s( friendsStr( user ) );
+
+    s.setTitle( QObject::tr( "%1%2s Friends Radio").arg( lastfm::ws::Username, QChar(0x2019) ));
+
+    return s; 
 }
 
 lastfm::RadioStation
 lastfm::RadioStation::neighbourhood( const lastfm::User& user )
 {
-    return RadioStation( neighbourhoodStr( user ) );
+    RadioStation s( neighbourhoodStr( user ) );
+    s.setTitle( QObject::tr( "%1%2s Neighbours%2 Radio").arg( lastfm::ws::Username, QChar(0x2019) ));
+    return s;
 }
 
 
@@ -97,7 +123,9 @@ lastfm::RadioStation::similar( QList<lastfm::Artist>& artists )
 lastfm::RadioStation
 lastfm::RadioStation::mix( const lastfm::User& user )
 {
-    return RadioStation( mixStr( user ) );
+    RadioStation s( mixStr( user ) );
+    s.setTitle( QObject::tr( "%1%2s Mix Radio").arg( lastfm::ws::Username, QChar(0x2019) ) );
+    return s;
 }
 
 
