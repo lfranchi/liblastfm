@@ -133,7 +133,7 @@ lastfm::ws::parse( QNetworkReply* reply ) throw( ParseError )
         QByteArray data = reply->readAll();
 
         if (!data.size()) {
-            throw ParseError( MalformedResponse, "No data");
+            throw ParseError( MalformedResponse, "No data" );
         }
             
         QDomDocument xml;
@@ -141,7 +141,7 @@ lastfm::ws::parse( QNetworkReply* reply ) throw( ParseError )
         QDomElement lfm = xml.documentElement();
 
         if (lfm.isNull())
-            throw ParseError( MalformedResponse, "" );
+            throw ParseError( MalformedResponse, "Lfm is null" );
 
         QString const status = lfm.attribute( "status" );
         QDomElement error = lfm.firstChildElement( "error" );

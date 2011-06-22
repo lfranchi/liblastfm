@@ -152,6 +152,7 @@ void
 lastfm::Audioscrobbler::onNowPlayingReturn()
 {
     lastfm::XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
+
     qDebug() << lfm;
 
     if ( lfm.attribute("status") == "ok" )
@@ -167,44 +168,55 @@ lastfm::Audioscrobbler::onNowPlayingReturn()
 void
 lastfm::Audioscrobbler::onTrackScrobbleReturn()
 {
-    lastfm::XmlQuery lfm = d->m_scrobbleReply->readAll();
-    qDebug() << lfm;
-
-    if (lfm.attribute("status") == "ok")
+    try
     {
-        int index = 0;
+        lastfm::XmlQuery lfm = lastfm::ws::parse( d->m_scrobbleReply );
 
-        foreach ( const XmlQuery& scrobble, lfm["scrobbles"].children("scrobble") )
-            parseTrack( scrobble, d->m_batch.at( index++ ) );
+        qDebug() << lfm;
 
-        d->m_cache.remove( d->m_batch );
-        d->m_batch.clear();
-    }
-    else if ( d->m_scrobbleReply->error() == QNetworkReply::NoError )
-    {
-        // The scrobble submission failed, but the http request was sucessful
-
-        if ( !(lfm["error"].attribute("code") == "9" // Bad session
-            || lfm["error"].attribute("code") == "11" // Service offline
-            || lfm["error"].attribute("code") == "16") ) // Service temporarily unavailable
+        if (lfm.attribute("status") == "ok")
         {
-            foreach ( const Track& track, d->m_batch )
-            {
-                MutableTrack mTrack = MutableTrack( track );
-                mTrack.setScrobbleError( static_cast<Track::ScrobbleError>(lfm["error"].attribute("code").toInt()) );
-                mTrack.setScrobbleErrorText( lfm["error"].text() );
-                mTrack.setScrobbleStatus( Track::Error );
-            }
+            int index = 0;
 
-            // clear the cache if it was not one of these error codes
+            foreach ( const XmlQuery& scrobble, lfm["scrobbles"].children("scrobble") )
+                parseTrack( scrobble, d->m_batch.at( index++ ) );
+
             d->m_cache.remove( d->m_batch );
             d->m_batch.clear();
         }
-        else
+        else if ( d->m_scrobbleReply->error() == QNetworkReply::NoError )
         {
-            Q_ASSERT(false);
-        }
-    }
+            // The scrobble submission failed, but the http request was sucessful
 
-    d->m_scrobbleReply = 0;
+            if ( !(lfm["error"].attribute("code") == "9" // Bad session
+                || lfm["error"].attribute("code") == "11" // Service offline
+                || lfm["error"].attribute("code") == "16") ) // Service temporarily unavailable
+            {
+                foreach ( const Track& track, d->m_batch )
+                {
+                    MutableTrack mTrack = MutableTrack( track );
+                    mTrack.setScrobbleError( static_cast<Track::ScrobbleError>(lfm["error"].attribute("code").toInt()) );
+                    mTrack.setScrobbleErrorText( lfm["error"].text() );
+                    mTrack.setScrobbleStatus( Track::Error );
+                }
+
+                // clear the cache if it was not one of these error codes
+                d->m_cache.remove( d->m_batch );
+                d->m_batch.clear();
+            }
+            else
+            {
+                Q_ASSERT(false);
+            }
+        }
+
+        d->m_scrobbleReply = 0;
+
+        // check is there are anymore scrobbles to submit
+        submit();
+    }
+    catch ( lastfm::ws::ParseError p )
+    {
+        qDebug() << p.message() << p.enumValue();
+    }
 }
