@@ -60,7 +60,7 @@ namespace lastfm
     
         QNetworkReply* getPlaylists() const;
         QNetworkReply* getTopArtists( QString period = "overall", int limit = 50, int page = 1 ) const;
-        QNetworkReply* getRecentTracks() const;
+        QNetworkReply* getRecentTracks( int limit = 50, int page = 1 ) const;
         QNetworkReply* getRecentArtists() const;
         QNetworkReply* getRecentStations(  int limit = 10, int page = 1  ) const;
         QNetworkReply* getRecommendedArtists( int limit = 50, int page = 1 ) const;

@@ -23,6 +23,7 @@
 #include "../core/XmlQuery.h"
 #include <QStringList>
 #include <lastfm/UserList>
+#include <QAbstractNetworkCache>
 
 using lastfm::User;
 using lastfm::UserList;
@@ -109,12 +110,20 @@ User::getRecentArtists() const
 
 
 QNetworkReply*
-User::getRecentTracks() const
+User::getRecentTracks( int limit , int page ) const
 {
-    return ws::get( params( "getRecentTracks" ) );
+    QMap<QString, QString> map = params( "getRecentTracks" );
+    map["limit"] = QString::number( limit );
+    map["page"] = QString::number( page );
+
+    QAbstractNetworkCache* cache = lastfm::nam()->cache();
+    if ( cache )
+        cache->remove( lastfm::ws::url( map ) );
+
+    return ws::get( map );
 }
 
-QNetworkReply* 
+QNetworkReply*
 User::getRecentStations( int limit, int page ) const
 {
     QMap<QString, QString> map = params( "getRecentStations" );
