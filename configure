@@ -16,10 +16,8 @@ require "#{cwd}/admin/utils.rb"
 
   h2 "Configuring qmake..." do
     args=Array.new
-    args << '-spec macx-g++' if Platform::IMPL == :macosx
     if ARGV.include? '--release'
       args << '-config release'
-      args << '"CONFIG += app_bundle"' if Platform::IMPL == :macosx and ARGV.include? '--bundle'
     else
       args << '-config debug'
     end
@@ -42,11 +40,6 @@ require "#{cwd}/admin/utils.rb"
     File.new("#{cwd}/Makefile", 'w').write `ruby admin/Makefile.rb #{hs.join(' ')}`
   end
 
-  case Platform::IMPL
-    when :mswin then make='nmake all'
-    else make='make' # NOTE only tested with GNU make, sorry :(
-  end
-
   puts
-  puts "Good, your configure is finished! Now type: #{make}"
+  puts "Good, your configure is finished! Now type: make"
   

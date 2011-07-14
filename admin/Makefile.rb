@@ -6,26 +6,15 @@
 
 cwd = File.dirname( __FILE__ )
 require 'find'
-require "#{cwd}/platform.rb"
 
 
 ######################################################################### defs
-case Platform::IMPL
-  when :mswin
-    CP='ruby -e "require \'FileUtils\'; FileUtils.copy_file(ARGV[0], ARGV[1])" --'
-    LN=CP
-    RM='ruby -e "require \'FileUtils\'; FileUtils.rm(ARGV[0], :force => true)" --'
-    RM_RF='ruby -e "require \'FileUtils\'; FileUtils.rm_rf ARGV[0]" --'	
-    MKDIR='ruby -e "require \'FileUtils\'; FileUtils.mkpath ARGV[0]" --'
-    ORDERONLY=''
-  else
-    CP='cp'
-    LN=CP #'ln -sf' oddly doesn't work, the target is always remade
-    RM='rm -f'
-    RM_RF='rm -rf'	
-    MKDIR='mkdir -p'
-    ORDERONLY='|'
-end
+CP='ruby -e "require \'FileUtils\'; FileUtils.copy_file(ARGV[0], ARGV[1])" --'
+LN=CP
+RM='ruby -e "require \'FileUtils\'; FileUtils.rm(ARGV[0], :force => true)" --'
+RM_RF='ruby -e "require \'FileUtils\'; FileUtils.rm_rf ARGV[0]" --'	
+MKDIR='ruby -e "require \'FileUtils\'; FileUtils.mkpath ARGV[0]" --'
+ORDERONLY=''
 
 def penis( path )
   yielded = false
@@ -131,24 +120,24 @@ headers: #{$headers} _include/lastfm.h
 install: #{$install_headers} $(DESTDIR)#{INSTALL_PREFIX}/include/lastfm.h
 EOS
 
-if Platform::IMPL == :macosx
-  # qmake doesn't do the install_name_tool steps, so we have to do everything
-  dst="$(DESTDIR)#{INSTALL_PREFIX}/lib"
-  v=ENV['LFM_VERSION']
-  vmajor=v[0..0]
-  puts "	mkdir -p #{dst}"
-  ['liblastfm', 'liblastfm_fingerprint'].each do |base|
-    puts "	cp _bin/#{base}.#{v}.dylib '#{dst}'"
-    puts "	cd '#{dst}' && ln -fs #{base}.#{v}.dylib #{base}.dylib"
-    puts "	cd '#{dst}' && ln -fs #{base}.#{v}.dylib #{base}.#{vmajor}.dylib"
-    puts "	install_name_tool -id '#{dst}/#{base}.#{vmajor}.dylib' '#{dst}/#{base}.#{vmajor}.dylib'"
-  end
-  ext="#{vmajor}.dylib"
-  puts "	install_name_tool -change liblastfm.#{ext} #{dst}/liblastfm.#{ext} #{dst}/liblastfm_fingerprint.#{ext}"
-else 
-  puts %Q[	cd src && $(MAKE) install "INSTALL_ROOT=$(DESTDIR)#{INSTALL_PREFIX}"]
-  puts %Q[	cd src/fingerprint && $(MAKE) install "INSTALL_ROOT=$(DESTDIR)#{INSTALL_PREFIX}"]
-end
+#if Platform::IMPL == :macosx
+#  # qmake doesn't do the install_name_tool steps, so we have to do everything
+#  dst="$(DESTDIR)#{INSTALL_PREFIX}/lib"
+#  v=ENV['LFM_VERSION']
+#  vmajor=v[0..0]
+#  puts "	mkdir -p #{dst}"
+#  ['liblastfm', 'liblastfm_fingerprint'].each do |base|
+#    puts "	cp _bin/#{base}.#{v}.dylib '#{dst}'"
+#    puts "	cd '#{dst}' && ln -fs #{base}.#{v}.dylib #{base}.dylib"
+#    puts "	cd '#{dst}' && ln -fs #{base}.#{v}.dylib #{base}.#{vmajor}.dylib"
+#    puts "	install_name_tool -id '#{dst}/#{base}.#{vmajor}.dylib' '#{dst}/#{base}.#{vmajor}.dylib'"
+#  end
+#  ext="#{vmajor}.dylib"
+#  puts "	install_name_tool -change liblastfm.#{ext} #{dst}/liblastfm.#{ext} #{dst}/liblastfm_fingerprint.#{ext}"
+#else 
+#  puts %Q[	cd src && $(MAKE) install "INSTALL_ROOT=$(DESTDIR)#{INSTALL_PREFIX}"]
+#  puts %Q[	cd src/fingerprint && $(MAKE) install "INSTALL_ROOT=$(DESTDIR)#{INSTALL_PREFIX}"]
+#end
 
 BASENAME='liblastfm-'+ENV['LFM_VERSION']
 puts <<-EOS
