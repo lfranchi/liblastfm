@@ -84,4 +84,4 @@ mac:SOURCES += 	ws/mac/MNetworkConnectionMonitor_mac.cpp
 mac:HEADERS += ws/mac/ProxyDict.h \
                ws/mac/MNetworkConnectionMonitor.h
 
-VERSION = 0.4.0
+!win32:VERSION = 0.4.0

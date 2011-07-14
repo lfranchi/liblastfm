@@ -37,8 +37,8 @@ require "#{cwd}/admin/utils.rb"
     hs << 'types/Tasteometer.h' << 'types/AbstractType.h' << 'types/Track.h' << 'types/Mbid.h' << 'types/Artist.h' << 'types/Album.h' << 'types/FingerprintId.h' << 'types/Playlist.h' << 'types/Tag.h' << 'types/User.h' << 'types/Xspf.h'
     hs << 'ws/ws.h' << 'ws/InternetConnectionMonitor.h' << 'ws/NetworkAccessManager.h'
     uname = `uname`
-    ENV['LFM_VERSION']="0.4.0" unless uname.include? "CYGWIN"
-    File.new("#{cwd}/Makefile", 'w').write `ruby admin/Makefile.rb #{hs.join(' ')}`
+	ENV['LFM_VERSION']="0.4.0" 
+	File.new("#{cwd}/Makefile", 'w').write `ruby admin/Makefile.rb #{hs.join(' ')}`
   end
 
   puts

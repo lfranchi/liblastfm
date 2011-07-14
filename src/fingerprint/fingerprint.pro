@@ -2,7 +2,6 @@ TEMPLATE = lib
 TARGET = lastfm_fingerprint
 LIBS += -L$$DESTDIR -llastfm
 QT = core xml network sql
-include( _files.qmake )
 DEFINES += LASTFM_FINGERPRINT_LIB
 
 INSTALLS = target
@@ -44,4 +43,4 @@ HEADERS += \
 	Fingerprint.h \
 	Collection.h
 
-VERSION = 0.4.0
+!win32:VERSION = 0.4.0
