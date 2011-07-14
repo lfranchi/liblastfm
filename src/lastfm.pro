@@ -44,7 +44,7 @@ SOURCES += \
 HEADERS += \
 	ws/ws.h \
 	ws/NetworkConnectionMonitor.h \
-	ws/NetworkAccessManager.h \
+	ws/NetworkAccessManager.h \ 
 	ws/InternetConnectionMonitor.h \
 	types/Xspf.h \
 	types/User.h \
@@ -78,3 +78,10 @@ win32:HEADERS += ws/win/WNetworkConnectionMonitor.h \
 	ws/win/NdisEvents.h \
 	ws/win/IeSettings.h \
 	ws/win/ComSetup.h
+
+mac:SOURCES += 	ws/mac/MNetworkConnectionMonitor_mac.cpp
+
+mac:HEADERS += ws/mac/ProxyDict.h \
+               ws/mac/MNetworkConnectionMonitor.h
+
+VERSION = 0.4.0
