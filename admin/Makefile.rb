@@ -65,13 +65,13 @@ __demos: demos/Makefile __src
 	cd demos && $(MAKE)
 
 src/Makefile:
-	cd src && #{ENV['LFM_QMAKE']}
+	cd src && qmake
 src/fingerprint/Makefile:
-	cd src/fingerprint && #{ENV['LFM_QMAKE']}
+	cd src/fingerprint && qmake
 tests/Makefile:
-	cd tests && #{ENV['LFM_QMAKE']}
+	cd tests && qmake
 demos/Makefile:
-	cd demos && #{ENV['LFM_QMAKE']}
+	cd demos && qmake
 
 .PHONY: clean
 clean:
