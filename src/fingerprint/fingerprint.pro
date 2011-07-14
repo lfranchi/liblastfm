@@ -23,3 +23,25 @@ mac:CONFIG( app_bundle ) {
     PKGCONFIG += fftw3f
 
 }
+
+SOURCES += \
+	Sha256.cpp \
+	fplib/OptFFT.cpp \
+	fplib/FingerprintExtractor.cpp \
+	fplib/Filter.cpp \
+	Fingerprint.cpp \
+	Collection.cpp
+
+HEADERS += \
+	Sha256.h \
+	fplib/OptFFT.h \
+	fplib/fp_helper_fun.h \
+	fplib/FloatingAverage.h \
+	fplib/FingerprintExtractor.h \
+	fplib/Filter.h \
+	fplib/CircularArray.h \
+	FingerprintableSource.h \
+	Fingerprint.h \
+	Collection.h
+
+VERSION = 0.4.0
