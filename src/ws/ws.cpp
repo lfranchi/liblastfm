@@ -128,70 +128,9 @@ lastfm::ws::post( QMap<QString, QString> params, bool sk )
 QByteArray
 lastfm::ws::parse( QNetworkReply* reply ) throw( ParseError )
 {
-    try
-    {
-        QByteArray data = reply->readAll();
-
-        if (!data.size()) {
-            throw ParseError( MalformedResponse, "No data" );
-        }
-            
-        QDomDocument xml;
-        xml.setContent( data );
-        QDomElement lfm = xml.documentElement();
-
-        if (lfm.isNull())
-            throw ParseError( MalformedResponse, "Lfm is null" );
-
-        QString const status = lfm.attribute( "status" );
-        QDomElement error = lfm.firstChildElement( "error" );
-        uint const n = lfm.childNodes().count();
-
-        // no elements beyond the lfm is perfectably acceptable <-- wtf?
-        // if (n == 0) // nothing useful in the response
-        if (status == "failed" || (n == 1 && !error.isNull()) )
-            throw error.isNull()
-                    ? ParseError( MalformedResponse, "" )
-                    : ParseError( Error( error.attribute( "code" ).toUInt() ), error.text() );
-
-        switch (reply->error())
-        {
-            case QNetworkReply::RemoteHostClosedError:
-            case QNetworkReply::ConnectionRefusedError:
-            case QNetworkReply::TimeoutError:
-            case QNetworkReply::ContentAccessDenied:
-            case QNetworkReply::ContentOperationNotPermittedError:
-            case QNetworkReply::UnknownContentError:
-            case QNetworkReply::ProtocolInvalidOperationError:
-            case QNetworkReply::ProtocolFailure:
-                throw TryAgainLater;
-
-            case QNetworkReply::NoError:
-            default:
-                break;
-        }
-
-        //FIXME pretty wasteful to parse XML document twice..
-        return data;
-    }
-    catch (ParseError e)
-    {
-        switch ( e.enumValue() )
-        {
-            case OperationFailed:
-            case InvalidApiKey:
-            case InvalidSessionKey:
-                // NOTE will never be received during the LoginDialog stage
-                // since that happens before this slot is registered with
-                // QMetaObject in App::App(). Neat :)
-                QMetaObject::invokeMethod( qApp, "onWsError", Q_ARG( lastfm::ws::Error, e.enumValue() ) );
-            default:
-                throw e;
-        }
-    }
-
-    // bit dodgy, but prolly for the best
+    QByteArray data = reply->readAll();
     reply->deleteLater();
+    return data;
 }
 
 
