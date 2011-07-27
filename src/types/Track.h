@@ -110,7 +110,7 @@ signals:
     void loveToggled( bool love );
     void loveFinished();
     void unlovedFinished();
-    void gotInfo( const XmlQuery& );
+    void gotInfo( const QByteArray& );
     void scrobbleStatusChanged();
     void corrected( QString correction );
 };

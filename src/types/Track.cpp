@@ -132,9 +132,16 @@ lastfm::Track::Track( const QDomElement& e )
 void
 lastfm::TrackData::onLoveFinished()
 {
-    XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
-    if ( lfm.attribute( "status" ) == "ok")
-        loved = true;
+    try
+    {
+        XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
+        if ( lfm.attribute( "status" ) == "ok")
+            loved = true;
+
+    }
+    catch (...)
+    {
+    }
     emit loveToggled( loved );
 }
 
@@ -142,35 +149,50 @@ lastfm::TrackData::onLoveFinished()
 void
 lastfm::TrackData::onUnloveFinished()
 {
-    XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
-    if ( lfm.attribute( "status" ) == "ok")
-        loved = false;
+    try
+    {
+        XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
+        if ( lfm.attribute( "status" ) == "ok")
+            loved = false;
+    }
+    catch (...)
+    {
+    }
+
     emit loveToggled( loved );
 }
 
 void
 lastfm::TrackData::onGotInfo()
 {
-    lastfm::XmlQuery lfm( static_cast<QNetworkReply*>(sender())->readAll() );
+    try
+    {
+        QByteArray data = static_cast<QNetworkReply*>(sender())->readAll();
 
-    QString imageUrl = lfm["track"]["image size=small"].text();
-    if ( !imageUrl.isEmpty() ) m_images[lastfm::Small] = imageUrl;
-    imageUrl = lfm["track"]["image size=medium"].text();
-    if ( !imageUrl.isEmpty() ) m_images[lastfm::Medium] = imageUrl;
-    imageUrl = lfm["track"]["image size=large"].text();
-    if ( !imageUrl.isEmpty() ) m_images[lastfm::Large] = imageUrl;
-    imageUrl = lfm["track"]["image size=extralarge"].text();
-    if ( !imageUrl.isEmpty() ) m_images[lastfm::ExtraLarge] = imageUrl;
-    imageUrl = lfm["track"]["image size=mega"].text();
-    if ( !imageUrl.isEmpty() ) m_images[lastfm::Mega] = imageUrl;
+        lastfm::XmlQuery lfm( data );
 
-    loved = lfm["track"]["userloved"].text().toInt();
+        QString imageUrl = lfm["track"]["image size=small"].text();
+        if ( !imageUrl.isEmpty() ) m_images[lastfm::Small] = imageUrl;
+        imageUrl = lfm["track"]["image size=medium"].text();
+        if ( !imageUrl.isEmpty() ) m_images[lastfm::Medium] = imageUrl;
+        imageUrl = lfm["track"]["image size=large"].text();
+        if ( !imageUrl.isEmpty() ) m_images[lastfm::Large] = imageUrl;
+        imageUrl = lfm["track"]["image size=extralarge"].text();
+        if ( !imageUrl.isEmpty() ) m_images[lastfm::ExtraLarge] = imageUrl;
+        imageUrl = lfm["track"]["image size=mega"].text();
+        if ( !imageUrl.isEmpty() ) m_images[lastfm::Mega] = imageUrl;
 
-    emit gotInfo( lfm );
-    emit loveToggled( loved );
+        loved = lfm["track"]["userloved"].text().toInt();
+
+        emit gotInfo( data );
+        emit loveToggled( loved );
+    }
+    catch (...)
+    {
+    }
 
     // you should connect everytime you call getInfo
-    disconnect( this, SIGNAL(gotInfo(const XmlQuery&)), 0, 0);
+    disconnect( this, SIGNAL(gotInfo(const QByteArray&)), 0, 0);
 }
 
 
