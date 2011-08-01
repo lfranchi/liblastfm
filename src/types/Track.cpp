@@ -189,6 +189,7 @@ lastfm::TrackData::onGotInfo()
     }
     catch (...)
     {
+        emit gotInfo( "" );
     }
 
     // you should connect everytime you call getInfo
