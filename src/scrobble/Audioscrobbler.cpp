@@ -181,6 +181,8 @@ lastfm::Audioscrobbler::onTrackScrobbleReturn()
             foreach ( const XmlQuery& scrobble, lfm["scrobbles"].children("scrobble") )
                 parseTrack( scrobble, d->m_batch.at( index++ ) );
 
+            emit scrobblesSubmitted( d->m_batch );
+
             d->m_cache.remove( d->m_batch );
             d->m_batch.clear();
         }
@@ -200,6 +202,8 @@ lastfm::Audioscrobbler::onTrackScrobbleReturn()
                     mTrack.setScrobbleStatus( Track::Error );
                 }
 
+                emit scrobblesSubmitted( d->m_batch );
+
                 // clear the cache if it was not one of these error codes
                 d->m_cache.remove( d->m_batch );
                 d->m_batch.clear();
@@ -218,5 +222,6 @@ lastfm::Audioscrobbler::onTrackScrobbleReturn()
     catch ( lastfm::ws::ParseError p )
     {
         qDebug() << p.message() << p.enumValue();
+        d->m_scrobbleReply = 0;
     }
 }

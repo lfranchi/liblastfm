@@ -47,6 +47,9 @@ namespace lastfm
 
     signals:
         void scrobblesCached( const QList<lastfm::Track>& tracks );
+        /* Note that this is emitted after we tried to submit the scrobbles
+        It could just be that they have an error code */
+        void scrobblesSubmitted( const QList<lastfm::Track>& tracks );
         void nowPlayingError( int code, QString message );
 
     public slots:
