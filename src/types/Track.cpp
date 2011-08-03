@@ -165,10 +165,10 @@ lastfm::TrackData::onUnloveFinished()
 void
 lastfm::TrackData::onGotInfo()
 {
+    const QByteArray data = static_cast<QNetworkReply*>(sender())->readAll();
+
     try
     {
-        QByteArray data = static_cast<QNetworkReply*>(sender())->readAll();
-
         lastfm::XmlQuery lfm( data );
 
         QString imageUrl = lfm["track"]["image size=small"].text();
@@ -189,7 +189,7 @@ lastfm::TrackData::onGotInfo()
     }
     catch (...)
     {
-        emit gotInfo( "" );
+        emit gotInfo( data );
     }
 
     // you should connect everytime you call getInfo
