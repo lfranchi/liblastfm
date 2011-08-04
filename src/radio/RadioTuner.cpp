@@ -61,18 +61,12 @@ RadioTuner::RadioTuner( const RadioStation& station )
 }
 
 void
-RadioTuner::retune( const RadioStation& station)
+RadioTuner::retune( const RadioStation& station )
 {
     m_playlistQueue.clear();
+    m_retuneStation = station;
 
     qDebug() << station.url();
-
-    QMap<QString, QString> map;
-    map["method"] = "radio.tune";
-    map["station"] = station.url();
-    map["additional_info"] = "1";
-    QNetworkReply* reply = ws::post(map);
-    connect( reply, SIGNAL(finished()), SLOT(onTuneReturn()) );
 }
 
 
@@ -98,18 +92,35 @@ RadioTuner::onTuneReturn()
 void
 RadioTuner::fetchFiveMoreTracks()
 {
-    if ( !m_twoSecondTimer->isActive() )
+    if ( !m_retuneStation.url().isEmpty() )
     {
-        //TODO check documentation, I figure this needs a session key
+        // We have been asked to retune so do it now
         QMap<QString, QString> map;
-        map["method"] = "radio.getPlaylist";
+        map["method"] = "radio.tune";
+        map["station"] = m_retuneStation.url();
         map["additional_info"] = "1";
-        map["rtp"] = "1"; // see above
-        connect( ws::post( map ), SIGNAL(finished()), SLOT(onGetPlaylistReturn()) );
-        m_fetchingPlaylist = true;
+
+        QNetworkReply* reply = ws::post(map);
+        connect( reply, SIGNAL(finished()), SLOT(onTuneReturn()) );
+
+        m_retuneStation = RadioStation();
+        m_twoSecondTimer->stop();
     }
     else
-        m_requestedPlaylist = true;
+    {
+        if ( !m_twoSecondTimer->isActive() )
+        {
+            //TODO check documentation, I figure this needs a session key
+            QMap<QString, QString> map;
+            map["method"] = "radio.getPlaylist";
+            map["additional_info"] = "1";
+            map["rtp"] = "1"; // see above
+            connect( ws::post( map ), SIGNAL(finished()), SLOT(onGetPlaylistReturn()) );
+            m_fetchingPlaylist = true;
+        }
+        else
+            m_requestedPlaylist = true;
+    }
 }
 
 

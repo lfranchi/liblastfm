@@ -298,8 +298,7 @@ QString lastfm::RadioStation::libraryStr( QList<lastfm::User>& users )
     for ( int i = 1 ; i < users.count() ; ++i )
         url.append( "," + users[i].name() );
 
-    if ( users.count() == 1 )
-        url.append("/personal");
+    url.append("/personal");
 
     return url;
 }
