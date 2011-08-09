@@ -148,19 +148,16 @@ namespace lastfm
      
             QString toString() const
             {
-                #define tr QObject::tr
-                QStringList list;
+                QString result;
+
                 if (male())
-                    list << tr("boy") << tr("lad") << tr("chap") << tr("guy");
+                    result = QObject::tr( "m" );
                 else if (female())
-                    // I'm not sexist, it's just I'm gutless and couldn't think
-                    // of any other non offensive terms for women!
-                    list << tr("girl") << tr("lady") << tr("lass");
-                else 
-                    return tr("person");
+                    result = QObject::tr( "f" );
+                else
+                    result = QObject::tr( "n" ); // as in neuter
                 
-                return list.value( QDateTime::currentDateTime().toTime_t() % list.count() );
-                #undef tr
+                return result;
             }
         } m_gender;
 

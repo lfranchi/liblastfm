@@ -250,25 +250,15 @@ UserDetails::UserDetails( QNetworkReply* reply )
 QString
 UserDetails::getInfoString() const
 {
-    #define tr QObject::tr
-;
-
     QString text;
-    if (m_gender.known() && m_age > 0 && m_scrobbles > 0)
-    {
-        text = tr("A %1, %2 years of age with %L3 scrobbles")
-                .arg( m_gender.toString() )
-                .arg( m_age )
-                .arg( m_scrobbles );
-    }
-    else if (m_scrobbles > 0)
-    {
-        text = tr("%L1 scrobbles").arg( m_scrobbles );
-    }    
+
+    text = QObject::tr("%1").arg( m_realName.isEmpty() ? m_name : m_realName );
+    if ( m_age ) text.append( QObject::tr(", %1").arg( m_age ) );
+    if ( m_gender.known() ) text.append( QObject::tr(", %1").arg( m_gender.toString() ) );
+    if ( !m_country.isEmpty() ) text.append( QObject::tr(", %1").arg( m_country ) );
+    if ( m_scrobbles ) text.append( QObject::tr(", %L1 scrobbles").arg( m_scrobbles ) );
 
     return text;
-    
-    #undef tr
 }
 
 void 
