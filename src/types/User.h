@@ -94,6 +94,35 @@ namespace lastfm
         QMap<QString, QString> params( const QString& method ) const;
     };
 
+    class LASTFM_DLLEXPORT Gender
+    {
+        QString s;
+
+    public:
+        Gender() :s(/*confused!*/){}
+
+        Gender( const QString& ss ) :s( ss.toLower() )
+        {}
+
+        bool known() const { return male() || female(); }
+        bool male() const { return s == "m"; }
+        bool female() const { return s == "f"; }
+
+        QString toString() const
+        {
+            QString result;
+
+            if (male())
+                result = QObject::tr( "m" );
+            else if (female())
+                result = QObject::tr( "f" );
+            else
+                result = QObject::tr( "n" ); // as in neuter
+
+            return result;
+        }
+    };
+
 
     /** The Extended User contains extra information about a user's account */
     class LASTFM_DLLEXPORT UserDetails : public User
@@ -113,6 +142,7 @@ namespace lastfm
         bool canBootstrap() const{ return m_canBootstrap; }
         quint32 scrobbleCount() const{ return m_scrobbles; }
         QDateTime dateRegistered() const { return m_registered; }
+        Gender gender() const { return m_gender; }
 
         void setScrobbleCount( quint32 scrobblesCount );
         void setDateRegistered( const QDateTime& date );
@@ -131,36 +161,7 @@ namespace lastfm
         // static QNetworkReply* getRecommendedArtists();
 
     protected:
-            
-        class Gender
-        {
-            QString s;
-
-        public:
-            Gender() :s(/*confused!*/){}
-
-            Gender( const QString& ss ) :s( ss.toLower() )
-            {}
-     
-            bool known() const { return male() || female(); }
-            bool male() const { return s == "m"; }
-            bool female() const { return s == "f"; }
-     
-            QString toString() const
-            {
-                QString result;
-
-                if (male())
-                    result = QObject::tr( "m" );
-                else if (female())
-                    result = QObject::tr( "f" );
-                else
-                    result = QObject::tr( "n" ); // as in neuter
-                
-                return result;
-            }
-        } m_gender;
-
+        Gender m_gender;
         unsigned short m_age;
         unsigned int m_scrobbles;
         QDateTime m_registered;
