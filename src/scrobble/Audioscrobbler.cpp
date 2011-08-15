@@ -151,14 +151,28 @@ lastfm::Audioscrobbler::parseTrack( const XmlQuery& trackXml, const Track& track
 void
 lastfm::Audioscrobbler::onNowPlayingReturn()
 {
-    lastfm::XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
+    try
+    {
+        lastfm::XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
 
-    qDebug() << lfm;
+        qDebug() << lfm;
 
-    if ( lfm.attribute("status") == "ok" )
-        parseTrack( lfm["nowplaying"], d->m_nowPlayingTrack );
-    else
-        emit nowPlayingError( lfm["error"].attribute("code").toInt(), lfm["error"].text() );
+        if ( lfm.attribute("status") == "ok" )
+            parseTrack( lfm["nowplaying"], d->m_nowPlayingTrack );
+        else
+            emit nowPlayingError( lfm["error"].attribute("code").toInt(), lfm["error"].text() );
+
+        d->m_nowPlayingTrack = Track();
+        d->m_nowPlayingReply = 0;
+    }
+    catch ( lastfm::ws::ParseError p )
+    {
+        qDebug() << p.message() << p.enumValue();
+    }
+    catch ( lastfm::ws::Error p )
+    {
+        qDebug() << p;
+    }
 
     d->m_nowPlayingTrack = Track();
     d->m_nowPlayingReply = 0;
@@ -222,6 +236,11 @@ lastfm::Audioscrobbler::onTrackScrobbleReturn()
     catch ( lastfm::ws::ParseError p )
     {
         qDebug() << p.message() << p.enumValue();
+        d->m_scrobbleReply = 0;
+    }
+    catch ( lastfm::ws::Error p )
+    {
+        qDebug() << p;
         d->m_scrobbleReply = 0;
     }
 }
