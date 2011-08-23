@@ -77,7 +77,7 @@ namespace lastfm
         QNetworkReply* getInfo() const;
         static Artist getInfo( QNetworkReply* );
     
-        QNetworkReply* getSimilar() const;
+        QNetworkReply* getSimilar( int limit = -1 ) const;
         /** The match percentage is returned from last.fm as a 4 significant 
           * figure floating point value. So we multply it by 100 to make an 
           * integer in the range of 0 to 10,000. This is possible confusing 

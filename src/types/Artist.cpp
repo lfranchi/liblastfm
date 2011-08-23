@@ -117,9 +117,11 @@ Artist::getTopTags() const
 
 
 QNetworkReply* 
-Artist::getSimilar() const
+Artist::getSimilar( int limit ) const
 {
-    return ws::get( params("getSimilar") );
+    QMap<QString, QString> map = params("getSimilar");
+    if ( limit != -1 ) map["limit"] = QString::number( limit );
+    return ws::get( map );
 }
 
 
