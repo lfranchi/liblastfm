@@ -303,6 +303,7 @@ public:
     }
 
     void setFromLfm( const XmlQuery& lfm );
+    void setImageUrl( lastfm::ImageSize size, const QString& url );
     
     void setArtist( QString artist ) { d->artist = artist.trimmed(); }
     void setAlbumArtist( QString albumArtist ) { d->albumArtist = albumArtist.trimmed(); }

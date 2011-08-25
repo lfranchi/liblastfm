@@ -391,6 +391,12 @@ lastfm::MutableTrack::setFromLfm( const XmlQuery& lfm )
     d->forceLoveToggled( d->loved );
 }
 
+void
+lastfm::MutableTrack::setImageUrl( lastfm::ImageSize size, const QString& url )
+{
+    d->m_images[size] = url;
+}
+
 
 void
 lastfm::MutableTrack::love()
