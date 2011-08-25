@@ -165,7 +165,7 @@ User::list( QNetworkReply* r )
 {
     UserList users;
     try {
-        XmlQuery lfm = ws::parse(r);
+        XmlQuery lfm = r->readAll();
         foreach (XmlQuery e, lfm.children( "user" ))
         {
             User u( e );
@@ -226,7 +226,7 @@ UserDetails::UserDetails( QNetworkReply* reply )
 {
     try
     {
-        XmlQuery user = XmlQuery(ws::parse(reply))["user"];
+        XmlQuery user = XmlQuery( reply->readAll() )["user"];
         m_age = user["age"].text().toUInt();
         m_scrobbles = user["playcount"].text().toUInt();
         m_registered = QDateTime::fromTime_t(user["registered"].attribute("unixtime").toUInt());

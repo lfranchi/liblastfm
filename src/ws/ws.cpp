@@ -125,15 +125,6 @@ lastfm::ws::post( QMap<QString, QString> params, bool sk )
 }
 
 
-QByteArray
-lastfm::ws::parse( QNetworkReply* reply ) throw( ParseError )
-{
-    QByteArray data = reply->readAll();
-    reply->deleteLater();
-    return data;
-}
-
-
 QNetworkAccessManager*
 lastfm::nam()
 {    

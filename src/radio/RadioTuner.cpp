@@ -74,7 +74,7 @@ void
 RadioTuner::onTuneReturn()
 {
     try {
-        XmlQuery lfm = ws::parse( (QNetworkReply*)sender() );
+        XmlQuery lfm = qobject_cast<QNetworkReply*>(sender())->readAll();
         emit title( lfm["station"]["name"].text() );
 
         qDebug() << lfm;
@@ -148,7 +148,7 @@ RadioTuner::onGetPlaylistReturn()
     m_fetchingPlaylist = false;
 
     try {
-        XmlQuery lfm = ws::parse( (QNetworkReply*)sender() );
+        XmlQuery lfm = qobject_cast<QNetworkReply*>(sender())->readAll();
         emit title( lfm["playlist"]["title"].text() );
 
         qDebug() << lfm;

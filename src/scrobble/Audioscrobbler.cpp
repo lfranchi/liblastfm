@@ -184,7 +184,7 @@ lastfm::Audioscrobbler::onTrackScrobbleReturn()
 {
     try
     {
-        lastfm::XmlQuery lfm = lastfm::ws::parse( d->m_scrobbleReply );
+        lastfm::XmlQuery lfm = d->m_scrobbleReply->readAll();
 
         qDebug() << lfm;
 
