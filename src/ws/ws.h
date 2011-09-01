@@ -20,7 +20,7 @@
 #ifndef LASTFM_WS_H
 #define LASTFM_WS_H
 
-#include <lastfm/global.h>
+#include "../global.h"
 #include <QDateTime>
 #include <QMap>
 #include <QNetworkReply>

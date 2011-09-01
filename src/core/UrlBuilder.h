@@ -20,7 +20,7 @@
 #ifndef LASTFM_URL_BUILDER_H
 #define LASTFM_URL_BUILDER_H
 
-#include <lastfm/global.h>
+#include "../global.h"
 #include <QLocale>
 #include <QString>
 #include <QUrl>

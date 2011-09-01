@@ -20,7 +20,7 @@
 #ifndef LASTFM_MISC_H
 #define LASTFM_MISC_H
 
-#include <lastfm/global.h>
+#include "../global.h"
 #include <QCryptographicHash>
 #include <QDir>
 #include <QString>

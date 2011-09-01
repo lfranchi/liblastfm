@@ -20,9 +20,9 @@
 #ifndef LASTFM_RADIO_STATION_H
 #define LASTFM_RADIO_STATION_H
 
-#include <lastfm/User>
-#include <lastfm/Tag>
-#include <lastfm/Artist>
+#include "../types/User.h"
+#include "../types/Tag.h"
+#include "../types/Artist.h"
 
 namespace lastfm
 {

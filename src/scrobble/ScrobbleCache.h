@@ -20,7 +20,7 @@
 #ifndef LASTFM_SCROBBLE_CACHE_H
 #define LASTFM_SCROBBLE_CACHE_H
 
-#include "lastfm/Track"
+#include "../types/Track.h"
 #include <QList>
 #include <QString>
 

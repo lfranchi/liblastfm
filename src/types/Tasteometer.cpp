@@ -1,6 +1,6 @@
 #include "Tasteometer.h"
 
-#include "lastfm.h"
+#include "../types/User.h"
 
 lastfm::Tasteometer::Tasteometer()
 {

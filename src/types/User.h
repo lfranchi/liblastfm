@@ -24,8 +24,8 @@
 #include <QStringList>
 #include <QUrl>
 
-#include <lastfm/AbstractType>
-#include <lastfm/ws.h>
+#include "../types/AbstractType.h"
+#include "../ws/ws.h"
 
 namespace lastfm
 {

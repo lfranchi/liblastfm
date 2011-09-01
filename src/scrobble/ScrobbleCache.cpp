@@ -19,7 +19,7 @@
 */
 #include "ScrobbleCache.h"
 #include "ScrobblePoint.h"
-#include <lastfm/misc.h>
+#include "../core/misc.h"
 #include <QCoreApplication>
 #include <QFile>
 #include <QDomElement>

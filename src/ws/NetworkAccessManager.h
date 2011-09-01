@@ -20,7 +20,7 @@
 #ifndef LASTFM_WS_ACCESS_MANAGER_H
 #define LASTFM_WS_ACCESS_MANAGER_H
 
-#include <lastfm/global.h>
+#include "../global.h"
 #include <QtNetwork/QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkProxy>

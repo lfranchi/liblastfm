@@ -22,7 +22,7 @@
 #include "../core/UrlBuilder.h"
 #include "../core/XmlQuery.h"
 #include <QStringList>
-#include <lastfm/UserList>
+#include "../types/User.h"
 #include <QAbstractNetworkCache>
 
 using lastfm::User;

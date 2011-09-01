@@ -19,8 +19,8 @@
 */
 #include "NetworkAccessManager.h"
 #include "InternetConnectionMonitor.h"
-#include <lastfm/ws.h>
-#include <lastfm/misc.h>
+#include "../ws/ws.h"
+#include "../core/misc.h"
 #include <QCoreApplication>
 #include <QNetworkRequest>
 #ifdef WIN32

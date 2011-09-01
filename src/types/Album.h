@@ -20,8 +20,8 @@
 #ifndef LASTFM_ALBUM_H
 #define LASTFM_ALBUM_H
 
-#include <lastfm/Artist>
-#include <lastfm/Mbid>
+#include "../types/Artist.h"
+#include "../types/Mbid.h"
 #include <QString>
 #include <QUrl>
 

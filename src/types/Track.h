@@ -20,9 +20,9 @@
 #ifndef LASTFM_TRACK_H
 #define LASTFM_TRACK_H
 
-#include <lastfm/AbstractType>
-#include <lastfm/Album>
-#include <lastfm/Mbid>
+#include "../types/AbstractType.h"
+#include "../types/Album.h"
+#include "../types/Mbid.h"
 #include <QDateTime>
 #include <QDomElement>
 #include <QExplicitlySharedDataPointer>

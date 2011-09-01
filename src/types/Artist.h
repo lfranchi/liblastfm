@@ -24,8 +24,8 @@
 #include <QString>
 #include <QUrl>
 
-#include <lastfm/AbstractType>
-#include <lastfm/global.h>
+#include "../types/AbstractType.h"
+#include "../global.h"
 
 
 namespace lastfm

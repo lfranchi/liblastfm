@@ -20,7 +20,7 @@
 #ifndef LASTFM_SCROBBLE_POINT_H
 #define LASTFM_SCROBBLE_POINT_H
 
-#include <lastfm/global.h>
+#include "../global.h"
 #include <QtAlgorithms>
 
 

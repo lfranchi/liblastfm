@@ -1,7 +1,7 @@
 #ifndef TASTEOMETER_H
 #define TASTEOMETER_H
 
-#include <lastfm/global.h>
+#include "../global.h"
 
 namespace lastfm
 {

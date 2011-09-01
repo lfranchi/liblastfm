@@ -20,10 +20,10 @@
 #ifndef LASTFM_TUNER_H
 #define LASTFM_TUNER_H
 
-#include <lastfm/RadioStation>
-#include <lastfm/Track>
-#include <lastfm/Xspf>
-#include <lastfm/ws.h>
+#include "../radio/RadioStation.h"
+#include "../types/Track.h"
+#include "../types/Xspf.h"
+#include "../ws/ws.h"
 #include <QList>
 
 namespace lastfm

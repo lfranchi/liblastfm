@@ -21,7 +21,7 @@
 #ifndef NETWORK_CONNECTION_MONITOR_H
 #define NETWORK_CONNECTION_MONITOR_H
 
-#include <lastfm/global.h>
+#include "../global.h"
 #include <QObject>
 
 class LASTFM_DLLEXPORT NetworkConnectionMonitor : public QObject

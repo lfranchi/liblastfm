@@ -20,7 +20,7 @@
 #ifndef LASTFM_TAG_H
 #define LASTFM_TAG_H
 
-#include <lastfm/global.h>
+#include "../global.h"
 #include <QMap>
 #include <QString>
 #include <QUrl>

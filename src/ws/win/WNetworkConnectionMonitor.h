@@ -22,7 +22,7 @@
 #define WNETWORK_CONNECTION_MONITOR_H
 
 #include "../NetworkConnectionMonitor.h"
-#include <lastfm/global.h>
+#include "../../global.h"
 #include <QObject>
 
 namespace lastfm { class NdisEventsProxy; }

@@ -25,7 +25,7 @@
 #include <QString>
 #include <QUrl>
 
-#include <lastfm/global.h>
+#include "../global.h"
 
 namespace lastfm
 {
