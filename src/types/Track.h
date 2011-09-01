@@ -249,6 +249,7 @@ public:
     QNetworkReply* getTopTags() const;
     QNetworkReply* getTopFans() const;
     void getInfo() const;
+    QNetworkReply* getBuyLinks( const QString& country ) const;
 
     /** you can only add 10 tags, we submit everything you give us, but the
       * docs state 10 only. Will return 0 if the list is empty. */

@@ -471,6 +471,15 @@ lastfm::Track::getInfo() const
 
 
 QNetworkReply*
+lastfm::Track::getBuyLinks( const QString& country ) const
+{
+    QMap<QString, QString> map = params( "getBuyLinks", true );
+    map["country"] = country;
+    return ws::get( map );
+}
+
+
+QNetworkReply*
 lastfm::Track::addTags( const QStringList& tags ) const
 {
     if (tags.isEmpty())

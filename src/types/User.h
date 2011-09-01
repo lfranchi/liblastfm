@@ -143,6 +143,7 @@ namespace lastfm
         quint32 scrobbleCount() const{ return m_scrobbles; }
         QDateTime dateRegistered() const { return m_registered; }
         Gender gender() const { return m_gender; }
+        QString country() const { return m_country; }
 
         void setScrobbleCount( quint32 scrobblesCount );
         void setDateRegistered( const QDateTime& date );
