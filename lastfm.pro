@@ -1,4 +1,5 @@
 TEMPLATE = lib
+CONFIG += dll
 QT = core network xml
 
 INSTALLS = target headers
@@ -7,9 +8,6 @@ headers.path = /usr/local/include/lastfm
 headers.files = src/*.h
 
 INCLUDEPATH += src
-
-
-CONFIG += dll
 
 win32{
     DEFINES += LASTFM_LIB _ATL_DLL 

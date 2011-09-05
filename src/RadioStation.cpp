@@ -206,7 +206,10 @@ lastfm::RadioStation::list( QNetworkReply* r )
 {
     QList<lastfm::RadioStation> result;
     try {
-        foreach (XmlQuery xq, XmlQuery( r->readAll() ).children("station")) {
+        XmlQuery lfm;
+        lfm.parse( r->readAll() );
+
+        foreach (XmlQuery xq, lfm.children("station")) {
             lastfm::RadioStation rs( QUrl::fromPercentEncoding( xq["url"].text().toUtf8() ) );
             rs.setTitle(xq["name"].text());
             result.append(rs);

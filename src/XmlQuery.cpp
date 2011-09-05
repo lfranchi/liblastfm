@@ -24,8 +24,12 @@
 
 using lastfm::XmlQuery;
 
+XmlQuery::XmlQuery()
+{
+}
 
-XmlQuery::XmlQuery( const QByteArray& bytes ) throw( lastfm::ws::ParseError )
+void
+XmlQuery::parse( const QByteArray& bytes ) throw( lastfm::ws::ParseError )
 {  
     try
     {

@@ -134,7 +134,8 @@ lastfm::TrackData::onLoveFinished()
 {
     try
     {
-        XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
+        XmlQuery lfm;
+        lfm.parse( static_cast<QNetworkReply*>(sender())->readAll() );
         if ( lfm.attribute( "status" ) == "ok")
             loved = true;
 
@@ -151,7 +152,8 @@ lastfm::TrackData::onUnloveFinished()
 {
     try
     {
-        XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
+        XmlQuery lfm;
+        lfm.parse( static_cast<QNetworkReply*>(sender())->readAll() );
         if ( lfm.attribute( "status" ) == "ok")
             loved = false;
     }
@@ -169,7 +171,8 @@ lastfm::TrackData::onGotInfo()
 
     try
     {
-        lastfm::XmlQuery lfm( data );
+        lastfm::XmlQuery lfm;
+        lfm.parse( data );
 
         QString imageUrl = lfm["track"]["image size=small"].text();
         if ( !imageUrl.isEmpty() ) m_images[lastfm::Small] = imageUrl;

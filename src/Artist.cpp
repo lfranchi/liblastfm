@@ -140,7 +140,8 @@ Artist::getSimilar( QNetworkReply* r )
     QMap<int, QString> artists;
     try
     {
-        XmlQuery lfm = r->readAll();
+        XmlQuery lfm;
+        lfm.parse( r->readAll() );
         foreach (XmlQuery e, lfm.children( "artist" ))
         {
             // convert floating percentage to int in range 0 to 10,000
@@ -162,7 +163,8 @@ Artist::list( QNetworkReply* r )
 {
     QList<Artist> artists;
     try {
-        XmlQuery lfm = r->readAll();
+        XmlQuery lfm;
+        lfm.parse( r->readAll() );
         foreach (XmlQuery xq, lfm.children( "artist" )) {
             Artist artist( xq );
             artists += artist;
@@ -180,7 +182,8 @@ Artist
 Artist::getInfo( QNetworkReply* r )
 {
     try {
-        XmlQuery lfm = r->readAll();
+        XmlQuery lfm;
+        lfm.parse( r->readAll() );
         Artist artist = lfm["artist"]["name"].text();
         artist.m_images = images( lfm["artist"] );
         return artist;

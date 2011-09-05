@@ -45,7 +45,8 @@ namespace lastfm
           * Notice the lfm node is not referenced, that is because it is the
           * document-element of the XML document.
           */
-        XmlQuery( const QByteArray& ) throw( lastfm::ws::ParseError );
+        XmlQuery();
+        void parse( const QByteArray& data ) throw( lastfm::ws::ParseError );
         
         XmlQuery( const QDomElement& e, const char* name = "" ) : e( e )
         {

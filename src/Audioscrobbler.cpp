@@ -153,7 +153,8 @@ lastfm::Audioscrobbler::onNowPlayingReturn()
 {
     try
     {
-        lastfm::XmlQuery lfm = static_cast<QNetworkReply*>(sender())->readAll();
+        lastfm::XmlQuery lfm;
+        lfm.parse( static_cast<QNetworkReply*>(sender())->readAll() );
 
         qDebug() << lfm;
 
@@ -184,7 +185,8 @@ lastfm::Audioscrobbler::onTrackScrobbleReturn()
 {
     try
     {
-        lastfm::XmlQuery lfm = d->m_scrobbleReply->readAll();
+        lastfm::XmlQuery lfm;
+        lfm.parse( d->m_scrobbleReply->readAll() );
 
         qDebug() << lfm;
 

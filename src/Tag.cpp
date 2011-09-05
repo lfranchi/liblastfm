@@ -63,7 +63,10 @@ Tag::list( QNetworkReply* r )
 {
     QMap<int, QString> tags;
     try {
-        foreach (XmlQuery xq, XmlQuery( r->readAll() ).children("tag"))
+        XmlQuery lfm;
+        lfm.parse( r->readAll() );
+
+        foreach ( XmlQuery xq, lfm.children("tag") )
             // we toLower always as otherwise it is ugly mixed case, as first
             // ever tag decides case, and Last.fm is case insensitive about it 
             // anyway

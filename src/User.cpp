@@ -165,7 +165,8 @@ User::list( QNetworkReply* r )
 {
     UserList users;
     try {
-        XmlQuery lfm = r->readAll();
+        XmlQuery lfm;
+        lfm.parse( r->readAll() );
         foreach (XmlQuery e, lfm.children( "user" ))
         {
             User u( e );
@@ -226,19 +227,20 @@ UserDetails::UserDetails( QNetworkReply* reply )
 {
     try
     {
-        XmlQuery user = XmlQuery( reply->readAll() )["user"];
-        m_age = user["age"].text().toUInt();
-        m_scrobbles = user["playcount"].text().toUInt();
-        m_registered = QDateTime::fromTime_t(user["registered"].attribute("unixtime").toUInt());
-        m_country = user["country"].text();
-        m_isSubscriber = ( user["subscriber"].text() == "1" );
-        m_canBootstrap = ( user["bootstrap"].text() == "1" );
-        m_gender = user["gender"].text();
-        m_realName = user["realname"].text();
-        m_name = user["name"].text();
-        m_images << user["image size=small"].text()
-                 << user["image size=medium"].text()
-                 << user["image size=large"].text();
+        XmlQuery user;
+        user.parse( reply->readAll() );
+        m_age = user["user"]["age"].text().toUInt();
+        m_scrobbles = user["user"]["playcount"].text().toUInt();
+        m_registered = QDateTime::fromTime_t(user["user"]["registered"].attribute("unixtime").toUInt());
+        m_country = user["user"]["country"].text();
+        m_isSubscriber = ( user["user"]["subscriber"].text() == "1" );
+        m_canBootstrap = ( user["user"]["bootstrap"].text() == "1" );
+        m_gender = user["user"]["gender"].text();
+        m_realName = user["user"]["realname"].text();
+        m_name = user["user"]["name"].text();
+        m_images << user["user"]["image size=small"].text()
+                 << user["user"]["image size=medium"].text()
+                 << user["user"]["image size=large"].text();
     }
     catch (ws::ParseError& e)
     {
