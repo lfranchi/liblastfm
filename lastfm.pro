@@ -16,7 +16,7 @@ win32{
 mac{
     LIBS += -framework SystemConfiguration # ws configuration
     #TODO we should only use these with the carbon version of Qt!
-    LIBS += -framework Carbon -framework CoreFoundation # various
+    LIBS += -framework CoreFoundation # various
 }
 
 linux*{
