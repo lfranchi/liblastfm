@@ -130,6 +130,13 @@ namespace lastfm
             Error enumValue() const { return e; }
             QString message() const { return m_message; }
 
+            ParseError& operator=( const ParseError& that )
+            {
+                this->e = that.e;
+                this->m_message = that.m_message;
+                return *this;
+            }
+
             ~ParseError() throw() {;}
         };
         
