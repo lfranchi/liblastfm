@@ -42,7 +42,7 @@ namespace lastfm
 
         User( const class XmlQuery& xml );
 
-        lastfm::User& operator=( const lastfm::User& that ) { m_name = that.name(); m_images = that.m_images; m_realName = that.m_realName; m_match = that.m_match; return *this; }
+        lastfm::User& operator=( const lastfm::User& that );
         bool operator==(const lastfm::User& that) const { return m_name == that.m_name; }
         bool operator<(const lastfm::User& that) const { return m_name < that.m_name; }
 

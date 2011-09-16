@@ -41,6 +41,15 @@ User::User( const XmlQuery& xml )
     m_realName = xml["realname"].text();
 }
 
+lastfm::User&
+User::operator=( const User& that )
+{
+    m_name = that.name();
+    m_images = that.m_images;
+    m_realName = that.m_realName;
+    m_match = that.m_match;
+    return *this;
+}
 
 QUrl 
 User::imageUrl( ImageSize size, bool square ) const
