@@ -36,7 +36,10 @@ using namespace lastfm;
 
 
 RadioTuner::RadioTuner( const RadioStation& station )
-     : m_retry_counter( 0 ), m_fetchingPlaylist( false ), m_requestedPlaylist(false)
+    : m_station( station ),
+      m_retry_counter( 0 ),
+      m_fetchingPlaylist( false ),
+      m_requestedPlaylist(false)
 {
     m_twoSecondTimer = new QTimer( this );
     m_twoSecondTimer->setSingleShot( true );
@@ -73,13 +76,19 @@ RadioTuner::retune( const RadioStation& station )
 void
 RadioTuner::onTuneReturn()
 {
+    if ( !m_retuneStation.url().isEmpty() )
+        m_station = m_retuneStation;
+
     try {
         XmlQuery lfm;
         lfm.parse( qobject_cast<QNetworkReply*>(sender())->readAll() );
-        emit title( lfm["station"]["name"].text() );
 
         qDebug() << lfm;
 
+        m_station.setTitle( lfm["station"]["name"].text() );
+        m_station.setUrl( lfm["station"]["url"].text() );
+
+        emit title( lfm["station"]["name"].text() );
         emit supportsDisco( lfm["station"]["supportsdiscovery"].text() == "1" );
         fetchFiveMoreTracks();
     }
@@ -151,9 +160,13 @@ RadioTuner::onGetPlaylistReturn()
     try {
         XmlQuery lfm;
         lfm.parse( qobject_cast<QNetworkReply*>(sender())->readAll() );
-        emit title( lfm["playlist"]["title"].text() );
-
         qDebug() << lfm;
+
+        m_station.setTitle( lfm["playlist"]["title"].text() );
+        // we don't get the radio url in the playlist
+        //m_station.setUrl( lfm["station"]["url"].text() );
+
+        emit title( lfm["playlist"]["title"].text() );
 
         Xspf* xspf = new Xspf( lfm["playlist"], this );
         connect( xspf, SIGNAL(expired()), SLOT(onXspfExpired()) );

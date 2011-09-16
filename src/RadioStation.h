@@ -20,22 +20,40 @@
 #ifndef LASTFM_RADIO_STATION_H
 #define LASTFM_RADIO_STATION_H
 
+#include <QSharedData>
+#include <QSharedDataPointer>
+
 #include "User.h"
 #include "Tag.h"
 #include "Artist.h"
 
 namespace lastfm
 {
+    class RadioStationData : public QSharedData
+    {
+    public:
+        QUrl m_url;
+        QString m_title;
+        QString m_tagFilter;
+
+        float m_rep;
+        float m_mainstr;
+        bool m_disco;
+    };
+
     /** @author <jono@last.fm> 
       */
     class LASTFM_DLLEXPORT RadioStation
     {
     public:
         RadioStation()
-        {}
+        {
+            d = new RadioStationData;
+        }
         RadioStation( const QString& s )
         {
-        setString( s );
+            d = new RadioStationData;
+            setString( s );
         }
     
         static RadioStation library( const lastfm::User& user );
@@ -66,6 +84,7 @@ namespace lastfm
         QString url() const;
 
         void setTitle( const QString& title );
+        void setUrl( const QString& url );
 
         void setTagFilter( const QString& tag );
 
@@ -79,10 +98,10 @@ namespace lastfm
 
         bool isLegacyPlaylist() const
         {
-            return m_url.toString().startsWith( "lastfm://play/" ) ||
-                   m_url.toString().startsWith( "lastfm://preview/" ) ||
-                   m_url.toString().startsWith( "lastfm://track/" ) ||
-                   m_url.toString().startsWith( "lastfm://playlist/" );
+            return d->m_url.toString().startsWith( "lastfm://play/" ) ||
+                   d->m_url.toString().startsWith( "lastfm://preview/" ) ||
+                   d->m_url.toString().startsWith( "lastfm://track/" ) ||
+                   d->m_url.toString().startsWith( "lastfm://playlist/" );
         }
 
         // good for getRecentStations:
@@ -100,14 +119,9 @@ namespace lastfm
         static QString tagStr( QList<lastfm::Tag>& tag );
         static QString similarStr( QList<lastfm::Artist>& artist );
         static QString mixStr( const lastfm::User& user )             { return "lastfm://user/" + user + "/mix"; }
-    private:
-        QUrl m_url;
-        QString m_title;
-        QString m_tagFilter;
 
-        float m_rep;
-        float m_mainstr;
-        bool m_disco;
+    private:
+        QSharedDataPointer<RadioStationData> d;
     };
 }
 

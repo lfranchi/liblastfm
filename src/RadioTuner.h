@@ -78,6 +78,7 @@ namespace lastfm
         bool m_fetchingPlaylist;
         bool m_requestedPlaylist;
         class QTimer* m_twoSecondTimer;
+        RadioStation m_station;
         RadioStation m_retuneStation;
     };
 }

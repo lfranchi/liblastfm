@@ -132,7 +132,7 @@ lastfm::RadioStation::mix( const lastfm::User& user )
 QString
 lastfm::RadioStation::url() const
 {
-    return m_url.toString() + (m_tagFilter.isEmpty() ? "" : "/tag/" + m_tagFilter);
+    return d->m_url.toString() + (d->m_tagFilter.isEmpty() ? "" : "/tag/" + d->m_tagFilter);
 }
 
 
@@ -140,7 +140,7 @@ void
 lastfm::RadioStation::setTitle( const QString& s )
 {
     // Stop the radio station getting renamed when the web services don't know what it's called
-    if ( !m_title.isEmpty() && s.compare( "a radio station", Qt::CaseInsensitive ) == 0 )
+    if ( !d->m_title.isEmpty() && s.compare( "a radio station", Qt::CaseInsensitive ) == 0 )
         return;
 
     QString title = s.trimmed();
@@ -160,21 +160,27 @@ lastfm::RadioStation::setTitle( const QString& s )
     else if ( title.compare( QObject::tr("%1%2s Neighbours Radio").arg( lastfm::ws::Username ), Qt::CaseInsensitive ) == 0  )
         title = QObject::tr("My Neighbours%1 Radio").arg( QChar( 0x2019 ) );
 
-    m_title = title;
+    d->m_title = title;
+}
+
+void
+lastfm::RadioStation::setUrl( const QString& url )
+{
+    d->m_url = url;
 }
 
 
 QString
 lastfm::RadioStation::title() const
 {
-    return m_title; // + (m_tagFilter.isEmpty() ? "" : ": " + m_tagFilter);
+    return d->m_title; // + (d->m_tagFilter.isEmpty() ? "" : ": " + d->m_tagFilter);
 }
 
 
 void
 lastfm::RadioStation::setTagFilter( const QString& tag )
 {
-    m_tagFilter = tag;
+    d->m_tagFilter = tag;
 }
 
 
@@ -183,7 +189,7 @@ lastfm::RadioStation::getSampleArtists( int limit ) const
 {
     QMap<QString, QString> map;
     map["method"] = "radio.getSampleArtists";
-    map["station"] = m_url.toString();
+    map["station"] = d->m_url.toString();
     map["limit"] = QString::number( limit );
     return ws::get( map );
 }
@@ -194,7 +200,7 @@ lastfm::RadioStation::getTagSuggestions( int limit ) const
 {
     QMap<QString, QString> map;
     map["method"] = "radio.getTagSuggestions";
-    map["station"] = m_url.toString();
+    map["station"] = d->m_url.toString();
     map["limit"] = QString::number( limit );
     return ws::get( map );
 }
@@ -226,7 +232,7 @@ lastfm::RadioStation::list( QNetworkReply* r )
 bool
 lastfm::RadioStation::operator==( const RadioStation& that ) const
 {
-    return this->m_url == that.m_url && this->m_tagFilter == that.m_tagFilter;
+    return this->d->m_url == that.d->m_url && this->d->m_tagFilter == that.d->m_tagFilter;
 }
 
 
@@ -242,51 +248,51 @@ lastfm::RadioStation::setString( const QString& string )
 
         if ( index != -1 )
         {
-            m_tagFilter = tempString.mid( index + 5, tempString.count() - (index + 5) );
+            d->m_tagFilter = tempString.mid( index + 5, tempString.count() - (index + 5) );
             tempString = tempString.mid( 0, index );
         }
     }
 
-    m_url = tempString;
+    d->m_url = tempString;
 }
 
 
 void
 lastfm::RadioStation::setRep(float rep)
 {
-    m_rep = rep;
+    d->m_rep = rep;
 }
 
 
 void
 lastfm::RadioStation::setMainstr(float mainstr)
 {
-    m_mainstr = mainstr;
+    d->m_mainstr = mainstr;
 }
 
 
 void
 lastfm::RadioStation::setDisco(bool disco)
 {
-    m_disco = disco;
+    d->m_disco = disco;
 }
 
 
 float lastfm::RadioStation::rep() const
 {
-    return m_rep;
+    return d->m_rep;
 }
 
 
 float lastfm::RadioStation::mainstr() const
 {
-    return m_mainstr;
+    return d->m_mainstr;
 }
 
 
 bool lastfm::RadioStation::disco() const
 {
-    return m_disco;
+    return d->m_disco;
 }
 
 
