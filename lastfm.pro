@@ -2,10 +2,17 @@ TEMPLATE = lib
 CONFIG += dll
 QT = core network xml
 
+win32{
+INSTALLS = headers
+headers.path = _include/lastfm
+headers.files = src/*.h
+}
+mac{
 INSTALLS = target headers
 target.path = /usr/local/lib
 headers.path = /usr/local/include/lastfm
 headers.files = src/*.h
+}
 
 INCLUDEPATH += src
 
