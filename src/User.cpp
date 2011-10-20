@@ -129,6 +129,16 @@ User::getFriendsListeningNow( int limit, int page ) const
 
 
 QNetworkReply*
+User::getLovedTracks( int limit, int page ) const
+{
+    QMap<QString, QString> map = params( "getLovedTracks" );
+    map["limit"] = QString::number( limit );
+    map["page"] = QString::number( page );
+    return ws::get( map );
+}
+
+
+QNetworkReply*
 User::getTopTags() const
 {
     return ws::get( params( "getTopTags" ) );
