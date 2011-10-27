@@ -67,6 +67,28 @@ User::User( const XmlQuery& xml )
              << xml["image size=extralarge"].text();
 }
 
+User::User()
+    :AbstractType(),
+    m_name( lastfm::ws::Username ),
+    m_match( -1.0f ),
+    m_age( 0 ),
+    m_scrobbles( 0 ),
+    m_registered( QDateTime() ),
+    m_isSubscriber( false ),
+    m_canBootstrap( false )
+{}
+
+User::User( const QString& name )
+    :AbstractType(),
+    m_name( name ),
+    m_match( -1.0f ),
+    m_age( 0 ),
+    m_scrobbles( 0 ),
+    m_registered( QDateTime() ),
+    m_isSubscriber( false ),
+    m_canBootstrap( false )
+{}
+
 lastfm::User&
 User::operator=( const User& that )
 {
@@ -218,9 +240,11 @@ UserList //static
 User::list( QNetworkReply* r )
 {
     UserList users;
-    try {
-        XmlQuery lfm;
-        lfm.parse( r->readAll() );
+
+    XmlQuery lfm;
+
+    if ( lfm.parse( r->readAll() ) )
+    {
         foreach (XmlQuery e, lfm.children( "user" ))
         {
             User u( e );
@@ -232,9 +256,9 @@ User::list( QNetworkReply* r )
         users.perPage = lfm["friends"].attribute("perPage").toInt();
         users.totalPages = lfm["friends"].attribute("totalPages").toInt();
     }
-    catch (ws::ParseError& e)
+    else
     {
-        qWarning() << e.what();
+        qDebug() << lfm.parseError().message() << lfm.parseError().enumValue();
     }    
     return users;
 }

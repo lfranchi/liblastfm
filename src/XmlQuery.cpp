@@ -25,40 +25,44 @@
 using lastfm::XmlQuery;
 
 XmlQuery::XmlQuery()
+    :m_error( lastfm::ws::ParseError( lastfm::ws::NoError, "" ))
 {
 }
 
-void
-XmlQuery::parse( const QByteArray& bytes ) throw( lastfm::ws::ParseError )
+bool
+XmlQuery::parse( const QByteArray& bytes )
 {  
-    try
+    if ( !bytes.size() )
+        m_error = lastfm::ws::ParseError( lastfm::ws::MalformedResponse, "No data" );
+    else
     {
-        if ( !bytes.size() )
-            throw lastfm::ws::ParseError( lastfm::ws::MalformedResponse, "No data" );
-
         if( !domdoc.setContent( bytes ) )
-            throw lastfm::ws::ParseError( lastfm::ws::MalformedResponse, "Invalid XML" );
+            m_error = lastfm::ws::ParseError( lastfm::ws::MalformedResponse, "Invalid XML" );
+        else
+        {
+            e = domdoc.documentElement();
 
-        e = domdoc.documentElement();
+            if (e.isNull())
+                m_error = lastfm::ws::ParseError( lastfm::ws::MalformedResponse, "Lfm is null" );
+            else
+            {
+                QString const status = e.attribute( "status" );
+                QDomElement error = e.firstChildElement( "error" );
+                uint const n = e.childNodes().count();
 
-        if (e.isNull())
-            throw lastfm::ws::ParseError( lastfm::ws::MalformedResponse, "Lfm is null" );
-
-        QString const status = e.attribute( "status" );
-        QDomElement error = e.firstChildElement( "error" );
-        uint const n = e.childNodes().count();
-
-        // no elements beyond the lfm is perfectably acceptable <-- wtf?
-        // if (n == 0) // nothing useful in the response
-        if (status == "failed" || (n == 1 && !error.isNull()) )
-            throw error.isNull()
-                    ? lastfm::ws::ParseError( lastfm::ws::MalformedResponse, "" )
-                    : lastfm::ws::ParseError( lastfm::ws::Error( error.attribute( "code" ).toUInt() ), error.text() );
-
+                // no elements beyond the lfm is perfectably acceptable <-- wtf?
+                // if (n == 0) // nothing useful in the response
+                if (status == "failed" || (n == 1 && !error.isNull()) )
+                    m_error = error.isNull()
+                            ? lastfm::ws::ParseError( lastfm::ws::MalformedResponse, "" )
+                            : lastfm::ws::ParseError( lastfm::ws::Error( error.attribute( "code" ).toUInt() ), error.text() );
+            }
+        }
     }
-    catch ( lastfm::ws::ParseError e )
+
+    if ( m_error.enumValue() != lastfm::ws::NoError )
     {
-        switch ( e.enumValue() )
+        switch ( m_error.enumValue() )
         {
             case lastfm::ws::OperationFailed:
             case lastfm::ws::InvalidApiKey:
@@ -66,11 +70,15 @@ XmlQuery::parse( const QByteArray& bytes ) throw( lastfm::ws::ParseError )
                 // NOTE will never be received during the LoginDialog stage
                 // since that happens before this slot is registered with
                 // QMetaObject in App::App(). Neat :)
-                QMetaObject::invokeMethod( qApp, "onWsError", Q_ARG( lastfm::ws::Error, e.enumValue() ) );
+                QMetaObject::invokeMethod( qApp, "onWsError", Q_ARG( lastfm::ws::Error, m_error.enumValue() ) );
+                break;
             default:
-                throw e;
+                //do nothing
+            break;
         }
     }
+
+    return m_error.enumValue() == lastfm::ws::NoError;
 }
 
 

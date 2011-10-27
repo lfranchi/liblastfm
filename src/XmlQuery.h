@@ -33,6 +33,7 @@ namespace lastfm
     {
         QDomDocument domdoc;
         QDomElement e;
+        lastfm::ws::ParseError m_error;
 
     public:
         /** we assume the bytearray is an XML document, this object will then
@@ -46,9 +47,11 @@ namespace lastfm
           * document-element of the XML document.
           */
         XmlQuery();
-        void parse( const QByteArray& data ) throw( lastfm::ws::ParseError );
+        bool parse( const QByteArray& data );
+        lastfm::ws::ParseError parseError() const { return m_error; }
         
-        XmlQuery( const QDomElement& e, const char* name = "" ) : e( e )
+        XmlQuery( const QDomElement& e, const char* name = "" )
+            :e( e ), m_error( lastfm::ws::ParseError( lastfm::ws::NoError, "" ))
         {
             if (e.isNull()) qWarning() << "Expected node absent:" << name;
         }

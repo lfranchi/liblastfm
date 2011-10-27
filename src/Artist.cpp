@@ -138,10 +138,11 @@ QMap<int, QString> /* static */
 Artist::getSimilar( QNetworkReply* r )
 {
     QMap<int, QString> artists;
-    try
+
+    XmlQuery lfm;
+
+    if ( lfm.parse( r->readAll() ) )
     {
-        XmlQuery lfm;
-        lfm.parse( r->readAll() );
         foreach (XmlQuery e, lfm.children( "artist" ))
         {
             // convert floating percentage to int in range 0 to 10,000
@@ -149,9 +150,9 @@ Artist::getSimilar( QNetworkReply* r )
             artists.insertMulti( match, e["name"].text() );
         }
     }
-    catch (ws::ParseError& e)
+    else
     {
-        qWarning() << e.what();
+        qWarning() << lfm.parseError().what();
     }
     return artists;
 }
@@ -162,17 +163,19 @@ QList<Artist> /* static */
 Artist::list( QNetworkReply* r )
 {
     QList<Artist> artists;
-    try {
-        XmlQuery lfm;
-        lfm.parse( r->readAll() );
-        foreach (XmlQuery xq, lfm.children( "artist" )) {
+    XmlQuery lfm;
+
+    if ( lfm.parse( r->readAll() ) )
+    {
+        foreach (XmlQuery xq, lfm.children( "artist" ))
+        {
             Artist artist( xq );
             artists += artist;
         }
     }
-    catch (ws::ParseError& e)
+    else
     {
-        qWarning() << e.what();
+        qWarning() << lfm.parseError().what();
     }
     return artists;
 }
@@ -181,16 +184,17 @@ Artist::list( QNetworkReply* r )
 Artist
 Artist::getInfo( QNetworkReply* r )
 {
-    try {
-        XmlQuery lfm;
-        lfm.parse( r->readAll() );
+    XmlQuery lfm;
+
+    if ( lfm.parse( r->readAll() ) )
+    {
         Artist artist = lfm["artist"]["name"].text();
         artist.m_images = images( lfm["artist"] );
         return artist;
     }
-    catch (ws::ParseError& e)
+    else
     {
-        qWarning() << e.what();
+        qWarning() << lfm.parseError().what();
         return Artist();
     }
 }

@@ -62,9 +62,11 @@ QMap<int, QString> //static
 Tag::list( QNetworkReply* r )
 {
     QMap<int, QString> tags;
-    try {
-        XmlQuery lfm;
-        lfm.parse( r->readAll() );
+
+    XmlQuery lfm;
+
+    if ( lfm.parse( r->readAll() ) )
+    {
 
         foreach ( XmlQuery xq, lfm.children("tag") )
             // we toLower always as otherwise it is ugly mixed case, as first
@@ -72,9 +74,10 @@ Tag::list( QNetworkReply* r )
             // anyway
             tags.insertMulti( xq["count"].text().toInt(), xq["name"].text().toLower() );
     }
-    catch (ws::ParseError& e)
+    else
     {
-        qWarning() << e.what();
+        qDebug() << lfm.parseError().message() << lfm.parseError().enumValue();
     }
+
     return tags;
 }

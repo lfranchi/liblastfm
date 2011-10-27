@@ -79,10 +79,10 @@ RadioTuner::onTuneReturn()
     if ( !m_retuneStation.url().isEmpty() )
         m_station = m_retuneStation;
 
-    try {
-        XmlQuery lfm;
-        lfm.parse( qobject_cast<QNetworkReply*>(sender())->readAll() );
+    XmlQuery lfm;
 
+    if ( lfm.parse( qobject_cast<QNetworkReply*>(sender())->readAll() ) )
+    {
         qDebug() << lfm;
 
         m_station.setTitle( lfm["station"]["name"].text() );
@@ -92,9 +92,9 @@ RadioTuner::onTuneReturn()
         emit supportsDisco( lfm["station"]["supportsdiscovery"].text() == "1" );
         fetchFiveMoreTracks();
     }
-    catch (ws::ParseError& e)
+    else
     {
-        emit error( e.enumValue(), e.message() );
+        emit error( lfm.parseError().enumValue(), lfm.parseError().message() );
     }
 }
 
@@ -157,9 +157,10 @@ RadioTuner::onGetPlaylistReturn()
     // This will block us fetching two playlists at once
     m_fetchingPlaylist = false;
 
-    try {
-        XmlQuery lfm;
-        lfm.parse( qobject_cast<QNetworkReply*>(sender())->readAll() );
+    XmlQuery lfm;
+
+    if ( lfm.parse( qobject_cast<QNetworkReply*>(sender())->readAll() ) )
+    {
         qDebug() << lfm;
 
         m_station.setTitle( lfm["playlist"]["title"].text() );
@@ -184,10 +185,10 @@ RadioTuner::onGetPlaylistReturn()
             emit trackAvailable();
         }
     }
-    catch (ws::ParseError& e) 
+    else
     {
-        qWarning() << e.what();
-        emit error( e.enumValue(), e.message() );
+        qDebug() << lfm.parseError().message() << lfm.parseError().enumValue();
+        emit error( lfm.parseError().enumValue(), lfm.parseError().message() );
     }
 }
 

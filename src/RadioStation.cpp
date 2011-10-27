@@ -211,20 +211,23 @@ QList<lastfm::RadioStation>
 lastfm::RadioStation::list( QNetworkReply* r )
 {
     QList<lastfm::RadioStation> result;
-    try {
-        XmlQuery lfm;
-        lfm.parse( r->readAll() );
+    XmlQuery lfm;
 
-        foreach (XmlQuery xq, lfm.children("station")) {
+    if ( lfm.parse( r->readAll() ) )
+    {
+
+        foreach (XmlQuery xq, lfm.children("station"))
+        {
             lastfm::RadioStation rs( QUrl::fromPercentEncoding( xq["url"].text().toUtf8() ) );
             rs.setTitle(xq["name"].text());
             result.append(rs);
         }
     }
-    catch (ws::ParseError& e)
+    else
     {
-        qWarning() << e.what();
+        qWarning() << lfm.parseError().what();
     }
+
     return result;
 }
 

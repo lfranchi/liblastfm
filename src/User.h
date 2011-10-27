@@ -73,12 +73,8 @@ namespace lastfm
         };
 
     public:
-        User() : AbstractType(), m_name( lastfm::ws::Username ), m_match( -1.0f )
-        {}
-
-        User( const QString& name ) : AbstractType(), m_name( name ), m_match( -1.0f )
-        {}
-
+        User();
+        User( const QString& name );
         User( const class XmlQuery& xml );
 
         lastfm::User& operator=( const lastfm::User& that );
