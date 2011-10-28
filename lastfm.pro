@@ -7,7 +7,7 @@ INSTALLS = headers
 headers.path = _include/lastfm
 headers.files = src/*.h
 }
-mac{
+else{
 INSTALLS = target headers
 target.path = /usr/local/lib
 headers.path = /usr/local/include/lastfm
@@ -95,5 +95,8 @@ mac:SOURCES += 	src/mac/MNetworkConnectionMonitor_mac.cpp
 
 mac:HEADERS += src/mac/ProxyDict.h \
                src/mac/MNetworkConnectionMonitor.h
+
+linux*:SOURCES += src/linux/LNetworkConnectionMonitor_linux.cpp
+linux*:HEADERS += src/linux/LNetworkConnectionMonitor.h
 
 !win32:VERSION = 0.4.0
