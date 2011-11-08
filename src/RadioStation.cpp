@@ -225,7 +225,7 @@ lastfm::RadioStation::list( QNetworkReply* r )
     }
     else
     {
-        qWarning() << lfm.parseError().what();
+        qWarning() << lfm.parseError().message();
     }
 
     return result;

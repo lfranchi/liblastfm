@@ -119,13 +119,13 @@ namespace lastfm
         LASTFM_DLLEXPORT QNetworkReply* post( QMap<QString, QString>, bool sessionKey = true );
 
 
-        class ParseError : public std::runtime_error
+        class ParseError
         {
             Error e;
             QString m_message;
         public:
             explicit ParseError( Error e, QString message )
-                :std::runtime_error("lastfm::ws::Error"), e(e), m_message(message)
+                :e(e), m_message(message)
             {}
             Error enumValue() const { return e; }
             QString message() const { return m_message; }

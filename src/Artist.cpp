@@ -152,7 +152,7 @@ Artist::getSimilar( QNetworkReply* r )
     }
     else
     {
-        qWarning() << lfm.parseError().what();
+        qWarning() << lfm.parseError().message();
     }
     return artists;
 }
@@ -175,7 +175,7 @@ Artist::list( QNetworkReply* r )
     }
     else
     {
-        qWarning() << lfm.parseError().what();
+        qWarning() << lfm.parseError().message();
     }
     return artists;
 }
@@ -194,7 +194,7 @@ Artist::getInfo( QNetworkReply* r )
     }
     else
     {
-        qWarning() << lfm.parseError().what();
+        qWarning() << lfm.parseError().message();
         return Artist();
     }
 }
