@@ -67,6 +67,25 @@ lastfm::UrlBuilder::host( const QLocale& locale )
 }
 
 
+bool // static
+lastfm::UrlBuilder::isHost( const QUrl& url )
+{
+    QStringList hosts = QStringList() << "www.lastfm.com.br"
+                    <<  "www.lastfm.com.tr"
+                    << "www.lastfm.fr"
+                    << "www.lastfm.it"
+                    << "www.lastfm.de"
+                    << "www.lastfm.es"
+                    << "www.lastfm.pl"
+                    << "www.lastfm.ru"
+                    << "www.lastfm.jp"
+                    << "www.lastfm.se"
+                    << "cn.last.fm"
+                    << "www.last.fm";
+
+    return hosts.contains( url.host() );
+}
+
 QUrl //static
 lastfm::UrlBuilder::localize( QUrl url)
 {

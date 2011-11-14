@@ -63,6 +63,9 @@ namespace lastfm
 
         /** returns eg. www.lastfm.de */
         static QString host( const QLocale& = QLocale() );
+
+        /** return true if url is a last.fm url */
+        static bool isHost( const QUrl& url );
     };
 }
 
