@@ -51,7 +51,8 @@ SOURCES += \
         src/RadioStation.cpp \
         src/XmlQuery.cpp \
         src/UrlBuilder.cpp \
-        src/misc.cpp
+        src/misc.cpp \
+        src/Chart.cpp
 	
 HEADERS += \
         src/ws.h \
@@ -77,7 +78,8 @@ HEADERS += \
 	src/global.h \
         src/XmlQuery.h \
         src/UrlBuilder.h \
-        src/misc.h
+        src/misc.h \
+        src/Chart.h
 	
 win32:SOURCES += src/win/WNetworkConnectionMonitor_win.cpp \
         src/win/WmiSink.cpp \
@@ -100,3 +102,5 @@ linux*:SOURCES += src/linux/LNetworkConnectionMonitor_linux.cpp
 linux*:HEADERS += src/linux/LNetworkConnectionMonitor.h
 
 !win32:VERSION = 0.4.0
+
+

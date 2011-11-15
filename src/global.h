@@ -89,6 +89,7 @@ namespace lastfm
     class Artist;
     class Audioscrobbler;
     class AuthenticatedUser;
+    class Chart;
     class Fingerprint;
     class FingerprintableSource;
     class FingerprintId;
@@ -110,6 +111,7 @@ using lastfm::Album;
 using lastfm::Artist;
 using lastfm::Audioscrobbler;
 using lastfm::AuthenticatedUser;
+using lastfm::Chart;
 using lastfm::Fingerprint;
 using lastfm::FingerprintId;
 using lastfm::Mbid;
