@@ -302,7 +302,6 @@ User::getInfoString() const
     if ( m_age ) text.append( QObject::tr(", %1").arg( m_age ) );
     if ( m_gender.known() ) text.append( QObject::tr(", %1").arg( m_gender.toString() ) );
     if ( !m_country.isEmpty() ) text.append( QObject::tr(", %1").arg( m_country ) );
-    if ( m_scrobbles ) text.append( QObject::tr(", %L1 scrobbles").arg( m_scrobbles ) );
 
     return text;
 }

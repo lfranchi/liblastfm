@@ -50,11 +50,11 @@ namespace lastfm
             QString result;
 
             if (male())
-                result = QObject::tr( "m" );
+                result = QObject::tr( "Male" );
             else if (female())
-                result = QObject::tr( "f" );
+                result = QObject::tr( "Female" );
             else
-                result = QObject::tr( "n" ); // as in neuter
+                result = QObject::tr( "Neuter" );
 
             return result;
         }
