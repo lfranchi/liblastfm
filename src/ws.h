@@ -112,11 +112,13 @@ namespace lastfm
         LASTFM_DLLEXPORT QString host();
 
         /** the map needs a method entry, as per http://last.fm/api */
-        LASTFM_DLLEXPORT QUrl url( QMap<QString, QString> );
+        LASTFM_DLLEXPORT QUrl url( QMap<QString, QString>, bool sessionKey = true);
         LASTFM_DLLEXPORT QNetworkReply* get( QMap<QString, QString> );
         /** generates api sig, includes api key, and posts, don't add the api
           * key yourself as well--it'll break */
         LASTFM_DLLEXPORT QNetworkReply* post( QMap<QString, QString>, bool sessionKey = true );
+
+        LASTFM_DLLEXPORT void sign( QMap<QString, QString>&, bool sessionKey = true );
 
 
         class ParseError

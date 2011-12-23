@@ -63,7 +63,8 @@ void autograph( QMap<QString, QString>& params )
     params["lang"] = iso639();
 }
 
-static void sign( QMap<QString, QString>& params, bool sk = true )
+void
+lastfm::ws::sign( QMap<QString, QString>& params, bool sk )
 {
     autograph( params );
     // it's allowed for sk to be null if we this is an auth call for instance
@@ -83,9 +84,9 @@ static void sign( QMap<QString, QString>& params, bool sk = true )
 
 
 QUrl
-lastfm::ws::url( QMap<QString, QString> params )
+lastfm::ws::url( QMap<QString, QString> params, bool sk )
 {
-    sign( params );
+    lastfm::ws::sign( params, sk );
     QUrl url = ::baseUrl();
     // Qt setQueryItems doesn't encode a bunch of stuff, so we do it manually
     QMapIterator<QString, QString> i( params );
@@ -110,18 +111,7 @@ lastfm::ws::get( QMap<QString, QString> params )
 QNetworkReply*
 lastfm::ws::post( QMap<QString, QString> params, bool sk )
 {   
-    sign( params, sk ); 
-    QByteArray query;
-    QMapIterator<QString, QString> i( params );
-    while (i.hasNext()) {
-        i.next();
-        query += QUrl::toPercentEncoding( i.key() )
-               + '='
-               + QUrl::toPercentEncoding( i.value() )
-               + '&';
-    }
-
-    return nam()->post( QNetworkRequest(baseUrl()), query );
+    return nam()->post( QNetworkRequest( url( params, sk ) ), "" );
 }
 
 
