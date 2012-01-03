@@ -111,7 +111,18 @@ lastfm::ws::get( QMap<QString, QString> params )
 QNetworkReply*
 lastfm::ws::post( QMap<QString, QString> params, bool sk )
 {   
-    return nam()->post( QNetworkRequest( url( params, sk ) ), "" );
+    sign( params, sk );
+    QByteArray query;
+    QMapIterator<QString, QString> i( params );
+    while (i.hasNext()) {
+        i.next();
+        query += QUrl::toPercentEncoding( i.key() )
+               + '='
+               + QUrl::toPercentEncoding( i.value() )
+               + '&';
+    }
+
+    return nam()->post( QNetworkRequest(baseUrl()), query );
 }
 
 
