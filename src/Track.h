@@ -96,6 +96,9 @@ public:
     
     bool null;
 
+    bool podcast;
+    bool video;
+
 private:
     void forceLoveToggled( bool love ) { emit loveToggled( love );}
     void forceScrobbleStatusChanged() { emit scrobbleStatusChanged(); }
@@ -227,6 +230,10 @@ public:
     QDomElement toDomElement( class QDomDocument& ) const;
 
     TrackContext context() const { return d->context; }
+
+    // iTunes tracks might be podcasts or videos
+    bool isPodcast() const { return d->podcast; }
+    bool isVideo() const { return d->video; }
     
     QString extra( const QString& key ) const{ return d->extras[ key ]; }
 
@@ -328,7 +335,6 @@ public:
     void setScrobbleError( ScrobbleError scrobbleError ) { d->scrobbleError = scrobbleError; }
     void setScrobbleErrorText( const QString& scrobbleErrorText ) { d->scrobbleErrorText = scrobbleErrorText; }
     
-    /** you also must scrobble this track for the love to become permenant */
     void love();
     void unlove();
     QNetworkReply* ban();
@@ -340,6 +346,11 @@ public:
     void setTimeStamp( const QDateTime& dt ) { d->time = dt; }
 
     void setContext( TrackContext context ) { d->context = context;}
+
+    // iTunes tracks might be podcasts or videos
+    void setPodcast( bool podcast ) { d->podcast = podcast; }
+    void setVideo( bool video ) { d->video = video; }
+
 };
 
 

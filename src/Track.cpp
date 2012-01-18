@@ -114,6 +114,9 @@ lastfm::Track::Track( const QDomElement& e )
     d->loved = e.namedItem( "loved" ).toElement().text().toInt();
     d->scrobbleStatus = e.namedItem( "scrobbleStatus" ).toElement().text().toInt();
     d->scrobbleError = e.namedItem( "scrobbleError" ).toElement().text().toInt();
+    d->podcast = e.namedItem( "podcast" ).toElement().text().toInt();
+    d->video = e.namedItem( "video" ).toElement().text().toInt();
+
 
     for (QDomElement image(e.firstChildElement("image")) ; !image.isNull() ; image = e.nextSiblingElement("image"))
     {
@@ -227,6 +230,8 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
     makeElement( "loved", QString::number( isLoved() ) );
     makeElement( "scrobbleStatus", QString::number( scrobbleStatus() ) );
     makeElement( "scrobbleError", QString::number( scrobbleError() ) );
+    makeElement( "podcast", QString::number( isPodcast() ) );
+    makeElement( "video", QString::number( isVideo() ) );
 
     // put the images urls in the dom
     QMapIterator<lastfm::ImageSize, QUrl> imageIter( d->m_images );
