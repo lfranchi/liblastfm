@@ -80,7 +80,9 @@ lastfm::TrackData::TrackData()
                loved( false ),
                null( false ),
                scrobbleStatus( Track::Null ),
-               scrobbleError( Track::None )
+               scrobbleError( Track::None ),
+               podcast( false ),
+               video( false )
 {}
 
 lastfm::Track::Track()
