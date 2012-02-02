@@ -96,7 +96,6 @@ lastfm::Audioscrobbler::cacheBatch( const QList<lastfm::Track>& tracks, const QS
         MutableTrack( track ).setScrobbleStatus( Track::Cached );
 
     emit scrobblesCached( tracks );
-    submit();
 }
 
 
