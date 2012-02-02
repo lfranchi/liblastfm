@@ -62,6 +62,8 @@ XmlQuery::parse( const QByteArray& bytes )
 
     if ( m_error.enumValue() != lastfm::ws::NoError )
     {
+        qDebug() << bytes;
+
         switch ( m_error.enumValue() )
         {
             case lastfm::ws::OperationFailed:
