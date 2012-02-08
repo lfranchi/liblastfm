@@ -136,7 +136,9 @@ lastfm::NetworkAccessManager::createRequest( Operation op, const QNetworkRequest
 
     request.setAttribute( QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache );
     request.setRawHeader( "User-Agent", lastfm::UserAgent );
-    request.setRawHeader( "content-type", "application/x-www-form-urlencoded" );
+
+    if ( request.rawHeader( "Content-type" ).isEmpty() )
+        request.setRawHeader( "Content-type", "application/x-www-form-urlencoded" );
     
 #ifdef WIN32
     // PAC proxies can vary by domain, so we have to check everytime :(
