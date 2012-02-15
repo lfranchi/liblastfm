@@ -545,6 +545,7 @@ lastfm::Track::scrobble() const
     map["context"] = extra("playerId");
     map["albumArtist"] = d->albumArtist;
     if ( !d->album.isEmpty() ) map["album"] = d->album;
+    map["chosenByUser"] = source() == Track::LastFmRadio ? "0" : "1";
 
     qDebug() << map;
 
@@ -567,6 +568,7 @@ lastfm::Track::scrobble(const QList<lastfm::Track>& tracks)
         map["artist[" + QString::number(i) + "]"] = tracks[i].artist();
         map["albumArtist[" + QString::number(i) + "]"] = tracks[i].albumArtist();
         if ( !tracks[i].mbid().isNull() ) map["mbid[" + QString::number(i)  + "]"] = tracks[i].mbid();
+        map["chosenByUser[" + QString::number(i) + "]"] = tracks[i].source() == Track::LastFmRadio ? "0" : "1";
     }
 
     qDebug() << map;
