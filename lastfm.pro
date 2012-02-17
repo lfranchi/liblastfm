@@ -2,6 +2,37 @@ TEMPLATE = lib
 CONFIG += dll
 QT = core network xml
 
+ROOT_DIR = .
+
+BUILD_DIR = _build
+DESTDIR = $$ROOT_DIR/_bin
+
+OBJECTS_DIR = $$BUILD_DIR
+MOC_DIR = $$BUILD_DIR
+UI_DIR = $$BUILD_DIR
+RCC_DIR = $$BUILD_DIR
+INCLUDEPATH += $$ROOT_DIR/_include
+
+win32:DEFINES += _CRT_SECURE_NO_WARNINGS WIN32_LEAN_AND_MEAN
+
+mac {
+    QMAKE_PKGINFO_TYPEINFO = last
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.4
+}
+
+*g++* {
+    # allow use of 'and', 'or', etc. as symbols
+    QMAKE_CXXFLAGS += -fno-operator-names
+    QMAKE_CXXFLAGS_RELEASE += -fvisibility-inlines-hidden -fvisibility=hidden
+}
+
+# look better to Linux folks :P
+linux:CONFIG += warn_off
+
+# used to determine if we should statically link the fingerprint library
+# used by lastfm-desktop and other projects
+CONFIG -= app_bundle
+
 win32{
 INSTALLS = headers
 headers.path = _include/lastfm
