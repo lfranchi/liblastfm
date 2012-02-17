@@ -277,7 +277,6 @@ public:
 protected:
     QExplicitlySharedDataPointer<TrackData> d;
     QMap<QString, QString> params( const QString& method, bool use_mbid = false ) const;
-    void invalidateGetInfo();
 private:
     Track( TrackData* that_d ) : d( that_d )
     {}

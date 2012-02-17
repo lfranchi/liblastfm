@@ -360,22 +360,6 @@ lastfm::Track::share( const QStringList& recipients, const QString& message, boo
     return ws::post(map);
 }
 
-
-void
-lastfm::Track::invalidateGetInfo()
-{
-    // invalidate the track.getInfo cache
-    QAbstractNetworkCache* cache = lastfm::nam()->cache();
-    if ( cache )
-    {
-        QMap<QString, QString> map = params("getInfo", true);
-        if (!lastfm::ws::Username.isEmpty()) map["username"] = lastfm::ws::Username;
-        if (!lastfm::ws::SessionKey.isEmpty()) map["sk"] = lastfm::ws::SessionKey;
-        cache->remove( lastfm::ws::url( map ) );
-    }
-}
-
-
 void
 lastfm::MutableTrack::setFromLfm( const XmlQuery& lfm )
 {
@@ -407,8 +391,6 @@ lastfm::MutableTrack::love()
 {
     QNetworkReply* reply = ws::post(params("love"));
     QObject::connect( reply, SIGNAL(finished()), signalProxy(), SLOT(onLoveFinished()));
-
-    invalidateGetInfo();
 }
 
 
@@ -417,8 +399,6 @@ lastfm::MutableTrack::unlove()
 {
     QNetworkReply* reply = ws::post(params("unlove"));
     QObject::connect( reply, SIGNAL(finished()), signalProxy(), SLOT(onUnloveFinished()));
-
-    invalidateGetInfo();
 }
 
 QNetworkReply*
