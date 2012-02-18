@@ -44,9 +44,10 @@ public:
     /** if internet is unavailable you will get a down() signal soon, otherwise
       * you won't get a signal until the net goes down */
     InternetConnectionMonitor( QObject *parent = 0 );
+    ~InternetConnectionMonitor();
 
-    bool isDown() const { return !m_up; }
-    bool isUp() const { return m_up; }
+    bool isDown() const;
+    bool isUp() const;
 
     NetworkConnectionMonitor* createNetworkConnectionMonitor();
 
@@ -67,8 +68,7 @@ private slots:
     void onNetworkDown();
 
 private:
-    bool m_up;
-    NetworkConnectionMonitor* m_networkMonitor;
+    class InternetConnectionMonitorPrivate * const d;
 };
 
 } //namespace lastfm
