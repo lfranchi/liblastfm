@@ -20,51 +20,89 @@
 #include "XmlQuery.h"
 
 #include <QCoreApplication>
+#include <QDomDocument>
 #include <QStringList>
 
 using lastfm::XmlQuery;
 
-XmlQuery::XmlQuery()
-    :m_error( lastfm::ws::ParseError( lastfm::ws::NoError, "" ))
+class lastfm::XmlQueryPrivate
+{
+public:
+    XmlQueryPrivate();
+    QDomDocument domdoc;
+    QDomElement e;
+    lastfm::ws::ParseError error;
+};
+
+
+lastfm::XmlQueryPrivate::XmlQueryPrivate()
+    : error( lastfm::ws::ParseError( lastfm::ws::NoError, "" ) )
 {
 }
+
+
+XmlQuery::XmlQuery()
+    : d( new XmlQueryPrivate )
+{
+}
+
+
+XmlQuery::XmlQuery( const XmlQuery& that )
+    : d( new XmlQueryPrivate( *that.d ) )
+{
+}
+
+XmlQuery::XmlQuery( const QDomElement& e, const char* name )
+    : d( new XmlQueryPrivate )
+{
+    d->e = e;
+    if (e.isNull())
+        qWarning() << "Expected node absent:" << name;
+}
+
+
+XmlQuery::~XmlQuery()
+{
+    delete d;
+}
+
 
 bool
 XmlQuery::parse( const QByteArray& bytes )
 {  
     if ( !bytes.size() )
-        m_error = lastfm::ws::ParseError( lastfm::ws::MalformedResponse, "No data" );
+        d->error = lastfm::ws::ParseError( lastfm::ws::MalformedResponse, "No data" );
     else
     {
-        if( !domdoc.setContent( bytes ) )
-            m_error = lastfm::ws::ParseError( lastfm::ws::MalformedResponse, "Invalid XML" );
+        if( !d->domdoc.setContent( bytes ) )
+            d->error = lastfm::ws::ParseError( lastfm::ws::MalformedResponse, "Invalid XML" );
         else
         {
-            e = domdoc.documentElement();
+            d->e = d->domdoc.documentElement();
 
-            if (e.isNull())
-                m_error = lastfm::ws::ParseError( lastfm::ws::MalformedResponse, "Lfm is null" );
+            if (d->e.isNull())
+                d->error = lastfm::ws::ParseError( lastfm::ws::MalformedResponse, "Lfm is null" );
             else
             {
-                QString const status = e.attribute( "status" );
-                QDomElement error = e.firstChildElement( "error" );
-                uint const n = e.childNodes().count();
+                QString const status = d->e.attribute( "status" );
+                QDomElement error = d->e.firstChildElement( "error" );
+                uint const n = d->e.childNodes().count();
 
                 // no elements beyond the lfm is perfectably acceptable <-- wtf?
                 // if (n == 0) // nothing useful in the response
                 if (status == "failed" || (n == 1 && !error.isNull()) )
-                    m_error = error.isNull()
+                    d->error = error.isNull()
                             ? lastfm::ws::ParseError( lastfm::ws::MalformedResponse, "" )
                             : lastfm::ws::ParseError( lastfm::ws::Error( error.attribute( "code" ).toUInt() ), error.text() );
             }
         }
     }
 
-    if ( m_error.enumValue() != lastfm::ws::NoError )
+    if ( d->error.enumValue() != lastfm::ws::NoError )
     {
         qDebug() << bytes;
 
-        switch ( m_error.enumValue() )
+        switch ( d->error.enumValue() )
         {
             case lastfm::ws::OperationFailed:
             case lastfm::ws::InvalidApiKey:
@@ -72,7 +110,7 @@ XmlQuery::parse( const QByteArray& bytes )
                 // NOTE will never be received during the LoginDialog stage
                 // since that happens before this slot is registered with
                 // QMetaObject in App::App(). Neat :)
-                QMetaObject::invokeMethod( qApp, "onWsError", Q_ARG( lastfm::ws::Error, m_error.enumValue() ) );
+                QMetaObject::invokeMethod( qApp, "onWsError", Q_ARG( lastfm::ws::Error, d->error.enumValue() ) );
                 break;
             default:
                 //do nothing
@@ -80,7 +118,25 @@ XmlQuery::parse( const QByteArray& bytes )
         }
     }
 
-    return m_error.enumValue() == lastfm::ws::NoError;
+    return d->error.enumValue() == lastfm::ws::NoError;
+}
+
+
+lastfm::ws::ParseError XmlQuery::parseError() const
+{
+    return d->error;
+}
+
+
+QString XmlQuery::text() const
+{
+    return d->e.text();
+}
+
+
+QString XmlQuery::attribute( const QString& name ) const
+{
+    return d->e.attribute( name );
 }
 
 
@@ -96,11 +152,11 @@ XmlQuery::operator[]( const QString& name ) const
         QString attributeValue = parts.value( 1 );
 
         foreach (XmlQuery e, children( tagName ))
-            if (e.e.attribute( attributeName ) == attributeValue)
+            if (e.d->e.attribute( attributeName ) == attributeValue)
                 return e;
     }
-    XmlQuery xq( e.firstChildElement( name ), name.toUtf8().data() );
-    xq.domdoc = this->domdoc;
+    XmlQuery xq( d->e.firstChildElement( name ), name.toUtf8().data() );
+    xq.d->domdoc = this->d->domdoc;
     return xq;
 }
 
@@ -109,11 +165,34 @@ QList<XmlQuery>
 XmlQuery::children( const QString& named ) const
 {
     QList<XmlQuery> elements;
-    QDomNodeList nodes = e.elementsByTagName( named );
+    QDomNodeList nodes = d->e.elementsByTagName( named );
     for (int x = 0; x < nodes.count(); ++x) {
         XmlQuery xq( nodes.at( x ).toElement() );
-        xq.domdoc = this->domdoc;
+        xq.d->domdoc = this->d->domdoc;
         elements += xq;
     }
     return elements;
+}
+
+XmlQuery::operator QDomElement() const
+{
+    return d->e;
+}
+
+
+XmlQuery&
+XmlQuery::operator=( const XmlQuery& that )
+{
+    d->domdoc = that.d->domdoc;
+    d->e = that.d->e;
+    d->error = that.d->error;
+    return *this;
+}
+
+QDebug operator<<( QDebug d, const lastfm::XmlQuery& xq )
+{
+    QString s;
+    QTextStream t( &s, QIODevice::WriteOnly );
+    QDomElement(xq).save( t, 2 );
+    return d << s;
 }
