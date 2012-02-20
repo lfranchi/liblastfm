@@ -83,7 +83,8 @@ SOURCES += \
         src/XmlQuery.cpp \
         src/UrlBuilder.cpp \
         src/misc.cpp \
-        src/Chart.cpp
+        src/Chart.cpp \
+        src/Auth.cpp
 	
 HEADERS += \
         src/ws.h \
@@ -110,7 +111,8 @@ HEADERS += \
         src/XmlQuery.h \
         src/UrlBuilder.h \
         src/misc.h \
-        src/Chart.h
+        src/Chart.h \
+        src/Auth.h
 	
 win32:SOURCES += src/win/WNetworkConnectionMonitor_win.cpp \
         src/win/WmiSink.cpp \
