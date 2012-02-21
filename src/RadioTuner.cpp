@@ -36,10 +36,10 @@ using namespace lastfm;
 
 
 RadioTuner::RadioTuner( const RadioStation& station )
-    : m_station( station ),
-      m_retry_counter( 0 ),
+    :m_retry_counter( 0 ),
       m_fetchingPlaylist( false ),
-      m_requestedPlaylist(false)
+      m_requestedPlaylist(false),
+      m_station( station )
 {
     m_twoSecondTimer = new QTimer( this );
     m_twoSecondTimer->setSingleShot( true );
