@@ -18,8 +18,8 @@
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ABSTRACTTYPE_H
-#define ABSTRACTTYPE_H
+#ifndef LASTFM_ABSTRACTTYPE_H
+#define LASTFM_ABSTRACTTYPE_H
 
 #include <QDomElement>
 #include <QString>
@@ -40,4 +40,4 @@ namespace lastfm
     };
 };
 
-#endif // ABSTRACTTYPE_H
+#endif // LASTFM_ABSTRACTTYPE_H

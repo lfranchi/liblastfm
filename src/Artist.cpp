@@ -222,7 +222,6 @@ Artist::getInfo( QNetworkReply* r )
     }
 }
 
-
 QNetworkReply*
 Artist::addTags( const QStringList& tags ) const
 {
@@ -232,3 +231,58 @@ Artist::addTags( const QStringList& tags ) const
     map["tags"] = tags.join( QChar(',') );
     return ws::post(map);
 }
+
+bool
+Artist::isNull() const
+{
+    return d->name.isEmpty();
+}
+
+Artist&
+Artist::operator=( const Artist& that )
+{
+    d->name = that.name(); d->images = that.d->images; return *this;
+}
+
+bool
+lastfm::Artist::operator==( const Artist& that ) const
+{
+    return d->name == that.d->name;
+}
+
+bool
+Artist::operator!=( const Artist& that ) const
+{
+    return d->name != that.d->name;
+}
+bool
+Artist::operator<( const Artist& that ) const
+{
+    return d->name < that.d->name;
+}
+
+Artist::operator QString() const
+{
+    return d->name;
+}
+
+QString Artist::toString() const
+{
+    return name();
+}
+
+QString Artist::name() const
+{
+    return QString(*this);
+}
+
+void Artist::setName( const QString& name )
+{
+    d->name = name;
+}
+
+QDomElement Artist::toDomElement( QDomDocument& ) const
+{
+    return QDomElement();
+}
+

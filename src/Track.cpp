@@ -284,8 +284,8 @@ lastfm::Track::corrected() const
     // from the initial strings then this track has been corrected.
     return ( (!d->correctedTitle.isEmpty() && (d->correctedTitle != d->title))
             || (!d->correctedAlbum.isEmpty() && (d->correctedAlbum != d->album))
-            || (!d->correctedArtist.name().isEmpty() && (d->correctedArtist.name() != d->artist.name()))
-            || (!d->correctedAlbumArtist.name().isEmpty() && (d->correctedAlbumArtist.name() != d->albumArtist.name())));
+            || (!d->correctedArtist.isNull() && (d->correctedArtist.name() != d->artist.name()))
+            || (!d->correctedAlbumArtist.isNull() && (d->correctedAlbumArtist.name() != d->albumArtist.name())));
 }
 
 lastfm::Artist
@@ -325,7 +325,7 @@ lastfm::Track::title( Corrections corrected ) const
     if ( corrected == Corrected && !d->correctedTitle.isEmpty() )
         return d->correctedTitle;
 
-    return d->title.isEmpty() ? "[unknown]" : d->title;
+    return d->title;
 }
 
 

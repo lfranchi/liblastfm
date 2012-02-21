@@ -27,6 +27,63 @@
 #include <QStringList>
 #include <QTimer>
 
+using lastfm::Album;
+using lastfm::Artist;
+using lastfm::Mbid;
+
+Album::Album()
+{}
+
+Album::Album( Mbid mbid )
+    : m_mbid( mbid )
+{}
+
+Album::Album( Artist artist, QString title )
+    : m_artist( artist ), m_title( title )
+{}
+
+bool
+Album::operator==( const Album& that ) const
+{
+    return m_title == that.m_title && m_artist == that.m_artist;
+}
+
+bool
+Album::operator!=( const Album& that ) const
+{
+    return m_title != that.m_title || m_artist != that.m_artist;
+}
+
+Album::operator QString() const
+{
+    return title();
+}
+
+QString
+Album::title() const
+{
+    return m_title;
+}
+
+Artist
+Album::artist() const
+{
+    return m_artist;
+}
+
+Mbid
+Album::mbid() const
+{
+    return m_mbid;
+}
+
+bool
+Album::isNull() const
+{
+    return m_title.isEmpty() && m_mbid.isNull();
+}
+
+
 QNetworkReply*
 lastfm::Album::getInfo() const
 {

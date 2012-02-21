@@ -53,28 +53,24 @@ namespace lastfm
         QUrl imageUrl( ImageSize size = Large, bool square = false ) const;
         void setImageUrl( lastfm::ImageSize size, const QString& url );
 
-        bool isNull() const { return d->name.isEmpty(); }
+        bool isNull() const;
         
         /** the url for this artist's page at www.last.fm */
         QUrl www() const;
     
-        Artist& operator=( const Artist& that ) { d->name = that.name(); d->images = that.d->images; return *this; }
-        bool operator==( const Artist& that ) const { return d->name == that.d->name; }
-        bool operator!=( const Artist& that ) const { return d->name != that.d->name; }
-        bool operator<( const Artist& that ) const { return d->name < that.d->name; }
+        Artist& operator=( const Artist& that );
+        bool operator==( const Artist& that ) const;
+        bool operator!=( const Artist& that ) const;
+        bool operator<( const Artist& that ) const;
     
-        operator QString() const 
-        {
-            /** if no artist name is set, return the musicbrainz unknown identifier
-              * in case some part of the GUI tries to display it anyway. Note isNull
-              * returns false still. So you should have queried that! */
-            return d->name.isEmpty() ? "[unknown]" : d->name;
-        }
+        operator QString() const;
 
-        QString toString() const { return name(); }
-        QString name() const { return QString(*this); } 
+        QString toString() const;
 
-        QDomElement toDomElement( QDomDocument& ) const { return QDomElement(); }
+        QString name() const;
+        void setName( const QString& name );
+
+        QDomElement toDomElement( QDomDocument& ) const;
     
         QNetworkReply* share( const QStringList& recipients, const QString& message = "", bool isPublic = true ) const;
 

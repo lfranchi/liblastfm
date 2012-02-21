@@ -312,8 +312,8 @@ public:
     void setFromLfm( const XmlQuery& lfm );
     void setImageUrl( lastfm::ImageSize size, const QString& url );
     
-    void setArtist( QString artist ) { d->artist = artist.trimmed(); }
-    void setAlbumArtist( QString albumArtist ) { d->albumArtist = albumArtist.trimmed(); }
+    void setArtist( QString artist ) { d->artist.setName( artist.trimmed() ); }
+    void setAlbumArtist( QString albumArtist ) { d->albumArtist.setName( albumArtist.trimmed() ); }
     void setAlbum( QString album ) { d->album = album.trimmed(); }
     void setTitle( QString title ) { d->title = title.trimmed(); }
     void setCorrections( QString title, QString album, QString artist, QString albumArtist );
@@ -364,6 +364,6 @@ inline QDebug operator<<( QDebug d, const lastfm::Track& t )
 }
 
 
-Q_DECLARE_METATYPE( lastfm::Track );
+Q_DECLARE_METATYPE( lastfm::Track )
 
 #endif //LASTFM_TRACK_H
