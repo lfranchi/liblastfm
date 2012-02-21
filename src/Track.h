@@ -68,12 +68,12 @@ public:
     TrackData();
 
 public:
-    QString artist;
-    QString albumArtist;
+    lastfm::Artist artist;
+    lastfm::Artist albumArtist;
     QString album;
     QString title;
-    QString correctedArtist;
-    QString correctedAlbumArtist;
+    lastfm::Artist correctedArtist;
+    lastfm::Artist correctedAlbumArtist;
     QString correctedAlbum;
     QString correctedTitle;
     TrackContext context;

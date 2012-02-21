@@ -17,53 +17,77 @@
    You should have received a copy of the GNU General Public License
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+#include <QRegExp>
+#include <QStringList>
+
 #include "Artist.h"
 #include "User.h"
 #include "UrlBuilder.h"
 #include "XmlQuery.h"
 #include "ws.h"
-#include <QRegExp>
-#include <QStringList>
 
 using lastfm::Artist;
+using lastfm::ArtistData;
 using lastfm::User;
 using lastfm::ImageSize;
 using lastfm::XmlQuery;
 
-QUrl
-Artist::imageUrl( ImageSize size, bool square ) const
-{
-    if( !square ) return m_images.value( size ); 
 
-    QUrl url = m_images.value( size );
-    QRegExp re( "/serve/(\\d*)s?/" );
-    return QUrl( url.toString().replace( re, "/serve/\\1s/" ));
+Artist::Artist()
+    :AbstractType()
+{
+    d = new ArtistData;
 }
 
-static inline QList<QUrl> images( const lastfm::XmlQuery& e )
+Artist::Artist( const QString& name )
+    : AbstractType()
 {
-    QList<QUrl> images;
-    images += e["image size=small"].text();
-    images += e["image size=medium"].text();
-    images += e["image size=large"].text();
-    return images;
+    d = new ArtistData;
+    d->name = name;
 }
-
 
 Artist::Artist( const XmlQuery& xml )
     :AbstractType()
 {
-    m_name = xml["name"].text();
-    m_images = images( xml );
+    d = new ArtistData;
+
+    d->name = xml["name"].text();
+    setImageUrl( lastfm::Small, xml["image size=small"].text() );
+    setImageUrl( lastfm::Medium, xml["image size=medium"].text() );
+    setImageUrl( lastfm::Large, xml["image size=large"].text() );
+    setImageUrl( lastfm::ExtraLarge, xml["image size=extralarge"].text() );
+    setImageUrl( lastfm::Mega, xml["image size=mega"].text() );
 }
 
+Artist::Artist( const Artist& artist )
+    :AbstractType(), d( artist.d )
+{
+}
+
+QUrl
+Artist::imageUrl( ImageSize size, bool square ) const
+{
+    if( !square ) return d->images.value( size );
+
+    QUrl url = d->images.value( size );
+    QRegExp re( "/serve/(\\d*)s?/" );
+    return QUrl( url.toString().replace( re, "/serve/\\1s/" ));
+}
+
+void
+Artist::setImageUrl( lastfm::ImageSize size, const QString& url )
+{
+    if ( !url.isEmpty() )
+        d->images[size] = url;
+}
 
 QMap<QString, QString> //private
 Artist::params( const QString& method ) const
 {
     QMap<QString, QString> map;
     map["method"] = "artist."+method;
-    map["artist"] = m_name;
+    map["artist"] = d->name;
     return map;
 }
 
@@ -188,8 +212,7 @@ Artist::getInfo( QNetworkReply* r )
 
     if ( lfm.parse( r->readAll() ) )
     {
-        Artist artist = lfm["artist"]["name"].text();
-        artist.m_images = images( lfm["artist"] );
+        Artist artist = Artist( lfm["artist"] );
         return artist;
     }
     else

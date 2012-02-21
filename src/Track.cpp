@@ -125,6 +125,13 @@ lastfm::Track::Track( const QDomElement& e )
         d->m_images[static_cast<lastfm::ImageSize>(image.attribute("size").toInt())] = image.text();
     }
 
+    QDomNode artistImages = e.namedItem( "artistImages" );
+
+    for (QDomElement image(artistImages.firstChildElement("image")) ; !image.isNull() ; image = artistImages.nextSiblingElement("image"))
+    {
+        artist().setImageUrl( static_cast<lastfm::ImageSize>(image.attribute("size").toInt()), image.text() );
+    }
+
     QDomNodeList nodes = e.namedItem( "extras" ).childNodes();
     for (int i = 0; i < nodes.count(); ++i)
     {
@@ -244,6 +251,18 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
         item.appendChild( e );
     }
 
+    // put the artist images urls in the dom
+    QDomElement artistImages = xml.createElement( "artistImages" );
+
+    for ( int size = lastfm::Small ; size <= lastfm::Mega ; ++size )
+    {
+        QDomElement e = xml.createElement( "image" );
+        e.appendChild( xml.createTextNode( d->artist.imageUrl( static_cast<lastfm::ImageSize>(size) ).toString() ) );
+        e.setAttribute( "size", size );
+        artistImages.appendChild( e );
+    }
+    item.appendChild( artistImages );
+
     // add the extras to the dom
     QDomElement extras = xml.createElement( "extras" );
     QMapIterator<QString, QString> extrasIter( d->extras );
@@ -265,26 +284,26 @@ lastfm::Track::corrected() const
     // from the initial strings then this track has been corrected.
     return ( (!d->correctedTitle.isEmpty() && (d->correctedTitle != d->title))
             || (!d->correctedAlbum.isEmpty() && (d->correctedAlbum != d->album))
-            || (!d->correctedArtist.isEmpty() && (d->correctedArtist != d->artist))
-            || (!d->correctedAlbumArtist.isEmpty() && (d->correctedAlbumArtist != d->albumArtist)));
+            || (!d->correctedArtist.name().isEmpty() && (d->correctedArtist.name() != d->artist.name()))
+            || (!d->correctedAlbumArtist.name().isEmpty() && (d->correctedAlbumArtist.name() != d->albumArtist.name())));
 }
 
 lastfm::Artist
 lastfm::Track::artist( Corrections corrected ) const
 {
-    if ( corrected == Corrected && !d->correctedArtist.isEmpty() )
-        return Artist( d->correctedArtist );
+    if ( corrected == Corrected && !d->correctedArtist.name().isEmpty() )
+        return d->correctedArtist;
 
-    return Artist( d->artist );
+    return d->artist;
 }
 
 lastfm::Artist
 lastfm::Track::albumArtist( Corrections corrected ) const
 {
-    if ( corrected == Corrected && !d->correctedAlbumArtist.isEmpty() )
-        return Artist( d->correctedAlbumArtist );
+    if ( corrected == Corrected && !d->correctedAlbumArtist.name().isEmpty() )
+        return d->correctedAlbumArtist;
 
-    return Artist( d->albumArtist );
+    return d->albumArtist;
 }
 
 lastfm::Album
@@ -324,7 +343,7 @@ lastfm::Track::imageUrl( lastfm::ImageSize size, bool square ) const
 QString
 lastfm::Track::toString( const QChar& separator, Corrections corrections ) const
 {
-    if ( d->artist.isEmpty() )
+    if ( d->artist.name().isEmpty() )
     {
         if ( d->title.isEmpty() )
             return QFileInfo( d->url.path() ).fileName();
@@ -382,7 +401,8 @@ lastfm::MutableTrack::setFromLfm( const XmlQuery& lfm )
 void
 lastfm::MutableTrack::setImageUrl( lastfm::ImageSize size, const QString& url )
 {
-    d->m_images[size] = url;
+    if ( !url.isEmpty() )
+        d->m_images[size] = url;
 }
 
 

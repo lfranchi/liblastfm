@@ -23,6 +23,7 @@
 #include <QMap>
 #include <QString>
 #include <QUrl>
+#include <QSharedData>
 
 #include "AbstractType.h"
 #include "global.h"
@@ -30,40 +31,44 @@
 
 namespace lastfm
 {
+    class ArtistData : public QSharedData
+    {
+    public:
+        QString name;
+        QMap<lastfm::ImageSize, QUrl> images;
+    };
+
     class LASTFM_DLLEXPORT Artist : public AbstractType
     {
     private:
-        QString m_name;
-        QList<QUrl> m_images;
+        QSharedDataPointer<ArtistData> d;
 
     public:
-        Artist() : AbstractType()
-        {}
-
-        Artist( const QString& name ) : AbstractType(), m_name( name )
-        {}
-
+        Artist();
+        Artist( const QString& name );
         Artist( const class XmlQuery& xml );
+        Artist( const Artist& artist );
 
         /** will be QUrl() unless you got this back from a getInfo or something call */
         QUrl imageUrl( ImageSize size = Large, bool square = false ) const;
+        void setImageUrl( lastfm::ImageSize size, const QString& url );
 
-        bool isNull() const { return m_name.isEmpty(); }
+        bool isNull() const { return d->name.isEmpty(); }
         
         /** the url for this artist's page at www.last.fm */
         QUrl www() const;
     
-        Artist& operator=( const Artist& that ) { m_name = that.name(); m_images = that.m_images; return *this; }
-        bool operator==( const Artist& that ) const { return m_name == that.m_name; }
-        bool operator!=( const Artist& that ) const { return m_name != that.m_name; }
-        bool operator<( const Artist& that ) const { return m_name < that.m_name; }
+        Artist& operator=( const Artist& that ) { d->name = that.name(); d->images = that.d->images; return *this; }
+        bool operator==( const Artist& that ) const { return d->name == that.d->name; }
+        bool operator!=( const Artist& that ) const { return d->name != that.d->name; }
+        bool operator<( const Artist& that ) const { return d->name < that.d->name; }
     
         operator QString() const 
         {
             /** if no artist name is set, return the musicbrainz unknown identifier
               * in case some part of the GUI tries to display it anyway. Note isNull
               * returns false still. So you should have queried that! */
-            return m_name.isEmpty() ? "[unknown]" : m_name;
+            return d->name.isEmpty() ? "[unknown]" : d->name;
         }
 
         QString toString() const { return name(); }
