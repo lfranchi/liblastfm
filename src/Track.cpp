@@ -465,11 +465,14 @@ lastfm::Track::getTags() const
 }
 
 void
-lastfm::Track::getInfo() const
+lastfm::Track::getInfo( const QString& username ) const
 {
     QMap<QString, QString> map = params("getInfo", true);
-    if (!lastfm::ws::Username.isEmpty()) map["username"] = lastfm::ws::Username;
+    if (!username.isEmpty()) map["username"] = username;
+
+    // this is so the web services knows whether to use corrections or not
     if (!lastfm::ws::SessionKey.isEmpty()) map["sk"] = lastfm::ws::SessionKey;
+
     QObject::connect( ws::get( map ), SIGNAL(finished()), d.data(), SLOT(onGotInfo()));
 }
 

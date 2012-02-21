@@ -75,7 +75,7 @@ namespace lastfm
         QNetworkReply* share( const QStringList& recipients, const QString& message = "", bool isPublic = true ) const;
 
         QNetworkReply* getEvents(int limit = 0) const;
-        QNetworkReply* getInfo() const;
+        QNetworkReply* getInfo( const QString& username = "" ) const;
         static Artist getInfo( QNetworkReply* );
     
         QNetworkReply* getSimilar( int limit = -1 ) const;

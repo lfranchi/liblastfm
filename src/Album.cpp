@@ -85,13 +85,13 @@ Album::isNull() const
 
 
 QNetworkReply*
-lastfm::Album::getInfo() const
+lastfm::Album::getInfo( const QString& username) const
 {
     QMap<QString, QString> map;
     map["method"] = "album.getInfo";
     map["artist"] = m_artist;
     map["album"] = m_title;
-    if (!lastfm::ws::Username.isEmpty()) map["username"] = lastfm::ws::Username;
+    if (!username.isEmpty()) map["username"] = username;
     if (!lastfm::ws::SessionKey.isEmpty()) map["sk"] = lastfm::ws::SessionKey;
     return lastfm::ws::get(map);
 }

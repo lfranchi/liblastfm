@@ -255,7 +255,7 @@ public:
     QNetworkReply* getTags() const; // for the logged in user
     QNetworkReply* getTopTags() const;
     QNetworkReply* getTopFans() const;
-    void getInfo() const;
+    void getInfo( const QString& username = "" ) const;
     QNetworkReply* getBuyLinks( const QString& country ) const;
 
     /** you can only add 10 tags, we submit everything you give us, but the
