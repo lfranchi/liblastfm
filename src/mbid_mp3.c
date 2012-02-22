@@ -77,7 +77,7 @@ int getMP3_MBID(const char *path, char mbid[MBID_BUFFER_SIZE])
    char frame[4];
    char frame_header[4];
    int frame_size;
-   int version_major, version_minor;
+   int version_major;//, version_minor;
 
    if (path == NULL) {
       //debug("Received null path\n");
@@ -99,7 +99,7 @@ int getMP3_MBID(const char *path, char mbid[MBID_BUFFER_SIZE])
 
       mfile(2,version,fp,&s);
       version_major = (int)version[0];
-      version_minor = (int)version[1];
+      //version_minor = (int)version[1];
       if (version_major == 2) {
          //debug("ID3v2.2.0 does not support MBIDs: %s\n",path);
          break;
