@@ -60,7 +60,7 @@ mac{
     LIBS += -framework CoreFoundation # various
 }
 
-linux*{
+unix:!mac{
     QT += dbus
 }
 
@@ -134,8 +134,8 @@ mac:SOURCES += 	src/mac/MNetworkConnectionMonitor_mac.cpp
 mac:HEADERS += src/mac/ProxyDict.h \
                src/mac/MNetworkConnectionMonitor.h
 
-linux*:SOURCES += src/linux/LNetworkConnectionMonitor_linux.cpp
-linux*:HEADERS += src/linux/LNetworkConnectionMonitor.h
+unix:!mac:SOURCES += src/linux/LNetworkConnectionMonitor_linux.cpp
+unix:!mac:HEADERS += src/linux/LNetworkConnectionMonitor.h
 
 !win32:VERSION = 0.4.0
 
