@@ -39,9 +39,12 @@ headers.path = _include/lastfm
 headers.files = src/*.h
 }
 else{
+    isEmpty( PREFIX ) {
+        PREFIX=/usr/local
+    }
 INSTALLS = target headers
-target.path = /usr/local/lib
-headers.path = /usr/local/include/lastfm
+target.path = $${PREFIX}/lib
+headers.path = $${PREFIX}/include/lastfm
 headers.files = src/*.h
 }
 
