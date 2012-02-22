@@ -63,8 +63,6 @@ Installing liblastfm
 
 Packaging liblastfm
 -------------------
-DESTDIR is supported.
-
 liblastfm builds to two dynamic libraries (liblastfm.so and
 liblastfm_fingerprint.so). liblastfm.so links only to Qt, but the
 fingerprinting part has additional dependencies. So ideally, you would
