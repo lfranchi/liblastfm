@@ -191,7 +191,8 @@ lastfm::TrackData::onGotInfo()
         imageUrl = lfm["track"]["image size=mega"].text();
         if ( !imageUrl.isEmpty() ) m_images[lastfm::Mega] = imageUrl;
 
-        loved = lfm["track"]["userloved"].text().toInt();
+        if ( lfm["track"]["userloved"].text().length() > 0 )
+            loved = lfm["track"]["userloved"].text().toInt();
 
         emit gotInfo( data );
         emit loveToggled( loved );
