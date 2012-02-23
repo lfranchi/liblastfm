@@ -40,7 +40,7 @@ lastfm::Xspf::Xspf( const QDomElement& playlist_node, QObject* parent )
     //The title is url encoded, has + instead of space characters 
     //and has a + at the begining. So it needs cleaning up:
     m_title.replace( '+', ' ' );
-    m_title = QUrl::fromPercentEncoding( m_title.toAscii());
+    m_title = QUrl::fromPercentEncoding( m_title.toUtf8() );
     m_title = m_title.trimmed();
     
     foreach (XmlQuery e, e["trackList"].children( "track" ))
