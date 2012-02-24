@@ -259,7 +259,7 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
     makeElement( "rating", QString::number(d->rating) );
     makeElement( "fpId", QString::number(d->fpid) );
     makeElement( "mbId", mbid() );
-    makeElement( "loved", QString::number( isLoved() ) );
+    makeElement( "loved", QString::number( d->loved ) );
     makeElement( "scrobbleStatus", QString::number( scrobbleStatus() ) );
     makeElement( "scrobbleError", QString::number( scrobbleError() ) );
     makeElement( "podcast", QString::number( isPodcast() ) );
