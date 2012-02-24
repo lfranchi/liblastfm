@@ -66,6 +66,7 @@ namespace lastfm
             case QSysInfo::WV_XP:         return "Windows XP";
             case QSysInfo::WV_2003:       return "Windows Server 2003";
             case QSysInfo::WV_VISTA:      return "Windows Vista";
+            case QSysInfo::WV_WINDOWS7:   return "Windows 7";
             case QSysInfo::WV_NT_based:   return "NT-based Windows";
 
             case QSysInfo::WV_CE:         return "Windows CE";
@@ -85,6 +86,7 @@ namespace lastfm
             case QSysInfo::MV_10_3:       return "Mac OS X 10.3";
             case QSysInfo::MV_10_4:       return "Mac OS X 10.4";
             case QSysInfo::MV_10_5:       return "Mac OS X 10.5";
+            case QSysInfo::MV_10_6:       return "Mac OS X 10.6";
 
             default:                      return "Unknown";
         }
