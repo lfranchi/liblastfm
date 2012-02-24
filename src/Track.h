@@ -33,6 +33,13 @@
 
 namespace lastfm {
 
+enum LoveStatus
+{
+    Unknown = 0,
+    Unloved,
+    Loved
+};
+
 class LASTFM_DLLEXPORT TrackContext
 {
 public:
@@ -85,7 +92,7 @@ public:
     uint fpid;
     QUrl url;
     QDateTime time; /// the time the track was started at
-    bool loved;
+    LoveStatus loved;
     QMap<lastfm::ImageSize, QUrl> m_images;
     short scrobbleStatus;
     short scrobbleError;
@@ -100,9 +107,9 @@ public:
     bool video;
 
 private:
-    void forceLoveToggled( bool love ) { emit loveToggled( love );}
-    void forceScrobbleStatusChanged() { emit scrobbleStatusChanged(); }
-    void forceCorrected( QString correction ) { emit corrected( correction ); }
+    void forceLoveToggled( bool love );
+    void forceScrobbleStatusChanged();
+    void forceCorrected( QString correction );
 
 private slots:
     void onLoveFinished();
@@ -142,7 +149,7 @@ public:
         Player,
         MediaDevice,
         NonPersonalisedBroadcast, // eg Shoutcast, BBC Radio 1, etc.
-        PersonalisedRecommendation, // eg Pandora, but not Last.fm
+        PersonalisedRecommendation // eg Pandora, but not Last.fm
     };
 
     enum ScrobbleStatus
@@ -177,26 +184,14 @@ public:
       * in fact. This doesn't do a deep data comparison. So even if all the 
       * fields are the same it will return false if they aren't in fact spawned
       * from the same initial Track object */
-    bool sameObject( const Track& that )
-    {
-        return (this->d == that.d);
-    }
+    bool sameObject( const Track& that );
+    bool operator==( const Track& that ) const;
+    bool operator!=( const Track& that ) const;
 
-    bool operator==( const Track& that ) const
-    {
-        return ( this->title() == that.title() &&
-                 this->album() == that.album() &&
-                 this->artist() == that.artist());
-    }
-    bool operator!=( const Track& that ) const
-    {
-        return !operator==( that );
-    }
-
-    QObject* signalProxy() const { return d.data(); }
+    QObject* signalProxy() const;
 
     /** only a Track() is null */
-    bool isNull() const { return d->null; }
+    bool isNull() const;
 
     bool corrected() const;
 
@@ -205,46 +200,44 @@ public:
     Album album( Corrections corrected = Original ) const;
     QString title( Corrections corrected = Original ) const;
 
-    uint trackNumber() const { return d->trackNumber; }
-    uint duration() const { return d->duration; } /// in seconds
-    Mbid mbid() const { return Mbid(d->mbid); }
-    QUrl url() const { return d->url; }
-    QDateTime timestamp() const { return d->time; }
-    Source source() const { return static_cast<Source>(d->source); }
-    uint fingerprintId() const { return d->fpid; }
-    bool isLoved() const { return d->loved; }
+    uint trackNumber() const;
+    uint duration() const; // in seconds
+    Mbid mbid() const;
+    QUrl url() const;
+    QDateTime timestamp() const;
+    Source source() const;
+    uint fingerprintId() const;
+    bool isLoved() const;
+    LoveStatus loveStatus() const;
     QUrl imageUrl( lastfm::ImageSize size, bool square ) const;
 
-    QString durationString() const { return durationString( d->duration ); }
+    QString durationString() const;
     static QString durationString( int seconds );
 
-    ScrobbleStatus scrobbleStatus() const { return static_cast<ScrobbleStatus>(d->scrobbleStatus); }
-    ScrobbleError scrobbleError() const { return static_cast<ScrobbleError>(d->scrobbleError); }
-    QString scrobbleErrorText() const { return d->scrobbleErrorText; }
+    ScrobbleStatus scrobbleStatus() const;
+    ScrobbleError scrobbleError() const;
+    QString scrobbleErrorText() const;
 
     /** default separator is an en-dash */
-    QString toString() const { return toString( Corrected ); }
-    QString toString( Corrections corrections ) const { return toString( QChar(8211), corrections );}
+    QString toString() const;
+    QString toString( Corrections corrections ) const;
     QString toString( const QChar& separator, Corrections corrections = Original ) const;
     /** the standard representation of this object as an XML node */
     QDomElement toDomElement( class QDomDocument& ) const;
 
-    TrackContext context() const { return d->context; }
+    TrackContext context() const;
 
     // iTunes tracks might be podcasts or videos
-    bool isPodcast() const { return d->podcast; }
-    bool isVideo() const { return d->video; }
+    bool isPodcast() const;
+    bool isVideo() const;
     
-    QString extra( const QString& key ) const{ return d->extras[ key ]; }
+    QString extra( const QString& key ) const;
 
-    bool operator<( const Track &that ) const
-    {
-        return this->d->time < that.d->time;
-    }
+    bool operator<( const Track &that ) const;
     
     bool isMp3() const;
     
-    operator QVariant() const { return QVariant::fromValue( *this ); }
+    operator QVariant() const;
     
 //////////// lastfm::Ws
     
@@ -278,8 +271,7 @@ protected:
     QExplicitlySharedDataPointer<TrackData> d;
     QMap<QString, QString> params( const QString& method, bool use_mbid = false ) const;
 private:
-    Track( TrackData* that_d ) : d( that_d )
-    {}
+    Track( TrackData* that_d );
 };
 
 
@@ -295,60 +287,50 @@ private:
 class LASTFM_DLLEXPORT MutableTrack : public Track
 {
 public:
-    MutableTrack()
-    {
-        d->null = false;
-    }
+    MutableTrack();
 
     /** NOTE that passing a Track() to this ctor will automatically make it non
       * null. Which may not be what you want. So be careful
       * Rationale: this is the most maintainable way to do it 
       */
-    MutableTrack( const Track& that ) : Track( that )
-    {
-        d->null = false;
-    }
+    MutableTrack( const Track& that );
 
     void setFromLfm( const XmlQuery& lfm );
     void setImageUrl( lastfm::ImageSize size, const QString& url );
     
-    void setArtist( QString artist ) { d->artist.setName( artist.trimmed() ); }
-    void setAlbumArtist( QString albumArtist ) { d->albumArtist.setName( albumArtist.trimmed() ); }
-    void setAlbum( QString album ) { d->album = album.trimmed(); }
-    void setTitle( QString title ) { d->title = title.trimmed(); }
+    void setArtist( QString artist );
+    void setAlbumArtist( QString albumArtist );
+    void setAlbum( QString album );
+    void setTitle( QString title );
     void setCorrections( QString title, QString album, QString artist, QString albumArtist );
-    void setTrackNumber( uint n ) { d->trackNumber = n; }
-    void setDuration( uint duration ) { d->duration = duration; }
-    void setUrl( QUrl url ) { d->url = url; }
-    void setSource( Source s ) { d->source = s; }
-    void setLoved( bool loved ) { d->loved = loved; }
+    void setTrackNumber( uint n );
+    void setDuration( uint duration );
+    void setUrl( QUrl url );
+    void setSource( Source s );
+    void setLoved( bool loved );
     
-    void setMbid( Mbid id ) { d->mbid = id; }
-    void setFingerprintId( uint id ) { d->fpid = id; }
+    void setMbid( Mbid id );
+    void setFingerprintId( uint id );
 
-    void setScrobbleStatus( ScrobbleStatus scrobbleStatus )
-    {
-        d->scrobbleStatus = scrobbleStatus;
-        d->forceScrobbleStatusChanged();
-    }
-    void setScrobbleError( ScrobbleError scrobbleError ) { d->scrobbleError = scrobbleError; }
-    void setScrobbleErrorText( const QString& scrobbleErrorText ) { d->scrobbleErrorText = scrobbleErrorText; }
+    void setScrobbleStatus( ScrobbleStatus scrobbleStatus );
+    void setScrobbleError( ScrobbleError scrobbleError );
+    void setScrobbleErrorText( const QString& scrobbleErrorText );
     
     void love();
     void unlove();
     QNetworkReply* ban();
     
-    void stamp() { d->time = QDateTime::currentDateTime(); }
+    void stamp();
 
-    void setExtra( const QString& key, const QString& value ) { d->extras[key] = value; }
-    void removeExtra( QString key ) { d->extras.remove( key ); }
-    void setTimeStamp( const QDateTime& dt ) { d->time = dt; }
+    void setExtra( const QString& key, const QString& value );
+    void removeExtra( QString key );
+    void setTimeStamp( const QDateTime& dt );
 
-    void setContext( TrackContext context ) { d->context = context;}
+    void setContext( TrackContext context );
 
     // iTunes tracks might be podcasts or videos
-    void setPodcast( bool podcast ) { d->podcast = podcast; }
-    void setVideo( bool video ) { d->video = video; }
+    void setPodcast( bool podcast );
+    void setVideo( bool video );
 
 };
 
@@ -356,13 +338,7 @@ public:
 } //namespace lastfm
 
 
-inline QDebug operator<<( QDebug d, const lastfm::Track& t )
-{
-    return !t.isNull() 
-            ? d << t.toString( '-' ) << t.url()
-            : d << "Null Track object";
-}
-
+LASTFM_DLLEXPORT QDebug operator<<( QDebug d, const lastfm::Track& t );
 
 Q_DECLARE_METATYPE( lastfm::Track )
 

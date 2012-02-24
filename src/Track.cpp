@@ -77,7 +77,7 @@ lastfm::TrackData::TrackData()
                source( Track::Unknown ),
                rating( 0 ),
                fpid( -1 ),
-               loved( false ),
+               loved( Unknown ),
                scrobbleStatus( Track::Null ),
                scrobbleError( Track::None ),
                null( false ),
@@ -91,6 +91,10 @@ lastfm::Track::Track()
     d = new TrackData;
     d->null = true;
 }
+
+lastfm::Track::Track( TrackData* that_d )
+    :d( that_d )
+{}
 
 lastfm::Track::Track( const QDomElement& e )
     :AbstractType()
@@ -113,7 +117,7 @@ lastfm::Track::Track( const QDomElement& e )
     d->rating = e.namedItem( "rating" ).toElement().text().toUInt();
     d->source = e.namedItem( "source" ).toElement().text().toInt(); //defaults to 0, or lastfm::Track::Unknown
     d->time = QDateTime::fromTime_t( e.namedItem( "timestamp" ).toElement().text().toUInt() );
-    d->loved = e.namedItem( "loved" ).toElement().text().toInt();
+    d->loved = static_cast<LoveStatus>(e.namedItem( "loved" ).toElement().text().toInt());
     d->scrobbleStatus = e.namedItem( "scrobbleStatus" ).toElement().text().toInt();
     d->scrobbleError = e.namedItem( "scrobbleError" ).toElement().text().toInt();
     d->podcast = e.namedItem( "podcast" ).toElement().text().toInt();
@@ -149,7 +153,7 @@ lastfm::TrackData::onLoveFinished()
     if ( lfm.parse( static_cast<QNetworkReply*>(sender())->readAll() ) )
     {
         if ( lfm.attribute( "status" ) == "ok")
-            loved = true;
+            loved = Loved;
 
     }
 
@@ -165,7 +169,7 @@ lastfm::TrackData::onUnloveFinished()
     if ( lfm.parse( static_cast<QNetworkReply*>(sender())->readAll() ) )
     {
         if ( lfm.attribute( "status" ) == "ok")
-            loved = false;
+            loved = Unloved;
     }
 
     emit loveToggled( loved );
@@ -192,7 +196,7 @@ lastfm::TrackData::onGotInfo()
         if ( !imageUrl.isEmpty() ) m_images[lastfm::Mega] = imageUrl;
 
         if ( lfm["track"]["userloved"].text().length() > 0 )
-            loved = lfm["track"]["userloved"].text().toInt();
+            loved = lfm["track"]["userloved"].text() == "0" ? Unloved : Loved;
 
         emit gotInfo( data );
         emit loveToggled( loved );
@@ -204,6 +208,24 @@ lastfm::TrackData::onGotInfo()
 
     // you should connect everytime you call getInfo
     disconnect( this, SIGNAL(gotInfo(const QByteArray&)), 0, 0);
+}
+
+void
+lastfm::TrackData::forceLoveToggled( bool love )
+{
+    emit loveToggled( love );
+}
+
+void
+lastfm::TrackData::forceScrobbleStatusChanged()
+{
+    emit scrobbleStatusChanged();
+}
+
+void
+lastfm::TrackData::forceCorrected( QString correction )
+{
+    emit corrected( correction );
 }
 
 
@@ -394,7 +416,8 @@ lastfm::MutableTrack::setFromLfm( const XmlQuery& lfm )
     imageUrl = lfm["track"]["image size=mega"].text();
     if ( !imageUrl.isEmpty() ) d->m_images[lastfm::Mega] = imageUrl;
 
-    d->loved = lfm["track"]["userloved"].text().toInt();
+    if ( lfm["track"]["userloved"].text().length() > 0)
+        d->loved = lfm["track"]["userloved"].text() == "0" ? Unloved : Loved;
 
     d->forceLoveToggled( d->loved );
 }
@@ -596,6 +619,158 @@ lastfm::Track::isMp3() const
            d->url.path().endsWith( ".mp3", Qt::CaseInsensitive );
 }
 
+bool
+lastfm::Track::sameObject( const Track& that )
+{
+    return (this->d == that.d);
+}
+
+bool
+lastfm::Track::operator==( const Track& that ) const
+{
+    return ( this->title() == that.title() &&
+             this->album() == that.album() &&
+             this->artist() == that.artist());
+}
+bool
+lastfm::Track::operator!=( const Track& that ) const
+{
+    return !operator==( that );
+}
+
+QObject*
+lastfm::Track::signalProxy() const
+{
+    return d.data();
+}
+
+bool
+lastfm::Track::isNull() const
+{
+    return d->null;
+}
+
+uint
+lastfm::Track::trackNumber() const
+{ return d->trackNumber; }
+uint
+lastfm::Track::duration() const
+{
+    // in seconds
+    return d->duration;
+}
+
+lastfm::Mbid
+lastfm::Track::mbid() const
+{
+    return lastfm::Mbid(d->mbid); }
+QUrl
+lastfm::Track::url() const
+{
+    return d->url; }
+QDateTime
+lastfm::Track::timestamp() const
+{
+    return d->time;
+}
+
+lastfm::Track::Source
+lastfm::Track::source() const
+{
+    return static_cast<Source>(d->source);
+}
+
+uint
+lastfm::Track::fingerprintId() const
+{
+    return d->fpid;
+}
+
+bool
+lastfm::Track::isLoved() const
+{
+    return d->loved == Loved;
+}
+
+lastfm::LoveStatus
+lastfm::Track::loveStatus() const
+{
+    return d->loved;
+}
+
+
+QString
+lastfm::Track::durationString() const
+{
+    return durationString( d->duration );
+}
+
+
+lastfm::Track::ScrobbleStatus
+lastfm::Track::scrobbleStatus() const
+{
+    return static_cast<ScrobbleStatus>(d->scrobbleStatus);
+}
+
+lastfm::Track::ScrobbleError
+lastfm::Track::scrobbleError() const
+{
+    return static_cast<ScrobbleError>(d->scrobbleError);
+}
+QString
+lastfm::Track::scrobbleErrorText() const
+{
+    return d->scrobbleErrorText;
+}
+
+/** default separator is an en-dash */
+QString
+lastfm::Track::toString() const
+{
+    return toString( Corrected );
+}
+
+QString
+lastfm::Track::toString( Corrections corrections ) const
+{
+    return toString( QChar(8211), corrections );
+}
+
+lastfm::TrackContext
+lastfm::Track::context() const
+{
+    return d->context;
+}
+
+// iTunes tracks might be podcasts or videos
+bool
+lastfm::Track::isPodcast() const
+{
+    return d->podcast;
+}
+
+bool
+lastfm::Track::isVideo() const
+{
+    return d->video;
+}
+
+QString
+lastfm::Track::extra( const QString& key ) const
+{
+    return d->extras[ key ];
+}
+
+bool lastfm::Track::operator<( const Track &that ) const
+{
+    return this->d->time < that.d->time;
+}
+
+lastfm::Track::operator QVariant() const
+{
+    return QVariant::fromValue( *this );
+}
+
 void
 lastfm::MutableTrack::setCorrections( QString title, QString album, QString artist, QString albumArtist )
 {
@@ -607,3 +782,149 @@ lastfm::MutableTrack::setCorrections( QString title, QString album, QString arti
     d->forceCorrected( toString() );
 }
 
+lastfm::MutableTrack::MutableTrack()
+{
+    d->null = false;
+}
+
+
+lastfm::MutableTrack::MutableTrack( const Track& that )
+    : Track( that )
+{
+    d->null = false;
+}
+
+void
+lastfm::MutableTrack::setArtist( QString artist )
+{
+    d->artist.setName( artist.trimmed() );
+}
+
+void
+lastfm::MutableTrack::setAlbumArtist( QString albumArtist )
+{
+    d->albumArtist.setName( albumArtist.trimmed() );
+}
+
+void
+lastfm::MutableTrack::setAlbum( QString album )
+{
+    d->album = album.trimmed();
+}
+
+void
+lastfm::MutableTrack::setTitle( QString title )
+{
+    d->title = title.trimmed();
+}
+
+void
+lastfm::MutableTrack::setTrackNumber( uint n )
+{
+    d->trackNumber = n;
+}
+
+void
+lastfm::MutableTrack::setDuration( uint duration )
+{
+    d->duration = duration;
+}
+
+void
+lastfm::MutableTrack::setUrl( QUrl url )
+{
+    d->url = url;
+}
+
+void
+lastfm::MutableTrack::setSource( Source s )
+{
+    d->source = s;
+}
+
+void
+lastfm::MutableTrack::setLoved( bool loved )
+{
+    d->loved = loved ? Loved : Unloved;
+}
+
+void
+lastfm::MutableTrack::setMbid( Mbid id )
+{
+    d->mbid = id;
+}
+
+void
+lastfm::MutableTrack::setFingerprintId( uint id )
+{
+    d->fpid = id;
+}
+
+void
+lastfm::MutableTrack::setScrobbleStatus( ScrobbleStatus scrobbleStatus )
+{
+    d->scrobbleStatus = scrobbleStatus;
+    d->forceScrobbleStatusChanged();
+}
+
+void
+lastfm::MutableTrack::setScrobbleError( ScrobbleError scrobbleError )
+{
+    d->scrobbleError = scrobbleError;
+}
+
+void
+lastfm::MutableTrack::setScrobbleErrorText( const QString& scrobbleErrorText )
+{
+    d->scrobbleErrorText = scrobbleErrorText;
+}
+
+void
+lastfm::MutableTrack::stamp()
+{
+    d->time = QDateTime::currentDateTime();
+}
+
+void
+lastfm::MutableTrack::setExtra( const QString& key, const QString& value )
+{
+    d->extras[key] = value;
+}
+
+void
+lastfm::MutableTrack::removeExtra( QString key )
+{
+    d->extras.remove( key );
+}
+
+void
+lastfm::MutableTrack::setTimeStamp( const QDateTime& dt )
+{
+    d->time = dt;
+}
+
+void
+lastfm::MutableTrack::setContext( TrackContext context )
+{
+    d->context = context;
+}
+
+// iTunes tracks might be podcasts or videos
+void
+lastfm::MutableTrack::setPodcast( bool podcast )
+{
+    d->podcast = podcast;
+}
+void
+lastfm::MutableTrack::setVideo( bool video )
+{
+    d->video = video;
+}
+
+QDebug
+operator<<( QDebug d, const lastfm::Track& t )
+{
+    return !t.isNull()
+            ? d << t.toString( '-' ) << t.url()
+            : d << "Null Track object";
+}
