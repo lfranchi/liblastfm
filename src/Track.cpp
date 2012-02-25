@@ -157,7 +157,7 @@ lastfm::TrackData::onLoveFinished()
 
     }
 
-    emit loveToggled( loved );
+    emit loveToggled( loved == Loved );
 }
 
 
@@ -172,7 +172,7 @@ lastfm::TrackData::onUnloveFinished()
             loved = Unloved;
     }
 
-    emit loveToggled( loved );
+    emit loveToggled( loved == Loved );
 }
 
 void
@@ -199,7 +199,7 @@ lastfm::TrackData::onGotInfo()
             loved = lfm["track"]["userloved"].text() == "0" ? Unloved : Loved;
 
         emit gotInfo( data );
-        emit loveToggled( loved );
+        emit loveToggled( loved == Loved );
     }
     else
     {
@@ -419,7 +419,7 @@ lastfm::MutableTrack::setFromLfm( const XmlQuery& lfm )
     if ( lfm["track"]["userloved"].text().length() > 0)
         d->loved = lfm["track"]["userloved"].text() == "0" ? Unloved : Loved;
 
-    d->forceLoveToggled( d->loved );
+    d->forceLoveToggled( d->loved == Loved );
 }
 
 void
