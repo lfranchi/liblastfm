@@ -36,8 +36,8 @@ namespace lastfm {
 enum LoveStatus
 {
     Unknown = 0,
-    Unloved,
-    Loved
+    Loved,
+    Unloved
 };
 
 class LASTFM_DLLEXPORT TrackContext
