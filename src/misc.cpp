@@ -153,20 +153,68 @@ lastfm::CFStringToUtf8( CFStringRef s )
 }
 #endif
 
-#if 0
-// this is a Qt implementation I found
-QString cfstring2qstring(CFStringRef str)
+
+const char*
+lastfm::platform()
 {
-    if(!str)
-        return QString();
-    
-    CFIndex length = CFStringGetLength(str);
-    if(const UniChar *chars = CFStringGetCharactersPtr(str))
-        return QString((QChar *)chars, length);
-    UniChar *buffer = (UniChar*)malloc(length * sizeof(UniChar));
-    CFStringGetCharacters(str, CFRangeMake(0, length), buffer);
-    QString ret((QChar *)buffer, length);
-    free(buffer);
-    return ret;
+#ifdef Q_WS_WIN
+    switch (QSysInfo::WindowsVersion)
+    {
+        case QSysInfo::WV_32s:        return "Windows 3.1 with Win32s";
+        case QSysInfo::WV_95:         return "Windows 95";
+        case QSysInfo::WV_98:         return "Windows 98";
+        case QSysInfo::WV_Me:         return "Windows Me";
+        case QSysInfo::WV_DOS_based:  return "MS-DOS-based Windows";
+
+        case QSysInfo::WV_NT:         return "Windows NT";
+        case QSysInfo::WV_2000:       return "Windows 2000";
+        case QSysInfo::WV_XP:         return "Windows XP";
+        case QSysInfo::WV_2003:       return "Windows Server 2003";
+        case QSysInfo::WV_VISTA:      return "Windows Vista";
+        case QSysInfo::WV_WINDOWS7:   return "Windows 7";
+        case QSysInfo::WV_NT_based:   return "NT-based Windows";
+
+        case QSysInfo::WV_CE:         return "Windows CE";
+        case QSysInfo::WV_CENET:      return "Windows CE.NET";
+        case QSysInfo::WV_CE_based:   return "CE-based Windows";
+
+        default:                      return "Unknown";
+    }
+#elif defined Q_WS_MAC
+    switch (QSysInfo::MacintoshVersion)
+    {
+        case QSysInfo::MV_Unknown:    return "Unknown Mac";
+        case QSysInfo::MV_9:          return "Mac OS 9";
+        case QSysInfo::MV_10_0:       return "Mac OS X 10.0";
+        case QSysInfo::MV_10_1:       return "Mac OS X 10.1";
+        case QSysInfo::MV_10_2:       return "Mac OS X 10.2";
+        case QSysInfo::MV_10_3:       return "Mac OS X 10.3";
+        case QSysInfo::MV_10_4:       return "Mac OS X 10.4";
+        case QSysInfo::MV_10_5:       return "Mac OS X 10.5";
+        case QSysInfo::MV_10_6:       return "Mac OS X 10.6";
+        case QSysInfo::MV_10_7:       return "Mac OS X 10.7";
+
+        default:                      return "Unknown";
+    }
+#elif defined Q_WS_X11
+    return "UNIX X11";
+#else
+    return "Unknown";
+#endif
+}
+
+QString lastfm::
+md5( const QByteArray& src )
+{
+    QByteArray const digest = QCryptographicHash::hash( src, QCryptographicHash::Md5 );
+    return QString::fromLatin1( digest.toHex() ).rightJustified( 32, '0' ).toLower();
+}
+
+#ifdef Q_WS_MAC
+QString
+lastfm::CFStringToQString( CFStringRef s )
+{
+    return QString::fromUtf8( CFStringToUtf8( s ) );
 }
 #endif
+
