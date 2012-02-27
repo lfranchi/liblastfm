@@ -100,7 +100,16 @@ public:
 
     //FIXME I hate this, but is used for radio trackauth etc.
     QMap<QString,QString> extras;
-    
+
+    struct Observer
+    {
+        QNetworkReply* reply;
+        QObject* receiver;
+        const char* method;
+    };
+
+    QList<Observer> observers;
+
     bool null;
 
     bool podcast;
@@ -120,7 +129,6 @@ signals:
     void loveToggled( bool love );
     void loveFinished();
     void unlovedFinished();
-    void gotInfo( const QByteArray& );
     void scrobbleStatusChanged();
     void corrected( QString correction );
 };
@@ -248,7 +256,11 @@ public:
     QNetworkReply* getTags() const; // for the logged in user
     QNetworkReply* getTopTags() const;
     QNetworkReply* getTopFans() const;
-    void getInfo( const QString& username = "" ) const;
+
+    /** method should be a method name of reciever that takes a QByteArray
+    If that fails it will try invoking method with no arguments.
+    */
+    void getInfo( QObject* receiver, const char * method, const QString& username = "" ) const;
     QNetworkReply* getBuyLinks( const QString& country ) const;
 
     /** you can only add 10 tags, we submit everything you give us, but the

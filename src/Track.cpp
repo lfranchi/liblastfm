@@ -178,12 +178,25 @@ lastfm::TrackData::onUnloveFinished()
 void
 lastfm::TrackData::onGotInfo()
 {
+    Observer observer;
+
+    for ( int i = 0 ; i < observers.count() ; ++i )
+    {
+        if ( observers.at( i ).reply == sender() )
+        {
+            observer = observers.takeAt( i );
+            break;
+        }
+    }
+
     const QByteArray data = static_cast<QNetworkReply*>(sender())->readAll();
 
     lastfm::XmlQuery lfm;
 
     if ( lfm.parse( data ) )
     {
+        qDebug() << lfm;
+
         QString imageUrl = lfm["track"]["image size=small"].text();
         if ( !imageUrl.isEmpty() ) m_images[lastfm::Small] = imageUrl;
         imageUrl = lfm["track"]["image size=medium"].text();
@@ -198,16 +211,16 @@ lastfm::TrackData::onGotInfo()
         if ( lfm["track"]["userloved"].text().length() > 0 )
             loved = lfm["track"]["userloved"].text() == "0" ? Unloved : Loved;
 
-        emit gotInfo( data );
+        if ( !QMetaObject::invokeMethod( observer.receiver, observer.method, Q_ARG(QByteArray, data) ) )
+            QMetaObject::invokeMethod( observer.receiver, observer.method );
+
         emit loveToggled( loved == Loved );
     }
     else
     {
-        emit gotInfo( data );
+        if  ( !QMetaObject::invokeMethod( observer.receiver, observer.method, Q_ARG(QByteArray, data) ) )
+            QMetaObject::invokeMethod( observer.receiver, observer.method );
     }
-
-    // you should connect everytime you call getInfo
-    disconnect( this, SIGNAL(gotInfo(const QByteArray&)), 0, 0);
 }
 
 void
@@ -489,7 +502,7 @@ lastfm::Track::getTags() const
 }
 
 void
-lastfm::Track::getInfo( const QString& username ) const
+lastfm::Track::getInfo( QObject *receiver, const char *method, const QString &username ) const
 {
     QMap<QString, QString> map = params("getInfo", true);
     if (!username.isEmpty()) map["username"] = username;
@@ -497,7 +510,17 @@ lastfm::Track::getInfo( const QString& username ) const
     // this is so the web services knows whether to use corrections or not
     if (!lastfm::ws::SessionKey.isEmpty()) map["sk"] = lastfm::ws::SessionKey;
 
-    QObject::connect( ws::get( map ), SIGNAL(finished()), d.data(), SLOT(onGotInfo()));
+    qDebug() << map;
+
+    QNetworkReply* reply = ws::get( map );
+
+    TrackData::Observer observer;
+    observer.receiver = receiver;
+    observer.method = method;
+    observer.reply = reply;
+    d->observers << observer;
+
+    QObject::connect( reply, SIGNAL(finished()), d.data(), SLOT(onGotInfo()));
 }
 
 
