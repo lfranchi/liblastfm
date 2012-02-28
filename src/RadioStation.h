@@ -46,15 +46,8 @@ namespace lastfm
     class LASTFM_DLLEXPORT RadioStation
     {
     public:
-        RadioStation()
-        {
-            d = new RadioStationData;
-        }
-        RadioStation( const QString& s )
-        {
-            d = new RadioStationData;
-            setString( s );
-        }
+        RadioStation();
+        RadioStation( const QString& s );
     
         static RadioStation library( const lastfm::User& user );
         static RadioStation library( QList<lastfm::User>& users );
@@ -96,13 +89,7 @@ namespace lastfm
         float mainstr() const;
         bool disco() const;
 
-        bool isLegacyPlaylist() const
-        {
-            return d->m_url.toString().startsWith( "lastfm://play/" ) ||
-                   d->m_url.toString().startsWith( "lastfm://preview/" ) ||
-                   d->m_url.toString().startsWith( "lastfm://track/" ) ||
-                   d->m_url.toString().startsWith( "lastfm://playlist/" );
-        }
+        bool isLegacyPlaylist() const;
 
         // good for getRecentStations:
         static QList<RadioStation> list( QNetworkReply* );
@@ -113,12 +100,12 @@ namespace lastfm
         void setString( const QString& s );
 
         static QString libraryStr( QList<lastfm::User>& user );
-        static QString recommendationsStr( const lastfm::User& user ) { return "lastfm://user/" + user + "/recommended"; }
-        static QString friendsStr( const lastfm::User& user )         { return "lastfm://user/" + user + "/friends"; }
-        static QString neighbourhoodStr( const lastfm::User& user )   { return "lastfm://user/" + user + "/neighbours"; }
+        static QString recommendationsStr( const lastfm::User& user );
+        static QString friendsStr( const lastfm::User& user );
+        static QString neighbourhoodStr( const lastfm::User& user );
         static QString tagStr( QList<lastfm::Tag>& tag );
         static QString similarStr( QList<lastfm::Artist>& artist );
-        static QString mixStr( const lastfm::User& user )             { return "lastfm://user/" + user + "/mix"; }
+        static QString mixStr( const lastfm::User& user );
 
     private:
         QSharedDataPointer<RadioStationData> d;
@@ -129,9 +116,6 @@ namespace lastfm
 Q_DECLARE_METATYPE( lastfm::RadioStation )
 
 
-inline QDebug operator<<( QDebug d, const lastfm::RadioStation& station )
-{
-    return d << station.url();
-}
+LASTFM_DLLEXPORT QDebug operator<<( QDebug d, const lastfm::RadioStation& station );
 
 #endif

@@ -28,6 +28,17 @@ const float k_defaultRep(0.5);
 const float k_defaultMainstr(0.5);
 const bool k_defaultDisco(false);
 
+lastfm::RadioStation::RadioStation()
+{
+    d = new RadioStationData;
+}
+
+lastfm::RadioStation::RadioStation( const QString& s )
+{
+    d = new RadioStationData;
+    setString( s );
+}
+
 lastfm::RadioStation
 lastfm::RadioStation::library( const lastfm::User& user )
 {
@@ -206,6 +217,16 @@ lastfm::RadioStation::getTagSuggestions( int limit ) const
 }
 
 
+bool
+lastfm::RadioStation::isLegacyPlaylist() const
+{
+    return d->m_url.toString().startsWith( "lastfm://play/" ) ||
+           d->m_url.toString().startsWith( "lastfm://preview/" ) ||
+           d->m_url.toString().startsWith( "lastfm://track/" ) ||
+           d->m_url.toString().startsWith( "lastfm://playlist/" );
+}
+
+
 //static 
 QList<lastfm::RadioStation> 
 lastfm::RadioStation::list( QNetworkReply* r )
@@ -316,6 +337,24 @@ QString lastfm::RadioStation::libraryStr( QList<lastfm::User>& users )
 }
 
 
+QString lastfm::RadioStation::recommendationsStr( const lastfm::User& user )
+{
+    return "lastfm://user/" + user + "/recommended";
+}
+
+
+QString lastfm::RadioStation::friendsStr( const lastfm::User& user )
+{
+    return "lastfm://user/" + user + "/friends";
+}
+
+
+QString lastfm::RadioStation::neighbourhoodStr( const lastfm::User& user )
+{
+    return "lastfm://user/" + user + "/neighbours";
+}
+
+
 QString lastfm::RadioStation::tagStr( QList<lastfm::Tag>& tags )
 {
     qSort(tags.begin(), tags.end());
@@ -346,4 +385,16 @@ QString lastfm::RadioStation::similarStr( QList<lastfm::Artist>& artists )
         url.append( "/similarartists" );
 
     return url;
+}
+
+
+QString lastfm::RadioStation::mixStr( const lastfm::User& user )
+{
+    return "lastfm://user/" + user + "/mix";
+}
+
+
+QDebug operator<<( QDebug d, const lastfm::RadioStation& station )
+{
+    return d << station.url();
 }
