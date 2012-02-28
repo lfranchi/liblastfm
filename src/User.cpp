@@ -25,95 +25,255 @@
 #include "User.h"
 #include <QAbstractNetworkCache>
 
+using lastfm::Gender;
 using lastfm::User;
 using lastfm::UserList;
 using lastfm::User;
 using lastfm::XmlQuery;
 using lastfm::ImageSize;
 
+
+class lastfm::Gender::GenderPrivate
+{
+    public:
+        QString s;
+};
+
+
+Gender::Gender()
+    :d( new GenderPrivate )
+{
+}
+
+Gender::Gender( const Gender& other )
+    :d( new GenderPrivate( *other.d ) )
+{
+}
+
+
+Gender::Gender( const QString& ss )
+    :d( new GenderPrivate )
+{
+    d->s = ss.toLower();
+}
+
+
+Gender::~Gender()
+{
+    delete d;
+}
+
+
+bool
+Gender::known() const
+{
+    return male() || female();
+}
+
+
+bool
+Gender::male() const
+{
+    return d->s == "m";
+}
+
+
+bool
+Gender::female() const
+{
+    return d->s == "f";
+}
+
+QString Gender::toString() const
+{
+    QString result;
+
+    if (male())
+        result = QObject::tr( "Male" );
+    else if (female())
+        result = QObject::tr( "Female" );
+    else
+        result = QObject::tr( "Neuter" );
+
+    return result;
+}
+
+
+Gender&
+Gender::operator=( const lastfm::Gender& that )
+{
+    d->s = that.d->s;
+    return *this;
+}
+
+
+
+class lastfm::User::UserPrivate
+{
+    public:
+        UserPrivate()
+            : m_name( lastfm::ws::Username )
+            , m_match( -1.0f )
+            , m_age( 0 )
+            , m_scrobbles( 0 )
+            , m_registered( QDateTime() )
+            , m_isSubscriber( false )
+            , m_canBootstrap( false )
+        {}
+        QString m_name;
+        Type m_type;
+        QList<QUrl> m_images;
+        float m_match;
+        QString m_realName;
+        Gender m_gender;
+        unsigned short m_age;
+        unsigned int m_scrobbles;
+        QDateTime m_registered;
+        QString m_country;
+        bool m_isSubscriber;
+        bool m_canBootstrap;
+};
+
+
+
 User::User( const XmlQuery& xml ) 
      :AbstractType(),
-     m_match( -1.0f ),
-     m_age( 0 ),
-     m_scrobbles( 0 ),
-     m_registered( QDateTime() ),
-     m_isSubscriber( false ),
-     m_canBootstrap( false )
+     d( new UserPrivate )
 {
-    m_name = xml["name"].text();
-    m_images << xml["image size=small"].text()
+    d->m_name = xml["name"].text();
+    d->m_images << xml["image size=small"].text()
              << xml["image size=medium"].text()
              << xml["image size=large"].text();
-    m_realName = xml["realname"].text();
+    d->m_realName = xml["realname"].text();
 
     QString type = xml["type"].text();
 
-    if ( type == "subscriber" ) m_type = TypeSubscriber;
-    else if ( type == "moderator" ) m_type = TypeModerator;
-    else if ( type == "staff" ) m_type = TypeStaff;
-    else if ( type == "alumni" ) m_type = TypeAlumni;
-    else m_type = TypeUser;
+    if ( type == "subscriber" ) d->m_type = TypeSubscriber;
+    else if ( type == "moderator" ) d->m_type = TypeModerator;
+    else if ( type == "staff" ) d->m_type = TypeStaff;
+    else if ( type == "alumni" ) d->m_type = TypeAlumni;
+    else d->m_type = TypeUser;
 
-    m_age = xml["age"].text().toUInt();
-    m_scrobbles = xml["playcount"].text().toUInt();
-    m_registered = QDateTime::fromTime_t(xml["registered"].attribute("unixtime").toUInt());
-    m_country = xml["country"].text();
-    m_isSubscriber = ( xml["subscriber"].text() == "1" );
-    m_canBootstrap = ( xml["bootstrap"].text() == "1" );
-    m_gender = xml["gender"].text();
-    m_images << xml["image size=small"].text()
+    d->m_age = xml["age"].text().toUInt();
+    d->m_scrobbles = xml["playcount"].text().toUInt();
+    d->m_registered = QDateTime::fromTime_t(xml["registered"].attribute("unixtime").toUInt());
+    d->m_country = xml["country"].text();
+    d->m_isSubscriber = ( xml["subscriber"].text() == "1" );
+    d->m_canBootstrap = ( xml["bootstrap"].text() == "1" );
+    d->m_gender = xml["gender"].text();
+    d->m_images << xml["image size=small"].text()
              << xml["image size=medium"].text()
              << xml["image size=large"].text()
              << xml["image size=extralarge"].text();
 }
 
+User::User( const User& other )
+    :AbstractType(),
+    d( new UserPrivate( *other.d ) )
+{
+}
+
 User::User()
     :AbstractType(),
-    m_name( lastfm::ws::Username ),
-    m_match( -1.0f ),
-    m_age( 0 ),
-    m_scrobbles( 0 ),
-    m_registered( QDateTime() ),
-    m_isSubscriber( false ),
-    m_canBootstrap( false )
-{}
+    d( new UserPrivate )
+{
+}
 
 User::User( const QString& name )
     :AbstractType(),
-    m_name( name ),
-    m_match( -1.0f ),
-    m_age( 0 ),
-    m_scrobbles( 0 ),
-    m_registered( QDateTime() ),
-    m_isSubscriber( false ),
-    m_canBootstrap( false )
-{}
+    d( new UserPrivate )
+{
+    d->m_name = name;
+    d->m_match = -1.0f;
+    d->m_age = 0;
+    d->m_scrobbles = 0;
+    d->m_registered = QDateTime();
+    d->m_isSubscriber = false;
+    d->m_canBootstrap = false;
+}
+
+
+User::~User()
+{
+    delete d;
+}
+
 
 lastfm::User&
 User::operator=( const User& that )
 {
-    m_name = that.name();
-    m_images = that.m_images;
-    m_realName = that.m_realName;
-    m_match = that.m_match;
-    m_type = that.m_type;
-    m_age = that.m_age;
-    m_scrobbles = that.m_scrobbles;
-    m_registered = that.m_registered;
-    m_country = that.m_country;
-    m_isSubscriber = that.m_isSubscriber;
-    m_canBootstrap = that.m_canBootstrap;
-    m_gender = that.m_gender;
-    m_images = that.m_images;
+    d->m_name = that.name();
+    d->m_images = that.d->m_images;
+    d->m_realName = that.d->m_realName;
+    d->m_match = that.d->m_match;
+    d->m_type = that.d->m_type;
+    d->m_age = that.d->m_age;
+    d->m_scrobbles = that.d->m_scrobbles;
+    d->m_registered = that.d->m_registered;
+    d->m_country = that.d->m_country;
+    d->m_isSubscriber = that.d->m_isSubscriber;
+    d->m_canBootstrap = that.d->m_canBootstrap;
+    d->m_gender = that.d->m_gender;
+    d->m_images = that.d->m_images;
     return *this;
 }
+
+
+bool
+User::operator==(const lastfm::User& that) const
+{
+    return d->m_name == that.d->m_name;
+}
+
+
+bool
+User::operator<(const lastfm::User& that) const
+{
+    return d->m_name < that.d->m_name;
+}
+
+
+
+User::operator QString() const
+{
+    return d->m_name;
+}
+
+
+QString
+User::name() const
+{
+    return d->m_name;
+}
+
+
+void
+User::setName( const QString& name )
+{
+    d->m_name = name;
+}
+
+
+User::Type
+User::type() const
+{
+    return d->m_type;
+}
+
+
+void
+User::setType( Type type )
+{
+    d->m_type = type;
+}
+
 
 QUrl 
 User::imageUrl( ImageSize size, bool square ) const
 {
-    if( !square ) return m_images.value( size ); 
+    if( !square ) return d->m_images.value( size );
 
-    QUrl url = m_images.value( size );
+    QUrl url = d->m_images.value( size );
     QRegExp re( "/serve/(\\d*)s?/" );
     return QUrl( url.toString().replace( re, "/serve/\\1s/" ));
 }
@@ -124,7 +284,7 @@ User::params(const QString& method) const
 {
     QMap<QString, QString> map;
     map["method"] = "user."+method;
-    map["user"] = m_name;
+    map["user"] = d->m_name;
     return map;
 }
 
@@ -264,6 +424,20 @@ User::list( QNetworkReply* r )
 }
 
 
+QString
+User::toString() const
+{
+    return name();
+}
+
+
+QDomElement
+User::toDomElement( QDomDocument& ) const
+{
+    return QDomElement();
+}
+
+
 QNetworkReply* //static
 User::getInfo( const QString& username )
 {
@@ -289,7 +463,14 @@ User::getRecommendedArtists()
 QUrl
 User::www() const
 { 
-    return UrlBuilder( "user" ).slash( m_name ).url();
+    return UrlBuilder( "user" ).slash( d->m_name ).url();
+}
+
+
+float
+User::match() const
+{
+    return d->m_match;
 }
 
 
@@ -298,65 +479,121 @@ User::getInfoString() const
 {
     QString text;
 
-    text = QObject::tr("%1").arg( m_realName.isEmpty() ? m_name : m_realName );
-    if ( m_age ) text.append( QObject::tr(", %1").arg( m_age ) );
-    if ( m_gender.known() ) text.append( QObject::tr(", %1").arg( m_gender.toString() ) );
-    if ( !m_country.isEmpty() ) text.append( QObject::tr(", %1").arg( m_country ) );
+    text = QObject::tr("%1").arg( d->m_realName.isEmpty() ? d->m_name : d->m_realName );
+    if ( d->m_age ) text.append( QObject::tr(", %1").arg( d->m_age ) );
+    if ( d->m_gender.known() ) text.append( QObject::tr(", %1").arg( d->m_gender.toString() ) );
+    if ( !d->m_country.isEmpty() ) text.append( QObject::tr(", %1").arg( d->m_country ) );
 
     return text;
 }
 
+
+quint32
+User::scrobbleCount() const
+{
+    return d->m_scrobbles;
+}
+
+
 void 
 User::setScrobbleCount( quint32 scrobbleCount )
 {
-    m_scrobbles = scrobbleCount;
+    d->m_scrobbles = scrobbleCount;
+}
+
+
+QDateTime
+User::dateRegistered() const
+{
+    return d->m_registered;
 }
 
 
 void
 User::setDateRegistered( const QDateTime& date )
 {
-    m_registered = date;
+    d->m_registered = date;
 }
 
-void 
-User::setImages( const QList<QUrl>& images )
+
+Gender
+User::gender() const
 {
-    m_images = images;
+    return d->m_gender;
 }
+
+
+QString
+User::country() const
+{
+    return d->m_country;
+}
+
+
+QString
+User::realName() const
+{
+    return d->m_realName;
+}
+
 
 void 
 User::setRealName( const QString& realName )
 {
-    m_realName = realName;
+    d->m_realName = realName;
 }
+
+
+void
+User::setImages( const QList<QUrl>& images )
+{
+    d->m_images = images;
+}
+
+
 void 
 User::setAge( unsigned short age )
 {
-    m_age = age;
+    d->m_age = age;
 }
+
+
+bool
+User::isSubscriber() const
+{
+    return d->m_isSubscriber;
+}
+
 
 void 
 User::setIsSubscriber( bool subscriber )
 {
-    m_isSubscriber = subscriber;
+    d->m_isSubscriber = subscriber;
 }
+
+
+bool
+User::canBootstrap() const
+{
+    return d->m_canBootstrap;
+}
+
 
 void 
 User::setCanBootstrap( bool canBootstrap )
 {
-    m_canBootstrap = canBootstrap;
+    d->m_canBootstrap = canBootstrap;
 }
 
 void 
 User::setGender( const QString& s )
 {
-    m_gender = Gender( s );
+    d->m_gender = Gender( s );
 }
 
 void 
 User::setCountry( const QString& country )
 {
-    m_country = country;
+    d->m_country = country;
 }
 

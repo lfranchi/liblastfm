@@ -33,31 +33,23 @@ namespace lastfm
 
     class LASTFM_DLLEXPORT Gender
     {
-        QString s;
 
     public:
-        Gender() :s(/*confused!*/){}
+        Gender();
+        Gender( const Gender& gender );
+        Gender( const QString& ss );
+        ~Gender();
 
-        Gender( const QString& ss ) :s( ss.toLower() )
-        {}
+        bool known() const;
+        bool male() const;
+        bool female() const;
 
-        bool known() const { return male() || female(); }
-        bool male() const { return s == "m"; }
-        bool female() const { return s == "f"; }
+        QString toString() const;
+        lastfm::Gender& operator=( const lastfm::Gender& that );
 
-        QString toString() const
-        {
-            QString result;
-
-            if (male())
-                result = QObject::tr( "Male" );
-            else if (female())
-                result = QObject::tr( "Female" );
-            else
-                result = QObject::tr( "Neuter" );
-
-            return result;
-        }
+    private:
+        class GenderPrivate;
+        GenderPrivate * const d;
     };
 
     class LASTFM_DLLEXPORT User : public AbstractType
@@ -76,35 +68,37 @@ namespace lastfm
         User();
         User( const QString& name );
         User( const class XmlQuery& xml );
+        User( const User& user );
+        ~User();
 
         lastfm::User& operator=( const lastfm::User& that );
-        bool operator==(const lastfm::User& that) const { return m_name == that.m_name; }
-        bool operator<(const lastfm::User& that) const { return m_name < that.m_name; }
+        bool operator==(const lastfm::User& that) const;
+        bool operator<(const lastfm::User& that) const;
 
-        operator QString() const { return m_name; }
+        operator QString() const;
 
-        QString name() const { return m_name; }
-        void setName( const QString& name ){ m_name = name; }
+        QString name() const;
+        void setName( const QString& name );
 
-        Type type() const { return m_type;}
-        void setType( Type type ){ m_type = type; }
+        Type type() const;
+        void setType( Type type );
 
-        bool isSubscriber() const{ return m_isSubscriber; }
+        bool isSubscriber() const;
         void setIsSubscriber( bool subscriber );
 
-        bool canBootstrap() const{ return m_canBootstrap; }
+        bool canBootstrap() const;
         void setCanBootstrap( bool canBootstrap );
 
-        quint32 scrobbleCount() const{ return m_scrobbles; }
+        quint32 scrobbleCount() const;
         void setScrobbleCount( quint32 scrobblesCount );
 
-        QDateTime dateRegistered() const { return m_registered; }
+        QDateTime dateRegistered() const;
         void setDateRegistered( const QDateTime& date );
 
-        Gender gender() const { return m_gender; }
-        QString country() const { return m_country; }
+        Gender gender() const;
+        QString country() const;
 
-        QString realName() const { return m_realName; }
+        QString realName() const;
         void setRealName( const QString& realName );
 
         QUrl imageUrl( ImageSize size = Large, bool square = false ) const;
@@ -139,32 +133,22 @@ namespace lastfm
     
         static UserList list( QNetworkReply* );
 
-        QString toString() const { return name(); }
-        QDomElement toDomElement( QDomDocument& ) const { return QDomElement(); }       
+        QString toString() const;
+        QDomElement toDomElement( QDomDocument& ) const;
     
         /** the user's profile page at www.last.fm */
         QUrl www() const;
     
         /** Returns the match between the logged in user and the user which this
           * object represents (if < 0.0f then not set) */
-        float match() const { return m_match; }
+        float match() const;
     
     protected:        
         QMap<QString, QString> params( const QString& method ) const;
 
     protected:
-        QString m_name;
-        Type m_type;
-        QList<QUrl> m_images;
-        float m_match;
-        QString m_realName;
-        Gender m_gender;
-        unsigned short m_age;
-        unsigned int m_scrobbles;
-        QDateTime m_registered;
-        QString m_country;
-        bool m_isSubscriber;
-        bool m_canBootstrap;
+        class UserPrivate;
+        UserPrivate * const d;
     };
 
     class LASTFM_DLLEXPORT UserList : public QList<User>
