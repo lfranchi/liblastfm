@@ -26,10 +26,62 @@ using lastfm::Tag;
 using lastfm::User;
 
 
+class lastfm::TagPrivate
+{
+public:
+    QString name;
+};
+
+
+Tag::Tag( const QString& name )
+    : d( new TagPrivate )
+{
+    d->name = name;
+}
+
+
+Tag::Tag( const Tag& that )
+    : d( new TagPrivate( *that.d ) )
+{
+}
+
+
+Tag::~Tag()
+{
+    delete d;
+}
+
+Tag::operator QString() const
+{
+    return d->name;
+}
+
+
+QString
+Tag::name() const
+{
+    return d->name;
+}
+
+
+lastfm::Tag
+Tag::operator=( const Tag& that ) const
+{
+    return Tag( that.name() );
+}
+
+
+bool
+Tag::operator<( const Tag& that ) const
+{
+    return this->d->name < that.d->name;
+}
+
+
 QUrl
 Tag::www() const
 {
-    return UrlBuilder( "tag" ).slash( m_name ).url();
+    return UrlBuilder( "tag" ).slash( d->name ).url();
 }
 
 
@@ -45,7 +97,7 @@ Tag::search() const
 {
     QMap<QString, QString> map;
     map["method"] = "tag.search";
-    map["tag"] = m_name;
+    map["tag"] = d->name;
     return ws::get(map);
 }
 
