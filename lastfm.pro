@@ -77,6 +77,7 @@ SOURCES += \
         src/Artist.cpp \
         src/Album.cpp \
         src/ScrobbleCache.cpp \
+        src/ScrobblePoint.cpp \
         src/Audioscrobbler.cpp \
         src/RadioTuner.cpp \
         src/RadioStation.cpp \
