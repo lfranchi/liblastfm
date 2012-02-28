@@ -29,22 +29,23 @@ namespace lastfm
 {
     class LASTFM_DLLEXPORT Playlist
     {
-        int m_id;
-    
-        Playlist() : m_id( -1 )
-        {}
+        Playlist();
+        class PlaylistPrivate * const d;
 
     public:
-        Playlist( int id ) : m_id( id )
-        {}
+        Playlist( int id );
+        Playlist( const Playlist& that );
+        ~Playlist();
     
-        int id() const { return m_id; }
+        int id() const;
 
         QNetworkReply* addTrack( const Track& ) const;
         QNetworkReply* fetch() const;
 
         static QNetworkReply* create( const QString& title, const QString& description = "" );
         static QNetworkReply* fetch( const QUrl& url );
+
+        Playlist& operator=( const Playlist& that );
     };
 }
 

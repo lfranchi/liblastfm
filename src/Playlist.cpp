@@ -22,12 +22,52 @@
 #include "ws.h"
 
 
+class lastfm::PlaylistPrivate
+{
+    public:
+        int id;
+};
+    
+
+lastfm::Playlist::Playlist()
+    : d( new PlaylistPrivate )
+{
+    d->id = -1;
+}
+
+
+lastfm::Playlist::Playlist( const Playlist& that )
+    : d( new PlaylistPrivate( *that.d ) )
+{
+}
+
+
+lastfm::Playlist::~Playlist()
+{
+    delete d;
+}
+
+
+lastfm::Playlist::Playlist( int id )
+    : d( new PlaylistPrivate )
+{
+    d->id = id;
+}
+
+
+int
+lastfm::Playlist::id() const
+{
+    return d->id;
+}
+
+
 QNetworkReply*
 lastfm::Playlist::addTrack( const Track& t ) const
 {
     QMap<QString, QString> map;
     map["method"] = "playlist.addTrack";
-    map["playlistID"] = m_id;
+    map["playlistID"] = d->id;
     map["artist"] = t.artist();
     map["track"] = t.title();
     return lastfm::ws::post(map);
@@ -37,7 +77,7 @@ lastfm::Playlist::addTrack( const Track& t ) const
 QNetworkReply*
 lastfm::Playlist::fetch() const
 {
-    return fetch( QUrl("lastfm://playlist/" + QString::number( m_id )) );
+    return fetch( QUrl("lastfm://playlist/" + QString::number( d->id )) );
 }
 
 
@@ -60,4 +100,12 @@ lastfm::Playlist::create( const QString& title, const QString& description /*=""
     if (description.size()) 
         map["description"] = description;
     return lastfm::ws::post(map);
+}
+
+
+lastfm::Playlist&
+lastfm::Playlist::operator=( const Playlist& that )
+{
+    d->id = that.d->id;
+    return *this;
 }
