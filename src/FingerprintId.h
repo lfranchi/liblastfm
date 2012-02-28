@@ -27,16 +27,14 @@ namespace lastfm
 {
     class LASTFM_DLLEXPORT FingerprintId
     {
-        int id;
-
     public:
-        FingerprintId() : id( -1 )
-        {}
+        FingerprintId();
+        FingerprintId( uint i );
+        FingerprintId( const FingerprintId& other );
 
-        FingerprintId( uint i ) : id( i )
-        {}
+        ~FingerprintId();
 
-        bool isNull() const { return id == -1; }
+        bool isNull() const;
 
         /** we query Last.fm for suggested metadata, how awesome is that? 
           * @returns null if isNull() */
@@ -44,19 +42,17 @@ namespace lastfm
         static QMap<float,Track> getSuggestions( QNetworkReply* );
 
         /** -1 if you need to generate it */
-        operator int() const { return id; }
+        operator int() const;
         /** isEmpty() if you need to generate it */
-        operator QString() const { return id == -1 ? "" : QString::number( id ); }
+        operator QString() const;
+        FingerprintId& operator=( const FingerprintId& other );
+
+    private:
+        class FingerprintIdPrivate * const d;
     };
 }
 
 
-inline QDebug operator<<( QDebug d, lastfm::FingerprintId id)
-{
-    if (id.isNull())
-        return d << "(null)";
-    else
-        return d << int(id);
-}
+LASTFM_DLLEXPORT QDebug operator<<( QDebug d, lastfm::FingerprintId id);
 
 #endif

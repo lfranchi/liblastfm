@@ -23,6 +23,46 @@
 #include <QtXml>
  
 
+class lastfm::FingerprintIdPrivate
+{
+public:
+    int id;
+};
+
+
+lastfm::FingerprintId::FingerprintId()
+    : d( new FingerprintIdPrivate )
+{
+    d->id = -1;
+}
+
+
+lastfm::FingerprintId::FingerprintId( uint i )
+    : d( new FingerprintIdPrivate )
+{
+    d->id = i;
+}
+
+
+lastfm::FingerprintId::FingerprintId( const FingerprintId& that )
+    : d( new FingerprintIdPrivate( *that.d ) )
+{
+}
+
+
+lastfm::FingerprintId::~FingerprintId()
+{
+    delete d;
+}
+
+
+bool
+lastfm::FingerprintId::isNull() const
+{
+    return d->id == -1;
+}
+
+
 QNetworkReply*
 lastfm::FingerprintId::getSuggestions() const
 {
@@ -52,4 +92,33 @@ lastfm::FingerprintId::getSuggestions( QNetworkReply* reply )
         tracks.insert( e.attribute( "confidence", "0.0" ).toFloat(), t );
     }
     return tracks;
+}
+
+
+lastfm::FingerprintId::operator int() const
+{
+    return d->id;
+}
+
+
+lastfm::FingerprintId::operator QString() const
+{
+    return d->id == -1 ? "" : QString::number( d->id );
+}
+
+lastfm::FingerprintId&
+lastfm::FingerprintId::operator=( const FingerprintId& that )
+{
+    d->id = that.d->id;
+    return *this;
+}
+
+
+QDebug
+operator<<( QDebug d, lastfm::FingerprintId id)
+{
+    if (id.isNull())
+        return d << "(null)";
+    else
+        return d << int(id);
 }
