@@ -22,13 +22,47 @@
 #include <QStringList>
 
 
+class lastfm::UrlBuilderPrivate
+{
+public:
+    QByteArray path;
+};
+
+
+lastfm::UrlBuilder::UrlBuilder( const QString& base )
+    : d( new UrlBuilderPrivate )
+{
+    d->path = '/' + base.toAscii();
+}
+
+
+lastfm::UrlBuilder::UrlBuilder( const UrlBuilder& that )
+    : d( new UrlBuilderPrivate( *that.d ) )
+{
+}
+
+
+lastfm::UrlBuilder::~UrlBuilder()
+{
+    delete d;
+}
+
+
+lastfm::UrlBuilder&
+lastfm::UrlBuilder::slash( const QString& path )
+{
+    this->d->path += '/' + encode( path );
+    return *this;
+}
+
+
 QUrl
 lastfm::UrlBuilder::url() const
 {
     QUrl url;
     url.setScheme( "http" );
     url.setHost( host() );
-    url.setEncodedPath( path );
+    url.setEncodedPath( d->path );
     return url;
 }
 
@@ -99,4 +133,11 @@ lastfm::UrlBuilder::mobilize( QUrl url )
 {
     url.setHost( url.host().replace( QRegExp("^(www.)?last"), "m.last" ) );
     return url;
+}
+
+lastfm::UrlBuilder&
+lastfm::UrlBuilder::operator=( const UrlBuilder& that )
+{
+    d->path = that.d->path;
+    return *this;
 }

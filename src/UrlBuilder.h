@@ -31,17 +31,17 @@ namespace lastfm
     /** For building www.last.fm urls. We have special rules for encoding and that */
     class LASTFM_DLLEXPORT UrlBuilder
     {
-        QByteArray path;
-
     public:
         /** Careful, the base is not encoded at all, we assume it is ASCII!
           * If you need it encoded at all you must use the slash function.
           * eg. UrlBuilder( "user" ).slash( "mxcl" ) ==> http://last.fm/user/mxcl
           */
-        UrlBuilder( const QString& base ) : path( '/' + base.toAscii() )
-        {}
+        UrlBuilder( const QString& base );
 
-        UrlBuilder& slash( const QString& path ) { this->path += '/' + encode( path ); return *this; }
+        UrlBuilder& slash( const QString& path );
+
+        UrlBuilder( const UrlBuilder& that );
+        ~UrlBuilder();
 
         QUrl url() const;
 
@@ -66,6 +66,11 @@ namespace lastfm
 
         /** return true if url is a last.fm url */
         static bool isHost( const QUrl& url );
+
+        UrlBuilder& operator=( const UrlBuilder& that );
+
+    private:
+        class UrlBuilderPrivate * const d;
     };
 }
 
