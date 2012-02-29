@@ -134,6 +134,6 @@ mac:HEADERS += src/mac/ProxyDict.h \
 unix:!mac:SOURCES += src/linux/LNetworkConnectionMonitor_linux.cpp
 unix:!mac:HEADERS += src/linux/LNetworkConnectionMonitor.h
 
-!win32:VERSION = 0.4.0
+!win32:VERSION = 1.0.0
 
 
