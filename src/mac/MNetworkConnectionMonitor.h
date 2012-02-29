@@ -32,6 +32,9 @@
 
 class __SCNetworkReachability;
 
+namespace lastfm
+{
+
 class MNetworkConnectionMonitor : public NetworkConnectionMonitor
 {
     Q_OBJECT
@@ -47,6 +50,8 @@ private:
                           void *info );
 #endif
 };
+
+}
 
 #endif // MNETWORK_CONNECTION_MONITOR_H
 

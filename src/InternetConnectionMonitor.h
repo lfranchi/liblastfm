@@ -24,13 +24,9 @@
 #include "global.h"
 #include <QObject>
 
-class NetworkConnectionMonitor;
-
-#ifdef Q_WS_X11
-class LNetworkConnectionMonitor;
-#endif
-
 namespace lastfm {
+
+class NetworkConnectionMonitor;
 
 class LASTFM_DLLEXPORT InternetConnectionMonitor : public QObject
 {

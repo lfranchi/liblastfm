@@ -25,7 +25,7 @@
 #include <QDBusInterface>
 #include <QDBusReply>
 
-LNetworkConnectionMonitor::LNetworkConnectionMonitor( QObject* parent ) :
+lastfm::LNetworkConnectionMonitor::LNetworkConnectionMonitor( QObject* parent ) :
     NetworkConnectionMonitor( parent )
 {
     m_nmInterface = new QDBusInterface( QString( "org.freedesktop.NetworkManager" ),
@@ -64,14 +64,14 @@ LNetworkConnectionMonitor::LNetworkConnectionMonitor( QObject* parent ) :
 
 }
 
-LNetworkConnectionMonitor::~LNetworkConnectionMonitor()
+lastfm::LNetworkConnectionMonitor::~LNetworkConnectionMonitor()
 {
     delete m_nmInterface;
 }
 
 
 void
-LNetworkConnectionMonitor::onStateChange( uint newState )
+lastfm::LNetworkConnectionMonitor::onStateChange( uint newState )
 {
     qDebug() << "Networkmanager state change!";
     

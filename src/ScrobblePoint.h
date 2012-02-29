@@ -24,6 +24,9 @@
 #include <QtAlgorithms>
 
 
+namespace lastfm
+{
+
 class LASTFM_DLLEXPORT ScrobblePoint
 {
     uint i;
@@ -55,5 +58,7 @@ public:
     // Upper limit for scrobble time in seconds
     static const uint kScrobbleTimeMax = 240;
 };
+
+}
 
 #endif

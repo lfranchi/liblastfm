@@ -52,7 +52,6 @@ public:
     WNetworkConnectionMonitor* m_icm;
 };
 
-}
 
 WNetworkConnectionMonitor::WNetworkConnectionMonitor( QObject* parent ) :
     NetworkConnectionMonitor( parent )
@@ -64,4 +63,6 @@ WNetworkConnectionMonitor::WNetworkConnectionMonitor( QObject* parent ) :
 WNetworkConnectionMonitor::~WNetworkConnectionMonitor()
 {
     delete m_ndisEventsProxy;
+}
+
 }

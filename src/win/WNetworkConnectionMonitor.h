@@ -25,7 +25,9 @@
 #include "../global.h"
 #include <QObject>
 
-namespace lastfm { class NdisEventsProxy; }
+namespace lastfm {
+
+class NdisEventsProxy;
 
 class WNetworkConnectionMonitor : public NetworkConnectionMonitor
 {
@@ -39,6 +41,8 @@ public:
 private:
     lastfm::NdisEventsProxy* m_ndisEventsProxy;
 };
+
+}
 
 #endif // WNETWORK_CONNECTION_MONITOR_H
 

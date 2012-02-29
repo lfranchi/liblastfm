@@ -24,9 +24,9 @@
 #include <QPointer>
 #include <SystemConfiguration/SCNetworkReachability.h>
 
-MNetworkConnectionMonitor* context = 0;
+lastfm::MNetworkConnectionMonitor* context = 0;
 
-MNetworkConnectionMonitor::MNetworkConnectionMonitor( QObject* parent ) :
+lastfm::MNetworkConnectionMonitor::MNetworkConnectionMonitor( QObject* parent ) :
     NetworkConnectionMonitor( parent )
 {
     context = this;
@@ -37,13 +37,13 @@ MNetworkConnectionMonitor::MNetworkConnectionMonitor( QObject* parent ) :
     CFRelease( ref );
 }
 
-MNetworkConnectionMonitor::~MNetworkConnectionMonitor()
+lastfm::MNetworkConnectionMonitor::~MNetworkConnectionMonitor()
 {
 }
 
 
 void
-MNetworkConnectionMonitor::callback( SCNetworkReachabilityRef target,
+lastfm::MNetworkConnectionMonitor::callback( SCNetworkReachabilityRef target,
                                      SCNetworkConnectionFlags flags,
                                      void * )
 {

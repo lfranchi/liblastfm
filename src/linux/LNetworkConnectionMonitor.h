@@ -29,6 +29,9 @@
 class QDBusConnection;
 class QDBusInterface;
 
+namespace lastfm
+{
+
 class LNetworkConnectionMonitor : public NetworkConnectionMonitor
 {
     Q_OBJECT
@@ -49,6 +52,8 @@ private slots:
 private:
     QDBusInterface* m_nmInterface;
 };
+
+}
 
 #endif // LNETWORK_CONNECTION_MONITOR_H
 

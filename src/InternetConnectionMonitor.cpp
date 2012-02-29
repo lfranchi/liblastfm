@@ -100,7 +100,7 @@ lastfm::InternetConnectionMonitor::onNetworkDown()
     emit connectivityChanged( m_up );
 }
 
-NetworkConnectionMonitor*
+lastfm::NetworkConnectionMonitor*
 lastfm::InternetConnectionMonitor::createNetworkConnectionMonitor()
 {
     NetworkConnectionMonitor* ncm = 0;

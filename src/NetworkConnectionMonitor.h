@@ -24,6 +24,9 @@
 #include "global.h"
 #include <QObject>
 
+namespace lastfm
+{
+
 class LASTFM_DLLEXPORT NetworkConnectionMonitor : public QObject
 {
     Q_OBJECT
@@ -42,5 +45,7 @@ protected:
 private:
     bool m_connected;
 };
+
+}
 
 #endif // NETWORK_CONNECTION_MONITOR_H

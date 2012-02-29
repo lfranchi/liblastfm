@@ -24,11 +24,7 @@
 #include <QList>
 #include <QString>
 
-#if LASTFM_VERSION >= 0x00010000
 namespace lastfm {
-#else
-using lastfm::Track;
-#endif
 
 /** absolutely not thread-safe */
 class LASTFM_DLLEXPORT ScrobbleCache
@@ -77,8 +73,6 @@ private:
     bool isValid( const Track& track, Invalidity* = 0 );
 };
 
-#if LASTFM_VERSION >= 0x00010000
 }
-#endif
 
 #endif

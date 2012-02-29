@@ -20,23 +20,23 @@
 
 #include "NetworkConnectionMonitor.h"
 
-NetworkConnectionMonitor::NetworkConnectionMonitor( QObject* /*parent*/ )
+lastfm::NetworkConnectionMonitor::NetworkConnectionMonitor( QObject* /*parent*/ )
     : m_connected( true )
 {
 }
 
-NetworkConnectionMonitor::~NetworkConnectionMonitor()
+lastfm::NetworkConnectionMonitor::~NetworkConnectionMonitor()
 {
 }
 
 bool
-NetworkConnectionMonitor::isConnected() const
+lastfm::NetworkConnectionMonitor::isConnected() const
 {
     return m_connected;
 }
 
 void
-NetworkConnectionMonitor::setConnected( bool connected )
+lastfm::NetworkConnectionMonitor::setConnected( bool connected )
 {
     if ( m_connected != connected )
     {
