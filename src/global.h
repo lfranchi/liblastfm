@@ -101,6 +101,8 @@ namespace lastfm
     class RadioStation;
     class Tag;
     class Track;
+    class ScrobbleCache;
+    class ScrobblePoint;
     class XmlQuery;
     class Xspf;
 }
@@ -121,6 +123,8 @@ using lastfm::User;
 using lastfm::RadioStation;
 using lastfm::Tag;
 using lastfm::Track;
+using lastfm::ScrobbleCache;
+using lastfm::ScrobblePoint;
 using lastfm::XmlQuery;
 using lastfm::Xspf;
 #endif
