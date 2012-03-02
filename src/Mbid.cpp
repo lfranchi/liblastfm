@@ -23,14 +23,63 @@
 
 namespace lastfm
 {
-    Mbid //static
-    Mbid::fromLocalFile( const QString& path )
-    {   
-        char out[MBID_BUFFER_SIZE];
-        QByteArray const bytes = QFile::encodeName( path );
-        int const r = getMP3_MBID( bytes.data(), out );
-        Mbid mbid;
-        if (r == 0) mbid.id = QString::fromLatin1( out );
-        return mbid;
-    }
+
+class MbidPrivate
+{
+public:
+    QString id;
+};
+
+
+Mbid::Mbid( const QString& p )
+    : d( new MbidPrivate )
+{
+    d->id = p;
+}
+
+
+Mbid::Mbid( const Mbid& that )
+    : d( new MbidPrivate( *that.d ) )
+{
+}
+
+
+Mbid::~Mbid()
+{
+    delete d;
+}
+
+
+bool
+Mbid::isNull() const
+{
+    return d->id.isNull() || d->id.isEmpty();
+}
+
+
+Mbid::operator QString() const
+{
+    return d->id;
+}
+
+
+Mbid&
+Mbid::operator=( const Mbid& that )
+{
+    d->id = that.d->id;
+    return *this;
+}
+
+
+Mbid //static
+Mbid::fromLocalFile( const QString& path )
+{
+    char out[MBID_BUFFER_SIZE];
+    QByteArray const bytes = QFile::encodeName( path );
+    int const r = getMP3_MBID( bytes.data(), out );
+    Mbid mbid;
+    if (r == 0) mbid.d->id = QString::fromLatin1( out );
+    return mbid;
+}
+
 }
