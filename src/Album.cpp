@@ -31,27 +31,61 @@ using lastfm::Album;
 using lastfm::Artist;
 using lastfm::Mbid;
 
+class lastfm::AlbumPrivate {
+    public:
+        Mbid mbid;
+        Artist artist;
+        QString title;
+};
+
+
 Album::Album()
-{}
+    : d( new lastfm::AlbumPrivate )
+{
+}
 
 Album::Album( Mbid mbid )
-    : m_mbid( mbid )
-{}
+    : d( new AlbumPrivate )
+{
+    d->mbid = mbid;
+}
 
 Album::Album( Artist artist, QString title )
-    : m_artist( artist ), m_title( title )
-{}
+    : d( new AlbumPrivate )
+{
+    d->artist = artist;
+    d->title = title;
+}
+
+Album::Album( const Album& other )
+    : d( new AlbumPrivate( *other.d ) )
+{
+}
+
+Album::~Album()
+{
+    delete d;
+}
 
 bool
 Album::operator==( const Album& that ) const
 {
-    return m_title == that.m_title && m_artist == that.m_artist;
+    return d->title == that.d->title && d->artist == that.d->artist;
 }
 
 bool
 Album::operator!=( const Album& that ) const
 {
-    return m_title != that.m_title || m_artist != that.m_artist;
+    return d->title != that.d->title || d->artist != that.d->artist;
+}
+
+Album&
+Album::operator=( const Album& that )
+{
+    d->mbid = that.d->mbid;
+    d->artist = that.d->artist;
+    d->title = that.d->title;
+    return *this;
 }
 
 Album::operator QString() const
@@ -62,25 +96,25 @@ Album::operator QString() const
 QString
 Album::title() const
 {
-    return m_title;
+    return d->title;
 }
 
 Artist
 Album::artist() const
 {
-    return m_artist;
+    return d->artist;
 }
 
 Mbid
 Album::mbid() const
 {
-    return m_mbid;
+    return d->mbid;
 }
 
 bool
 Album::isNull() const
 {
-    return m_title.isEmpty() && m_mbid.isNull();
+    return d->title.isEmpty() && d->mbid.isNull();
 }
 
 
@@ -89,8 +123,8 @@ lastfm::Album::getInfo( const QString& username) const
 {
     QMap<QString, QString> map;
     map["method"] = "album.getInfo";
-    map["artist"] = m_artist;
-    map["album"] = m_title;
+    map["artist"] = d->artist;
+    map["album"] = d->title;
     if (!username.isEmpty()) map["username"] = username;
     if (!lastfm::ws::SessionKey.isEmpty()) map["sk"] = lastfm::ws::SessionKey;
     return lastfm::ws::get(map);
@@ -102,8 +136,8 @@ lastfm::Album::getTags() const
 {
     QMap<QString, QString> map;
     map["method"] = "album.getTags";
-    map["artist"] = m_artist;
-    map["album"] = m_title;
+    map["artist"] = d->artist;
+    map["album"] = d->title;
     return lastfm::ws::get(map);
 }
 
@@ -113,8 +147,8 @@ lastfm::Album::share( const QStringList& recipients, const QString& message, boo
 {
     QMap<QString, QString> map;
     map["method"] = "album.share";
-    map["artist"] = m_artist;
-    map["album"] = m_title;
+    map["artist"] = d->artist;
+    map["album"] = d->title;
     map["recipient"] = recipients.join(",");
     map["public"] = isPublic ? "1" : "0";
     if (message.size()) map["message"] = message;
@@ -125,7 +159,7 @@ lastfm::Album::share( const QStringList& recipients, const QString& message, boo
 QUrl
 lastfm::Album::www() const
 {
-    return lastfm::UrlBuilder( "music" ).slash( m_artist ).slash( m_title ).url();
+    return lastfm::UrlBuilder( "music" ).slash( d->artist ).slash( d->title ).url();
 }
 
 
@@ -137,8 +171,8 @@ lastfm::Album::addTags( const QStringList& tags ) const
 
     QMap<QString, QString> map;
     map["method"] = "album.addTags";
-    map["artist"] = m_artist;
-    map["album"] = m_title;
+    map["artist"] = d->artist;
+    map["album"] = d->title;
     map["tags"] = tags.join( QChar(',') );
     return lastfm::ws::post(map);
 }
