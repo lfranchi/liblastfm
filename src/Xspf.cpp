@@ -26,22 +26,31 @@
 #include "Xspf.h"
 
 
+class lastfm::XspfPrivate
+{
+    public:
+        QList<Track> tracks;
+        QString title;
+};
+
+
 lastfm::Xspf::Xspf( const QDomElement& playlist_node, QObject* parent )
     :QObject( parent )
+    , d( new XspfPrivate )
 {
     XmlQuery e( playlist_node );
 
     int expirySeconds = e["link rel=http://www.last.fm/expiry"].text().toInt();
     QTimer::singleShot( expirySeconds * 1000, this, SLOT(onExpired()));
     
-    m_title = e["title"].text();
+    d->title = e["title"].text();
         
     //FIXME should we use UnicornUtils::urlDecode()?
     //The title is url encoded, has + instead of space characters 
     //and has a + at the begining. So it needs cleaning up:
-    m_title.replace( '+', ' ' );
-    m_title = QUrl::fromPercentEncoding( m_title.toUtf8() );
-    m_title = m_title.trimmed();
+    d->title.replace( '+', ' ' );
+    d->title = QUrl::fromPercentEncoding( d->title.toUtf8() );
+    d->title = d->title.trimmed();
     
     foreach (XmlQuery e, e["trackList"].children( "track" ))
     {
@@ -64,9 +73,37 @@ lastfm::Xspf::Xspf( const QDomElement& playlist_node, QObject* parent )
         if ( contexts.count() > 0 )
             t.setContext( TrackContext( contextsNodeList.item(0).toElement().tagName(), contexts ) );
 
-        m_tracks << t; // outside try block since location is enough basically
+        d->tracks << t; // outside try block since location is enough basically
     }
 }
+
+
+lastfm::Xspf::~Xspf()
+{
+    delete d;
+}
+
+
+QString
+lastfm::Xspf::title() const
+{
+    return d->title;
+}
+
+
+bool
+lastfm::Xspf::isEmpty() const
+{
+    return d->tracks.isEmpty();
+}
+
+
+lastfm::Track
+lastfm::Xspf::takeFirst()
+{
+    return d->tracks.takeFirst();
+}
+
 
 void
 lastfm::Xspf::onExpired()
