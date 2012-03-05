@@ -31,20 +31,14 @@
 
 namespace lastfm
 {
-    class ArtistData : public QSharedData
-    {
-    public:
-        QString name;
-        QMap<lastfm::ImageSize, QUrl> images;
-    };
-
     class LASTFM_DLLEXPORT Artist : public AbstractType
     {
     private:
-        QSharedDataPointer<ArtistData> d;
+        QSharedDataPointer<class ArtistData> d;
 
     public:
         Artist();
+        ~Artist();
         Artist( const QString& name );
         Artist( const class XmlQuery& xml );
         Artist( const Artist& artist );
