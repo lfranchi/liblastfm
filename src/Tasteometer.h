@@ -9,6 +9,7 @@ namespace lastfm
     {
     public:
         Tasteometer();
+        ~Tasteometer();
 
     public:
         static QNetworkReply* compare( const User& left, const User& right );
