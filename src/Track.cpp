@@ -211,15 +211,17 @@ lastfm::TrackData::onGotInfo()
         if ( lfm["track"]["userloved"].text().length() > 0 )
             loved = lfm["track"]["userloved"].text() == "0" ? Unloved : Loved;
 
-        if ( !QMetaObject::invokeMethod( observer.receiver, observer.method, Q_ARG(QByteArray, data) ) )
-            QMetaObject::invokeMethod( observer.receiver, observer.method );
+        if ( observer.receiver )
+            if ( !QMetaObject::invokeMethod( observer.receiver, observer.method, Q_ARG(QByteArray, data) ) )
+                QMetaObject::invokeMethod( observer.receiver, observer.method );
 
         emit loveToggled( loved == Loved );
     }
     else
     {
-        if  ( !QMetaObject::invokeMethod( observer.receiver, observer.method, Q_ARG(QByteArray, data) ) )
-            QMetaObject::invokeMethod( observer.receiver, observer.method );
+        if ( observer.receiver )
+            if  ( !QMetaObject::invokeMethod( observer.receiver, observer.method, Q_ARG(QByteArray, data) ) )
+                QMetaObject::invokeMethod( observer.receiver, observer.method );
     }
 }
 

@@ -20,16 +20,17 @@
 #ifndef LASTFM_TRACK_H
 #define LASTFM_TRACK_H
 
-#include "AbstractType.h"
-#include "Album.h"
-#include "Mbid.h"
 #include <QDateTime>
 #include <QDomElement>
 #include <QExplicitlySharedDataPointer>
 #include <QString>
 #include <QMap>
 #include <QUrl>
+#include <QPointer>
 
+#include "AbstractType.h"
+#include "Album.h"
+#include "Mbid.h"
 
 namespace lastfm {
 
@@ -104,7 +105,7 @@ public:
     struct Observer
     {
         QNetworkReply* reply;
-        QObject* receiver;
+        QPointer<QObject> receiver;
         const char* method;
     };
 
