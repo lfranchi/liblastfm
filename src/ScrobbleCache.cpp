@@ -40,7 +40,7 @@ ScrobbleCache::ScrobbleCache( const QString& username )
 
 
 bool
-ScrobbleCache::isValid( const Track& track, Invalidity* v )
+ScrobbleCache::isValid( const lastfm::Track& track, Invalidity* v )
 {
     #define TEST( test, x ) \
         if (test) { \
@@ -122,7 +122,7 @@ ScrobbleCache::write()
 
 
 void
-ScrobbleCache::add( const QList<Track>& tracks )
+ScrobbleCache::add( const QList<lastfm::Track>& tracks )
 {
     foreach (const Track& track, tracks)
     {
@@ -143,7 +143,7 @@ ScrobbleCache::add( const QList<Track>& tracks )
 
 
 int
-ScrobbleCache::remove( const QList<Track>& toremove )
+ScrobbleCache::remove( const QList<lastfm::Track>& toremove )
 {
     QMutableListIterator<Track> i( m_tracks );
     while (i.hasNext()) {
