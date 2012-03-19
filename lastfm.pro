@@ -84,7 +84,8 @@ SOURCES += \
         src/UrlBuilder.cpp \
         src/misc.cpp \
         src/Chart.cpp \
-        src/Auth.cpp
+        src/Auth.cpp \
+        src/Library.cpp
 	
 HEADERS += \
         src/ws.h \
@@ -112,7 +113,8 @@ HEADERS += \
         src/UrlBuilder.h \
         src/misc.h \
         src/Chart.h \
-        src/Auth.h
+        src/Auth.h \
+        src/Library.h
 	
 win32:SOURCES += src/win/WNetworkConnectionMonitor_win.cpp \
         src/win/WmiSink.cpp \
