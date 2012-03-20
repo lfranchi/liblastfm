@@ -20,27 +20,35 @@
 
 #include "NetworkConnectionMonitor.h"
 
-lastfm::NetworkConnectionMonitor::NetworkConnectionMonitor( QObject* /*parent*/ )
-    : m_connected( true )
+class lastfm::NetworkConnectionMonitorPrivate
 {
+    public:
+        bool connected;
+};
+
+lastfm::NetworkConnectionMonitor::NetworkConnectionMonitor( QObject* /*parent*/ )
+    : d( new NetworkConnectionMonitorPrivate )
+{
+    d->connected = true;
 }
 
 lastfm::NetworkConnectionMonitor::~NetworkConnectionMonitor()
 {
+    delete d;
 }
 
 bool
 lastfm::NetworkConnectionMonitor::isConnected() const
 {
-    return m_connected;
+    return d->connected;
 }
 
 void
 lastfm::NetworkConnectionMonitor::setConnected( bool connected )
 {
-    if ( m_connected != connected )
+    if ( d->connected != connected )
     {
-        m_connected = connected;
+        d->connected = connected;
 
         if ( connected )
             emit networkUp();

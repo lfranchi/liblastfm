@@ -43,7 +43,7 @@ protected:
     void setConnected( bool connected );
 
 private:
-    bool m_connected;
+    class NetworkConnectionMonitorPrivate * const d;
 };
 
 }
