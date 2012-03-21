@@ -29,46 +29,142 @@
 #include "ws.h"
 
 
-lastfm::TrackContext::TrackContext()
-    :m_type( Unknown )
+class lastfm::TrackContextPrivate
 {
+    public:
+        TrackContext::Type m_type;
+        QList<QString> m_values;
+        static TrackContext::Type getType( const QString& typeString );
+};
 
+lastfm::TrackContext::Type
+lastfm::TrackContextPrivate::getType( const QString& typeString )
+{
+    lastfm::TrackContext::Type type = lastfm::TrackContext::Unknown;
+
+    if ( typeString == "artist" )
+        type = lastfm::TrackContext::Artist;
+    else if ( typeString == "user" )
+        type = lastfm::TrackContext::User;
+    else if ( typeString == "neighbour" )
+        type = lastfm::TrackContext::Neighbour;
+    else if ( typeString == "friend" )
+        type = lastfm::TrackContext::Friend;
+
+    return type;
+}
+
+
+lastfm::TrackContext::TrackContext()
+    :d( new TrackContextPrivate )
+{
+    d->m_type = Unknown;
 }
 
 lastfm::TrackContext::TrackContext( const QString& type, const QList<QString>& values )
-    :m_type( getType( type ) ), m_values( values )
+    :d( new TrackContextPrivate )
+{
+    d->m_values = values;
+    d->m_type = d->getType( type );
+}
+
+lastfm::TrackContext::TrackContext( const TrackContext& that )
+    :d( new TrackContextPrivate( *that.d ) )
 {
 }
 
-lastfm::TrackContext::Type
-lastfm::TrackContext::getType( const QString& typeString )
+lastfm::TrackContext::~TrackContext()
 {
-    Type type = Unknown;
-
-    if ( typeString == "artist" )
-        type = Artist;
-    else if ( typeString == "user" )
-        type = User;
-    else if ( typeString == "neighbour" )
-        type = Neighbour;
-    else if ( typeString == "friend" )
-        type = Friend;
-
-    return type;
+    delete d;
 }
 
 lastfm::TrackContext::Type
 lastfm::TrackContext::type() const
 {
-    return m_type;
+    return d->m_type;
 }
 
 
 QList<QString>
 lastfm::TrackContext::values() const
 {
-    return m_values;
+    return d->m_values;
 }
+
+lastfm::TrackContext&
+lastfm::TrackContext::operator=( const TrackContext& that )
+{
+    d->m_type = that.d->m_type;
+    d->m_values = that.d->m_values;
+    return *this;
+}
+
+
+class lastfm::TrackData : public QObject, public QSharedData
+{
+    Q_OBJECT
+
+    friend class Track;
+    friend class MutableTrack;
+public:
+    TrackData();
+
+public:
+    lastfm::Artist artist;
+    lastfm::Artist albumArtist;
+    QString album;
+    QString title;
+    lastfm::Artist correctedArtist;
+    lastfm::Artist correctedAlbumArtist;
+    QString correctedAlbum;
+    QString correctedTitle;
+    TrackContext context;
+    uint trackNumber;
+    uint duration;
+    short source;
+    short rating;
+    QString mbid; /// musicbrainz id
+    uint fpid;
+    QUrl url;
+    QDateTime time; /// the time the track was started at
+    LoveStatus loved;
+    QMap<lastfm::ImageSize, QUrl> m_images;
+    short scrobbleStatus;
+    short scrobbleError;
+    QString scrobbleErrorText;
+
+    //FIXME I hate this, but is used for radio trackauth etc.
+    QMap<QString,QString> extras;
+
+    struct Observer
+    {
+        QNetworkReply* reply;
+        QPointer<QObject> receiver;
+        const char* method;
+    };
+
+    QList<Observer> observers;
+
+    bool null;
+
+    bool podcast;
+    bool video;
+
+private:
+    void forceLoveToggled( bool love );
+    void forceScrobbleStatusChanged();
+    void forceCorrected( QString correction );
+
+private slots:
+    void onLoveFinished();
+    void onUnloveFinished();
+    void onGotInfo();
+
+signals:
+    void loveToggled( bool love );
+    void scrobbleStatusChanged( short scrobbleStatus );
+    void corrected( QString correction );
+};
 
 
 lastfm::TrackData::TrackData()
@@ -92,9 +188,10 @@ lastfm::Track::Track()
     d->null = true;
 }
 
-lastfm::Track::Track( TrackData* that_d )
-    :d( that_d )
-{}
+lastfm::Track::Track( const Track& that )
+    : d( that.d )
+{
+}
 
 lastfm::Track::Track( const QDomElement& e )
     :AbstractType()
@@ -230,7 +327,7 @@ lastfm::TrackData::forceLoveToggled( bool love )
 void
 lastfm::TrackData::forceScrobbleStatusChanged()
 {
-    emit scrobbleStatusChanged();
+    emit scrobbleStatusChanged( scrobbleStatus );
 }
 
 void
@@ -239,6 +336,17 @@ lastfm::TrackData::forceCorrected( QString correction )
     emit corrected( correction );
 }
 
+
+lastfm::Track&
+lastfm::Track::operator=( const Track& that )
+{
+    d = that.d;
+    return *this;
+}
+
+lastfm::Track::~Track()
+{
+}
 
 QDomElement
 lastfm::Track::toDomElement( QDomDocument& xml ) const
@@ -956,3 +1064,5 @@ operator<<( QDebug d, const lastfm::Track& t )
             ? d << t.toString( '-' ) << t.url()
             : d << "Null Track object";
 }
+
+#include "Track.moc"
