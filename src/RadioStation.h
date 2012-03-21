@@ -29,25 +29,16 @@
 
 namespace lastfm
 {
-    class RadioStationData : public QSharedData
-    {
-    public:
-        QUrl m_url;
-        QString m_title;
-        QString m_tagFilter;
-
-        float m_rep;
-        float m_mainstr;
-        bool m_disco;
-    };
-
     /** @author <jono@last.fm> 
       */
+
     class LASTFM_DLLEXPORT RadioStation
     {
     public:
         RadioStation();
         RadioStation( const QString& s );
+        RadioStation( const RadioStation& that );
+        ~RadioStation();
     
         static RadioStation library( const lastfm::User& user );
         static RadioStation library( QList<lastfm::User>& users );
@@ -95,20 +86,10 @@ namespace lastfm
         static QList<RadioStation> list( QNetworkReply* );
 
         bool operator==( const RadioStation& that ) const;
+        RadioStation& operator=( const RadioStation& that );
 
     private:
-        void setString( const QString& s );
-
-        static QString libraryStr( QList<lastfm::User>& user );
-        static QString recommendationsStr( const lastfm::User& user );
-        static QString friendsStr( const lastfm::User& user );
-        static QString neighbourhoodStr( const lastfm::User& user );
-        static QString tagStr( QList<lastfm::Tag>& tag );
-        static QString similarStr( QList<lastfm::Artist>& artist );
-        static QString mixStr( const lastfm::User& user );
-
-    private:
-        QSharedDataPointer<RadioStationData> d;
+        QSharedDataPointer<class RadioStationData> d;
     };
 }
 

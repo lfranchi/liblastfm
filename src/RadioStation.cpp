@@ -28,15 +28,58 @@ const float k_defaultRep(0.5);
 const float k_defaultMainstr(0.5);
 const bool k_defaultDisco(false);
 
-lastfm::RadioStation::RadioStation()
+class lastfm::RadioStationData : public QSharedData
 {
-    d = new RadioStationData;
+public:
+    QUrl m_url;
+    QString m_title;
+    QString m_tagFilter;
+
+    float m_rep;
+    float m_mainstr;
+    bool m_disco;
+};
+
+
+lastfm::RadioStation::RadioStation()
+    : d( new RadioStationData )
+{
 }
 
 lastfm::RadioStation::RadioStation( const QString& s )
+    : d( new RadioStationData )
 {
-    d = new RadioStationData;
-    setString( s );
+    // If it's a tag filtered station then extract that part
+    QString tempString = s;
+
+    if ( !tempString.startsWith("lastfm://tag/") )
+    {
+        int index = tempString.indexOf("/tag/");
+
+        if ( index != -1 )
+        {
+            d->m_tagFilter = tempString.mid( index + 5, tempString.count() - (index + 5) );
+            tempString = tempString.mid( 0, index );
+        }
+    }
+
+    d->m_url = tempString;
+}
+
+lastfm::RadioStation::RadioStation( const RadioStation& other )
+    : d(other.d)
+{
+}
+
+lastfm::RadioStation&
+lastfm::RadioStation::operator=( const RadioStation& that )
+{
+    d = that.d;
+    return *this;
+}
+
+lastfm::RadioStation::~RadioStation()
+{
 }
 
 lastfm::RadioStation
@@ -50,7 +93,18 @@ lastfm::RadioStation::library( const lastfm::User& user )
 lastfm::RadioStation
 lastfm::RadioStation::library( QList<lastfm::User>& users )
 {
-    RadioStation s( libraryStr( users ) );
+    qSort(users.begin(), users.end());
+
+    QString url = (users.count() > 1) ? "lastfm://users/" : "lastfm://user/";
+
+    url.append( users[0].name() );
+
+    for ( int i = 1 ; i < users.count() ; ++i )
+        url.append( "," + users[i].name() );
+
+    url.append("/personal");
+
+    RadioStation s( url );
     if( users.count() == 1 ) 
         s.setTitle( QObject::tr( "%1%2s Library Radio").arg( lastfm::ws::Username, QChar(0x2019) ));
 
@@ -73,7 +127,7 @@ lastfm::RadioStation::library( QList<lastfm::User>& users )
 lastfm::RadioStation
 lastfm::RadioStation::recommendations( const lastfm::User& user )
 {
-    RadioStation s( recommendationsStr( user ) );
+    RadioStation s( "lastfm://user/" + user + "/recommended" );
     
     s.setTitle( QObject::tr( "%1%2s Recommended Radio").arg( lastfm::ws::Username, QChar(0x2019) ));
 
@@ -83,7 +137,7 @@ lastfm::RadioStation::recommendations( const lastfm::User& user )
 lastfm::RadioStation
 lastfm::RadioStation::friends( const lastfm::User& user )
 {
-    RadioStation s( friendsStr( user ) );
+    RadioStation s( "lastfm://user/" + user + "/friends" );
 
     s.setTitle( QObject::tr( "%1%2s Friends Radio").arg( lastfm::ws::Username, QChar(0x2019) ));
 
@@ -93,7 +147,7 @@ lastfm::RadioStation::friends( const lastfm::User& user )
 lastfm::RadioStation
 lastfm::RadioStation::neighbourhood( const lastfm::User& user )
 {
-    RadioStation s( neighbourhoodStr( user ) );
+    RadioStation s( "lastfm://user/" + user + "/neighbours" );
     s.setTitle( QObject::tr( "%1%2s Neighbours%2 Radio").arg( lastfm::ws::Username, QChar(0x2019) ));
     return s;
 }
@@ -111,7 +165,16 @@ lastfm::RadioStation::tag( const lastfm::Tag& tag )
 lastfm::RadioStation
 lastfm::RadioStation::tag( QList<lastfm::Tag>& tag )
 {
-    return RadioStation( tagStr( tag ) );
+    qSort(tag.begin(), tag.end());
+
+    QString url = (tag.count() > 1) ? "lastfm://tag/" : "lastfm://globaltags/";
+
+    url.append( tag[0].name() );
+
+    for ( int i = 1 ; i < tag.count() ; ++i )
+        url.append( "*" + tag[i].name() );
+
+    return RadioStation( url );
 }
 
 
@@ -127,14 +190,26 @@ lastfm::RadioStation::similar( const lastfm::Artist& artist )
 lastfm::RadioStation
 lastfm::RadioStation::similar( QList<lastfm::Artist>& artists )
 {
-    return RadioStation( similarStr( artists ) );
+    qSort(artists.begin(), artists.end());
+
+    QString url = (artists.count() > 1) ? "lastfm://artistnames/" : "lastfm://artist/";
+
+    url.append( artists[0].name() );
+
+    for ( int i = 1 ; i < artists.count() ; ++i )
+        url.append( "," + artists[i].name() );
+
+    if (artists.count() == 1)
+        url.append( "/similarartists" );
+
+    return RadioStation( url );
 }
 
 
 lastfm::RadioStation
 lastfm::RadioStation::mix( const lastfm::User& user )
 {
-    RadioStation s( mixStr( user ) );
+    RadioStation s( "lastfm://user/" + user + "/mix" );
     s.setTitle( QObject::tr( "%1%2s Mix Radio").arg( lastfm::ws::Username, QChar(0x2019) ) );
     return s;
 }
@@ -261,27 +336,6 @@ lastfm::RadioStation::operator==( const RadioStation& that ) const
 
 
 void
-lastfm::RadioStation::setString( const QString& string )
-{
-    // If it's a tag filtered station then extract that part
-    QString tempString = string;
-
-    if ( !tempString.startsWith("lastfm://tag/") )
-    {
-        int index = tempString.indexOf("/tag/");
-
-        if ( index != -1 )
-        {
-            d->m_tagFilter = tempString.mid( index + 5, tempString.count() - (index + 5) );
-            tempString = tempString.mid( 0, index );
-        }
-    }
-
-    d->m_url = tempString;
-}
-
-
-void
 lastfm::RadioStation::setRep(float rep)
 {
     d->m_rep = rep;
@@ -317,80 +371,6 @@ float lastfm::RadioStation::mainstr() const
 bool lastfm::RadioStation::disco() const
 {
     return d->m_disco;
-}
-
-
-QString lastfm::RadioStation::libraryStr( QList<lastfm::User>& users )
-{
-    qSort(users.begin(), users.end());
-
-    QString url = (users.count() > 1) ? "lastfm://users/" : "lastfm://user/";
-
-    url.append( users[0].name() );
-
-    for ( int i = 1 ; i < users.count() ; ++i )
-        url.append( "," + users[i].name() );
-
-    url.append("/personal");
-
-    return url;
-}
-
-
-QString lastfm::RadioStation::recommendationsStr( const lastfm::User& user )
-{
-    return "lastfm://user/" + user + "/recommended";
-}
-
-
-QString lastfm::RadioStation::friendsStr( const lastfm::User& user )
-{
-    return "lastfm://user/" + user + "/friends";
-}
-
-
-QString lastfm::RadioStation::neighbourhoodStr( const lastfm::User& user )
-{
-    return "lastfm://user/" + user + "/neighbours";
-}
-
-
-QString lastfm::RadioStation::tagStr( QList<lastfm::Tag>& tags )
-{
-    qSort(tags.begin(), tags.end());
-
-    QString url = (tags.count() > 1) ? "lastfm://tag/" : "lastfm://globaltags/";
-
-    url.append( tags[0].name() );
-
-    for ( int i = 1 ; i < tags.count() ; ++i )
-        url.append( "*" + tags[i].name() );
-
-    return url;
-}
-
-
-QString lastfm::RadioStation::similarStr( QList<lastfm::Artist>& artists )
-{
-    qSort(artists.begin(), artists.end());
-
-    QString url = (artists.count() > 1) ? "lastfm://artistnames/" : "lastfm://artist/";
-
-    url.append( artists[0].name() );
-
-    for ( int i = 1 ; i < artists.count() ; ++i )
-        url.append( "," + artists[i].name() );
-
-    if (artists.count() == 1)
-        url.append( "/similarartists" );
-
-    return url;
-}
-
-
-QString lastfm::RadioStation::mixStr( const lastfm::User& user )
-{
-    return "lastfm://user/" + user + "/mix";
 }
 
 
