@@ -20,6 +20,7 @@
 
 #include <QTimer>
 
+#include "RadioStation.h"
 #include "RadioTuner.h"
 #include "XmlQuery.h"
 #include "Xspf.h"
@@ -35,72 +36,66 @@ using namespace lastfm;
 #define MAX_TUNING_ATTEMPTS 3
 
 
-RadioTuner::RadioTuner( const RadioStation& station )
-    :m_retry_counter( 0 ),
-      m_fetchingPlaylist( false ),
-      m_requestedPlaylist(false),
-      m_station( station )
+class lastfm::RadioTunerPrivate : public QObject
 {
+    Q_OBJECT
+    public:
+        QList<Xspf*> m_playlistQueue;
+        uint m_retry_counter;
+        bool m_fetchingPlaylist;
+        bool m_requestedPlaylist;
+        class QTimer* m_twoSecondTimer;
+        RadioStation m_station;
+        RadioStation m_retuneStation;
+
+        RadioTunerPrivate( QObject * parent, const RadioStation& station );
+
+        /** Tries again up to 5 times 
+          * @returns true if we tried again, otherwise you should emit error */
+        bool tryAgain();
+        /** Will emit 5 tracks from tracks(), they have to played within an hour
+          * or the streamer will refuse to stream them. Also the previous five are
+          * invalidated apart from the one that is currently playing, so sorry, you
+          * can't build up big lists of tracks.
+          *
+          * I feel I must point out that asking the user which one they want to play
+          * is also not allowed according to our terms and conditions, which you
+          * already agreed to in order to get your API key. Sorry about that dude. 
+          */
+        void fetchFiveMoreTracks();
+
+    private slots:
+        void onTwoSecondTimeout();
+};
+
+
+lastfm::RadioTunerPrivate::RadioTunerPrivate( QObject *parent, const RadioStation& station )
+    : QObject( parent ),
+    m_station( station )
+{
+    m_retry_counter = 0;
+    m_fetchingPlaylist = false;
+    m_requestedPlaylist = false;
     m_twoSecondTimer = new QTimer( this );
     m_twoSecondTimer->setSingleShot( true );
     connect( m_twoSecondTimer, SIGNAL(timeout()), SLOT(onTwoSecondTimeout()));
+}
 
-    qDebug() << station.url();
 
-    //Empty RadioStation implies that the radio
-    //should tune to the previous station.
-    if( station.url().isEmpty() )
+void
+RadioTunerPrivate::onTwoSecondTimeout()
+{
+    if (m_requestedPlaylist)
     {
+        m_requestedPlaylist = false;
         fetchFiveMoreTracks();
     }
-    else
-    {
-        QMap<QString, QString> map;
-        map["method"] = "radio.tune";
-        map["station"] = station.url();
-        map["additional_info"] = "1";
-        connect( ws::post(map), SIGNAL(finished()), SLOT(onTuneReturn()) );
-    }
-}
-
-void
-RadioTuner::retune( const RadioStation& station )
-{
-    m_playlistQueue.clear();
-    m_retuneStation = station;
-
-    qDebug() << station.url();
 }
 
 
-void
-RadioTuner::onTuneReturn()
-{
-    if ( !m_retuneStation.url().isEmpty() )
-        m_station = m_retuneStation;
-
-    XmlQuery lfm;
-
-    if ( lfm.parse( qobject_cast<QNetworkReply*>(sender())->readAll() ) )
-    {
-        qDebug() << lfm;
-
-        m_station.setTitle( lfm["station"]["name"].text() );
-        m_station.setUrl( lfm["station"]["url"].text() );
-
-        emit title( lfm["station"]["name"].text() );
-        emit supportsDisco( lfm["station"]["supportsdiscovery"].text() == "1" );
-        fetchFiveMoreTracks();
-    }
-    else
-    {
-        emit error( lfm.parseError().enumValue(), lfm.parseError().message() );
-    }
-}
-
 
 void
-RadioTuner::fetchFiveMoreTracks()
+RadioTunerPrivate::fetchFiveMoreTracks()
 {
     if ( !m_retuneStation.url().isEmpty() )
     {
@@ -111,7 +106,7 @@ RadioTuner::fetchFiveMoreTracks()
         map["additional_info"] = "1";
 
         QNetworkReply* reply = ws::post(map);
-        connect( reply, SIGNAL(finished()), SLOT(onTuneReturn()) );
+        connect( reply, SIGNAL(finished()), parent(), SLOT(onTuneReturn()) );
 
         m_retuneStation = RadioStation();
         m_twoSecondTimer->stop();
@@ -125,7 +120,7 @@ RadioTuner::fetchFiveMoreTracks()
             map["method"] = "radio.getPlaylist";
             map["additional_info"] = "1";
             map["rtp"] = "1"; // see above
-            connect( ws::post( map ), SIGNAL(finished()), SLOT(onGetPlaylistReturn()) );
+            connect( ws::post( map ), SIGNAL(finished()), parent(), SLOT(onGetPlaylistReturn()) );
             m_fetchingPlaylist = true;
         }
         else
@@ -135,7 +130,7 @@ RadioTuner::fetchFiveMoreTracks()
 
 
 bool
-RadioTuner::tryAgain()
+RadioTunerPrivate::tryAgain()
 {
     qDebug() << "Bad response count" << m_retry_counter;
     
@@ -146,16 +141,46 @@ RadioTuner::tryAgain()
 }
 
 
-void
-RadioTuner::onGetPlaylistReturn()
-{   
-    // We shouldn't request another playlist for 2 seconds because we'll get the same one
-    // in a different order. This QTimer will block until it has finished. If one or more
-    // playlists have been requested in the meantime, it will fetch one on timeout
-    m_twoSecondTimer->start( 2000 );
+RadioTuner::RadioTuner( const RadioStation& station )
+    :d( new RadioTunerPrivate( this, station ) )
+{
+    qDebug() << station.url();
 
-    // This will block us fetching two playlists at once
-    m_fetchingPlaylist = false;
+    //Empty RadioStation implies that the radio
+    //should tune to the previous station.
+    if( station.url().isEmpty() )
+    {
+        d->fetchFiveMoreTracks();
+    }
+    else
+    {
+        QMap<QString, QString> map;
+        map["method"] = "radio.tune";
+        map["station"] = station.url();
+        map["additional_info"] = "1";
+        connect( ws::post(map), SIGNAL(finished()), SLOT(onTuneReturn()) );
+    }
+}
+
+RadioTuner::~RadioTuner()
+{
+}
+
+void
+RadioTuner::retune( const RadioStation& station )
+{
+    d->m_playlistQueue.clear();
+    d->m_retuneStation = station;
+
+    qDebug() << station.url();
+}
+
+
+void
+RadioTuner::onTuneReturn()
+{
+    if ( !d->m_retuneStation.url().isEmpty() )
+        d->m_station = d->m_retuneStation;
 
     XmlQuery lfm;
 
@@ -163,9 +188,40 @@ RadioTuner::onGetPlaylistReturn()
     {
         qDebug() << lfm;
 
-        m_station.setTitle( lfm["playlist"]["title"].text() );
+        d->m_station.setTitle( lfm["station"]["name"].text() );
+        d->m_station.setUrl( lfm["station"]["url"].text() );
+
+        emit title( lfm["station"]["name"].text() );
+        emit supportsDisco( lfm["station"]["supportsdiscovery"].text() == "1" );
+        d->fetchFiveMoreTracks();
+    }
+    else
+    {
+        emit error( lfm.parseError().enumValue(), lfm.parseError().message() );
+    }
+}
+
+
+void
+RadioTuner::onGetPlaylistReturn()
+{   
+    // We shouldn't request another playlist for 2 seconds because we'll get the same one
+    // in a different order. This QTimer will block until it has finished. If one or more
+    // playlists have been requested in the meantime, it will fetch one on timeout
+    d->m_twoSecondTimer->start( 2000 );
+
+    // This will block us fetching two playlists at once
+    d->m_fetchingPlaylist = false;
+
+    XmlQuery lfm;
+
+    if ( lfm.parse( qobject_cast<QNetworkReply*>(sender())->readAll() ) )
+    {
+        qDebug() << lfm;
+
+        d->m_station.setTitle( lfm["playlist"]["title"].text() );
         // we don't get the radio url in the playlist
-        //m_station.setUrl( lfm["station"]["url"].text() );
+        //d->m_station.setUrl( lfm["station"]["url"].text() );
 
         emit title( lfm["playlist"]["title"].text() );
 
@@ -175,13 +231,13 @@ RadioTuner::onGetPlaylistReturn()
         if ( xspf->isEmpty() )
         {
             // give up after too many empty playlists  :(
-            if (!tryAgain())
+            if (!d->tryAgain())
                 emit error( ws::NotEnoughContent, tr("Not enough content") );
         }
         else
         {
-            m_retry_counter = 0;
-            m_playlistQueue << xspf;
+            d->m_retry_counter = 0;
+            d->m_playlistQueue << xspf;
             emit trackAvailable();
         }
     }
@@ -193,43 +249,35 @@ RadioTuner::onGetPlaylistReturn()
 }
 
 void
-RadioTuner::onTwoSecondTimeout()
-{
-    if (m_requestedPlaylist)
-    {
-        m_requestedPlaylist = false;
-        fetchFiveMoreTracks();
-    }
-}
-
-void
 RadioTuner::onXspfExpired()
 {
-    int index = m_playlistQueue.indexOf( static_cast<Xspf*>(sender()) );
+    int index = d->m_playlistQueue.indexOf( static_cast<Xspf*>(sender()) );
     if ( index != -1 )
-        m_playlistQueue.takeAt( index )->deleteLater();
+        d->m_playlistQueue.takeAt( index )->deleteLater();
 }
 
 Track
 RadioTuner::takeNextTrack()
 {
-    if ( m_playlistQueue.isEmpty() )
+    if ( d->m_playlistQueue.isEmpty() )
     {
         // If there are no tracks here and we're not fetching tracks
         // it's probably because the playlist expired so fetch more now
-        if ( !m_fetchingPlaylist )
-            fetchFiveMoreTracks();
+        if ( !d->m_fetchingPlaylist )
+            d->fetchFiveMoreTracks();
 
         return Track();
     }
 
-    Track result = m_playlistQueue[0]->takeFirst();
+    Track result = d->m_playlistQueue[0]->takeFirst();
 
-    if ( m_playlistQueue[0]->isEmpty() )
-        m_playlistQueue.removeFirst();
+    if ( d->m_playlistQueue[0]->isEmpty() )
+        d->m_playlistQueue.removeFirst();
 
-    if ( m_playlistQueue.isEmpty() )
-        fetchFiveMoreTracks();
+    if ( d->m_playlistQueue.isEmpty() )
+        d->fetchFiveMoreTracks();
 
     return result;
 }
+
+#include "RadioTuner.moc"

@@ -20,11 +20,8 @@
 #ifndef LASTFM_TUNER_H
 #define LASTFM_TUNER_H
 
-#include "RadioStation.h"
-#include "Track.h"
-#include "Xspf.h"
 #include "ws.h"
-#include <QList>
+#include <QObject>
 
 namespace lastfm
 {
@@ -39,6 +36,7 @@ namespace lastfm
         /** You need to have assigned Ws::* for this to work, creating the tuner
           * automatically fetches the first 5 tracks for the station */
         explicit RadioTuner( const RadioStation& );
+        ~RadioTuner();
 
         Track takeNextTrack();
 
@@ -55,31 +53,9 @@ namespace lastfm
         void onGetPlaylistReturn();
         void onXspfExpired();
 
-        void onTwoSecondTimeout();
 
     private:
-        /** Tries again up to 5 times 
-          * @returns true if we tried again, otherwise you should emit error */
-        bool tryAgain();
-        /** Will emit 5 tracks from tracks(), they have to played within an hour
-          * or the streamer will refuse to stream them. Also the previous five are
-          * invalidated apart from the one that is currently playing, so sorry, you
-          * can't build up big lists of tracks.
-          *
-          * I feel I must point out that asking the user which one they want to play
-          * is also not allowed according to our terms and conditions, which you
-          * already agreed to in order to get your API key. Sorry about that dude. 
-          */
-        void fetchFiveMoreTracks();
-
-    private:
-        QList<Xspf*> m_playlistQueue;
-        uint m_retry_counter;
-        bool m_fetchingPlaylist;
-        bool m_requestedPlaylist;
-        class QTimer* m_twoSecondTimer;
-        RadioStation m_station;
-        RadioStation m_retuneStation;
+        class RadioTunerPrivate * const d;
     };
 }
 
