@@ -123,18 +123,13 @@ lastfm::Track::Track( const QDomElement& e )
     d->podcast = e.namedItem( "podcast" ).toElement().text().toInt();
     d->video = e.namedItem( "video" ).toElement().text().toInt();
 
-
-    for (QDomElement image(e.firstChildElement("image")) ; !image.isNull() ; image = e.nextSiblingElement("image"))
-    {
+    for (QDomElement image = e.firstChildElement("image") ; !image.isNull() ; image = image.nextSiblingElement("image"))
         d->m_images[static_cast<lastfm::ImageSize>(image.attribute("size").toInt())] = image.text();
-    }
 
-    QDomNode artistImages = e.namedItem( "artistImages" );
+    QDomNode artistNode = e.namedItem("artist");
 
-    for (QDomElement image(artistImages.firstChildElement("image")) ; !image.isNull() ; image = artistImages.nextSiblingElement("image"))
-    {
-        artist().setImageUrl( static_cast<lastfm::ImageSize>(image.attribute("size").toInt()), image.text() );
-    }
+    for (QDomElement artistImage = artistNode.firstChildElement("image") ; !artistImage.isNull() ; artistImage = artistImage.nextSiblingElement("image"))
+        artist().setImageUrl( static_cast<lastfm::ImageSize>(artistImage.attribute("size").toInt()), artistImage.text() );
 
     QDomNodeList nodes = e.namedItem( "extras" ).childNodes();
     for (int i = 0; i < nodes.count(); ++i)
@@ -289,17 +284,23 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
         item.appendChild( e );
     }
 
-    // put the artist images urls in the dom
-    QDomElement artistImages = xml.createElement( "artistImages" );
+    QDomElement artistElement = xml.createElement( "artist" );
 
     for ( int size = lastfm::Small ; size <= lastfm::Mega ; ++size )
     {
-        QDomElement e = xml.createElement( "image" );
-        e.appendChild( xml.createTextNode( d->artist.imageUrl( static_cast<lastfm::ImageSize>(size) ).toString() ) );
-        e.setAttribute( "size", size );
-        artistImages.appendChild( e );
+        QString imageUrl = d->artist.imageUrl( static_cast<lastfm::ImageSize>(size) ).toString();
+
+        if ( !imageUrl.isEmpty() )
+        {
+            QDomElement e = xml.createElement( "image" );
+            e.appendChild( xml.createTextNode( d->artist.imageUrl( static_cast<lastfm::ImageSize>(size) ).toString() ) );
+            e.setAttribute( "size", size );
+            artistElement.appendChild( e );
+        }
     }
-    item.appendChild( artistImages );
+
+    if ( artistElement.childNodes().count() != 0 )
+        item.appendChild( artistElement );
 
     // add the extras to the dom
     QDomElement extras = xml.createElement( "extras" );
