@@ -28,6 +28,49 @@
 #include <QUrl>
 static QNetworkAccessManager* nam = 0;
 
+class lastfm::ws::ParseErrorPrivate
+{
+public:
+    lastfm::ws::Error e;
+    QString m_message;
+};
+
+lastfm::ws::ParseError::ParseError( lastfm::ws::Error e, QString message )
+    :d( new ParseErrorPrivate )
+{
+     d->e = e;
+     d->m_message = message;
+}
+
+lastfm::ws::ParseError::ParseError( const ParseError& that )
+    : d( new ParseErrorPrivate( *that.d ) )
+{
+}
+
+lastfm::ws::ParseError::~ParseError() throw()
+{
+    delete d;
+}
+
+lastfm::ws::Error
+lastfm::ws::ParseError::enumValue() const
+{
+    return d->e;
+}
+
+QString
+lastfm::ws::ParseError::message() const
+{
+    return d->m_message;
+}
+
+lastfm::ws::ParseError&
+lastfm::ws::ParseError::operator=( const ParseError& that )
+{
+    d->e = that.d->e;
+    d->m_message = that.d->m_message;
+    return *this;
+}
 
 QString 
 lastfm::ws::host()
@@ -203,3 +246,8 @@ namespace lastfm
 
 
 QDebug operator<<( QDebug, lastfm::ws::Error );
+
+QDebug operator<<( QDebug d, QNetworkReply::NetworkError e )
+{
+    return d << lastfm::qMetaEnumString<QNetworkReply>( e, "NetworkError" );
+}

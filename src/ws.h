@@ -121,25 +121,18 @@ namespace lastfm
         LASTFM_DLLEXPORT void sign( QMap<QString, QString>&, bool sessionKey = true );
 
 
-        class ParseError
+        class LASTFM_DLLEXPORT ParseError
         {
-            Error e;
-            QString m_message;
         public:
-            explicit ParseError( Error e, QString message )
-                :e(e), m_message(message)
-            {}
-            Error enumValue() const { return e; }
-            QString message() const { return m_message; }
+            explicit ParseError( Error e, QString message );
+            ParseError( const ParseError& that );
+            ~ParseError() throw();
+            Error enumValue() const;
+            QString message() const;
+            ParseError& operator=( const ParseError& that );
 
-            ParseError& operator=( const ParseError& that )
-            {
-                this->e = that.e;
-                this->m_message = that.m_message;
-                return *this;
-            }
-
-            ~ParseError() throw() {;}
+        private:
+            class ParseErrorPrivate * const d;
         };
         
         /** returns the expiry date of this HTTP response */
@@ -148,10 +141,7 @@ namespace lastfm
 }
 
 
-inline QDebug operator<<( QDebug d, QNetworkReply::NetworkError e )
-{
-    return d << lastfm::qMetaEnumString<QNetworkReply>( e, "NetworkError" );
-}
+LASTFM_DLLEXPORT QDebug operator<<( QDebug d, QNetworkReply::NetworkError e );
 
 #define LASTFM_WS_HOSTNAME "ws.audioscrobbler.com"
 
