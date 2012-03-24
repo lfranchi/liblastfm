@@ -31,14 +31,6 @@ class NetworkConnectionMonitor;
 class LASTFM_DLLEXPORT InternetConnectionMonitor : public QObject
 {
     Q_OBJECT
-    enum NMState
-    {
-        Unknown,
-        Asleep,
-        Connecting,
-        Connected,
-        Disconnected
-    };
 
 public:
     /** if internet is unavailable you will get a down() signal soon, otherwise
