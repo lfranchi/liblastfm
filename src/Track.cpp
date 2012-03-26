@@ -120,6 +120,7 @@ lastfm::Track::Track( const QDomElement& e )
     d->loved = static_cast<LoveStatus>(e.namedItem( "loved" ).toElement().text().toInt());
     d->scrobbleStatus = e.namedItem( "scrobbleStatus" ).toElement().text().toInt();
     d->scrobbleError = e.namedItem( "scrobbleError" ).toElement().text().toInt();
+    d->scrobbleErrorText = e.namedItem( "scrobbleErrorText" ).toElement().text();
     d->podcast = e.namedItem( "podcast" ).toElement().text().toInt();
     d->video = e.namedItem( "video" ).toElement().text().toInt();
 
@@ -272,6 +273,7 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
     makeElement( "loved", QString::number( d->loved ) );
     makeElement( "scrobbleStatus", QString::number( scrobbleStatus() ) );
     makeElement( "scrobbleError", QString::number( scrobbleError() ) );
+    makeElement( "scrobbleErrorText", scrobbleErrorText() );
     makeElement( "podcast", QString::number( isPodcast() ) );
     makeElement( "video", QString::number( isVideo() ) );
 
