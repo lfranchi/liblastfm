@@ -145,6 +145,7 @@ lastfm::Audioscrobbler::parseTrack( const XmlQuery& trackXml, const Track& track
     else if ( isScrobble )
     {
         mTrack.setScrobbleError( static_cast<Track::ScrobbleError>(trackXml["ignoredMessage"].attribute("code").toInt()) );
+        mTrack.setScrobbleErrorText( trackXml["ignoredMessage"].text() );
         mTrack.setScrobbleStatus( Track::Error );
     }
 }
