@@ -32,8 +32,8 @@ lastfm::Chart::getHypedArtists( int limit, int page )
 {
     QMap<QString, QString> map;
     map["method"] = "chart.getHypedArtists";
-    map["page"] =QString::number( page );
-    map["limit"] = QString::number( limit );
+    if ( page != -1 ) map["page"] = QString::number( page );
+    if ( limit != -1 ) map["limit"] = QString::number( limit );
     return ws::get( map );
 }
 
@@ -42,8 +42,8 @@ lastfm::Chart::getHypedTracks( int limit, int page )
 {
     QMap<QString, QString> map;
     map["method"] = "chart.getHypedTracks";
-    map["page"] =QString::number( page );
-    map["limit"] = QString::number( limit );
+    if ( page != -1 ) map["page"] = QString::number( page );
+    if ( limit != -1 ) map["limit"] = QString::number( limit );
     return ws::get( map );
 }
 
@@ -52,8 +52,8 @@ lastfm::Chart::getLovedTracks( int limit, int page )
 {
     QMap<QString, QString> map;
     map["method"] = "chart.getLovedTracks";
-    map["page"] =QString::number( page );
-    map["limit"] = QString::number( limit );
+    if ( page != -1 ) map["page"] = QString::number( page );
+    if ( limit != -1 ) map["limit"] = QString::number( limit );
     return ws::get( map );
 }
 
@@ -62,8 +62,8 @@ lastfm::Chart::getTopArtists( int limit, int page )
 {
     QMap<QString, QString> map;
     map["method"] = "chart.getTopArtists";
-    map["page"] =QString::number( page );
-    map["limit"] = QString::number( limit );
+    if ( page != -1 ) map["page"] = QString::number( page );
+    if ( limit != -1 ) map["limit"] = QString::number( limit );
     return ws::get( map );
 }
 
@@ -72,8 +72,8 @@ lastfm::Chart::getTopDownloads( int limit, int page )
 {
     QMap<QString, QString> map;
     map["method"] = "chart.getTopDownloads";
-    map["page"] =QString::number( page );
-    map["limit"] = QString::number( limit );
+    if ( page != -1 ) map["page"] = QString::number( page );
+    if ( limit != -1 ) map["limit"] = QString::number( limit );
     return ws::get( map );
 }
 
@@ -82,8 +82,8 @@ lastfm::Chart::getTopTags( int limit, int page )
 {
     QMap<QString, QString> map;
     map["method"] = "chart.getTopTags";
-    map["page"] =QString::number( page );
-    map["limit"] = QString::number( limit );
+    if ( page != -1 ) map["page"] = QString::number( page );
+    if ( limit != -1 ) map["limit"] = QString::number( limit );
     return ws::get( map );
 }
 
@@ -92,7 +92,7 @@ lastfm::Chart::getTopTracks( int limit, int page )
 {
     QMap<QString, QString> map;
     map["method"] = "chart.getTopTracks";
-    map["page"] =QString::number( page );
-    map["limit"] = QString::number( limit );
+    if ( page != -1 ) map["page"] = QString::number( page );
+    if ( limit != -1 ) map["limit"] = QString::number( limit );
     return ws::get( map );
 }

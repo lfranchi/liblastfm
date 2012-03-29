@@ -71,8 +71,8 @@ lastfm::Library::getAlbums( const QString& user, const lastfm::Artist& artist, i
     map["method"] = "library.getAlbums";
     map["user"] = user;
     map["artist"] = artist.name();
-    map["limit"] = QString::number( limit );
-    map["page"] = QString::number( page );
+    if ( page != -1 ) map["page"] = QString::number( page );
+    if ( limit != -1 ) map["limit"] = QString::number( limit );
     return ws::get( map );
 }
 
@@ -82,8 +82,8 @@ lastfm::Library::getArtists( const QString& user, int limit, int page )
     QMap<QString, QString> map;
     map["method"] = "library.getArtists";
     map["user"] = user;
-    map["limit"] = QString::number( limit );
-    map["page"] = QString::number( page );
+    if ( page != -1 ) map["page"] = QString::number( page );
+    if ( limit != -1 ) map["limit"] = QString::number( limit );
     return ws::get( map );
 }
 
@@ -107,8 +107,8 @@ lastfm::Library::getTracks( const QString& user, const lastfm::Album& album, int
     map["user"] = user;
     map["album"] = album.title();
     map["artist"] = album.artist().name();
-    map["limit"] = QString::number( limit );
-    map["page"] = QString::number( page );
+    if ( page != -1 ) map["page"] = QString::number( page );
+    if ( limit != -1 ) map["limit"] = QString::number( limit );
     return ws::get( map );
 }
 
