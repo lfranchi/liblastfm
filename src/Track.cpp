@@ -189,7 +189,7 @@ lastfm::Track::Track()
 }
 
 lastfm::Track::Track( const Track& that )
-    : d( that.d )
+    :AbstractType(), d( that.d )
 {
 }
 
