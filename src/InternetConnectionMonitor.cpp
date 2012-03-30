@@ -104,9 +104,10 @@ lastfm::InternetConnectionMonitor::onNetworkUp()
 #ifdef Q_OS_MAC
     // We don't need to check on mac as the
     // check is done as part of the reach api
-        m_up = true;
+    d->m_up = true;
+
     emit up();
-    emit connectivityChanged( m_up );
+    emit connectivityChanged( d->m_up );
     qDebug() << "Internet connection is reachable :)";
 #else
     qDebug() << "Network seems to be up again. Let's try if there's internet connection!";
