@@ -25,30 +25,28 @@
 #include <QDBusInterface>
 #include <QDBusReply>
 
+#define NM_DBUS_SERVICE   "org.freedesktop.NetworkManager"
+#define NM_DBUS_PATH      "/org/freedesktop/NetworkManager"
+#define NM_DBUS_INTERFACE "org.freedesktop.NetworkManager"
+
 lastfm::LNetworkConnectionMonitor::LNetworkConnectionMonitor( QObject* parent ) :
     NetworkConnectionMonitor( parent )
 {
-    m_nmInterface = new QDBusInterface( QString( "org.freedesktop.NetworkManager" ),
-                                        QString( "/org/freedesktop/NetworkManager" ),
-                                        QString( "org.freedesktop.NetworkManager" ),
+    m_nmInterface = new QDBusInterface( NM_DBUS_SERVICE,
+                                        NM_DBUS_PATH,
+                                        NM_DBUS_INTERFACE,
                                         QDBusConnection::systemBus(),
                                         this );
 
     //get current connection state
-    QDBusInterface* dbusInterface = new QDBusInterface( QString( "org.freedesktop.NetworkManager" ),
-                                                        QString( "/org/freedesktop/NetworkManager" ),
-                                                        QString( "org.freedesktop.DBus.Properties" ),
-                                                        QDBusConnection::systemBus(),
-                                                        this );
-
-    QDBusReply<QVariant> reply = dbusInterface->call( "Get", "org.freedesktop.NetworkManager", "state" );
+    QDBusReply<uint> reply = m_nmInterface->call( QDBus::AutoDetect, "state" );
     if ( reply.isValid() )
     {
-        if ( reply.value() == Connected )
+        if ( reply.value() == NM_STATE_CONNECTED_GLOBAL )
         {
             setConnected( true );
         }
-        else if ( reply.value() == Disconnected )
+        else if ( reply.value() == NM_STATE_DISCONNECTED || reply.value() == NM_STATE_ASLEEP )
         {
             setConnected( false );
         }
@@ -57,10 +55,15 @@ lastfm::LNetworkConnectionMonitor::LNetworkConnectionMonitor( QObject* parent ) 
     {
         qDebug() << "Error: " << reply.error();
     }
-    delete dbusInterface;
 
     //connect network manager signals
-   connect( m_nmInterface, SIGNAL( StateChange( uint ) ), this, SLOT( onStateChange( uint ) ) );
+   m_nmInterface->connection().connect( NM_DBUS_SERVICE,
+                                        NM_DBUS_PATH,
+                                        NM_DBUS_INTERFACE,
+                                        "StateChanged",
+                                        this,
+                                        SLOT( onStateChange( uint ) )
+                                      );
 
 }
 
@@ -74,12 +77,12 @@ void
 lastfm::LNetworkConnectionMonitor::onStateChange( uint newState )
 {
     qDebug() << "Networkmanager state change!";
-    
-    if ( newState == Disconnected )
+
+    if ( newState == NM_STATE_DISCONNECTED || newState == NM_STATE_ASLEEP )
     {
        setConnected( false );
     }
-    else if ( newState == Connected )
+    else if ( newState == NM_STATE_CONNECTED_GLOBAL )
     {
        setConnected( true );
     }

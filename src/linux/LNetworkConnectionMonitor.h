@@ -36,13 +36,16 @@ class LNetworkConnectionMonitor : public NetworkConnectionMonitor
 {
     Q_OBJECT
 
-    enum NMState
-    {
-        Unknown=1,
-        Asleep,
-        Connected,
-        Disconnected
-    };
+    typedef enum {
+        NM_STATE_UNKNOWN          = 0,
+        NM_STATE_ASLEEP           = 10,
+        NM_STATE_DISCONNECTED     = 20,
+        NM_STATE_DISCONNECTING    = 30,
+        NM_STATE_CONNECTING       = 40,
+        NM_STATE_CONNECTED_LOCAL  = 50,
+        NM_STATE_CONNECTED_SITE   = 60,
+        NM_STATE_CONNECTED_GLOBAL = 70
+    } NMState;
 
 public:
     LNetworkConnectionMonitor( QObject* parent = 0 );
