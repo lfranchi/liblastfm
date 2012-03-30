@@ -34,6 +34,16 @@ using lastfm::ImageSize;
 using lastfm::XmlQuery;
 
 
+class lastfm::ArtistData : public QSharedData
+{
+public:
+    ArtistData() {}
+    ~ArtistData() {}
+    QString name;
+    QMap<lastfm::ImageSize, QUrl> images;
+};
+
+
 Artist::Artist()
     :AbstractType()
 {
@@ -62,6 +72,10 @@ Artist::Artist( const XmlQuery& xml )
 
 Artist::Artist( const Artist& artist )
     :AbstractType(), d( artist.d )
+{
+}
+
+Artist::~Artist()
 {
 }
 

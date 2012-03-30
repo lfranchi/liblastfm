@@ -29,17 +29,16 @@ namespace lastfm
 {
     class LASTFM_DLLEXPORT Album
     {
-        Mbid m_mbid;
-        Artist m_artist;
-        QString m_title;
-
     public:
         Album();
         explicit Album( Mbid mbid );
         Album( Artist artist, QString title );
+        Album( const Album& album );
+        ~Album();
 
         bool operator==( const Album& that ) const;
         bool operator!=( const Album& that ) const;
+        Album& operator=( const Album& that );
     
         operator QString() const;
         QString title() const;
@@ -62,6 +61,9 @@ namespace lastfm
     
         /** the Last.fm website url for this album */
         QUrl www() const;
+
+    private:
+        class AlbumPrivate * const d;
     };
 }
 

@@ -43,6 +43,8 @@ namespace lastfm
         {
         }
 
+        void parseTrack( const XmlQuery& trackXml, const Track& track );
+
         const QString m_id;
         ScrobbleCache m_cache;
         QList<Track> m_batch;
@@ -121,7 +123,7 @@ lastfm::Audioscrobbler::submit()
 }
 
 void
-lastfm::Audioscrobbler::parseTrack( const XmlQuery& trackXml, const Track& track )
+lastfm::AudioscrobblerPrivate::parseTrack( const XmlQuery& trackXml, const Track& track )
 {
     MutableTrack mTrack = MutableTrack( track );
     bool isScrobble = QDomElement(trackXml).tagName() == "scrobble";
@@ -160,7 +162,7 @@ lastfm::Audioscrobbler::onNowPlayingReturn()
         qDebug() << lfm;
 
         if ( lfm.attribute("status") == "ok" )
-            parseTrack( lfm["nowplaying"], d->m_nowPlayingTrack );
+            d->parseTrack( lfm["nowplaying"], d->m_nowPlayingTrack );
         else
             emit nowPlayingError( lfm["error"].attribute("code").toInt(), lfm["error"].text() );
 
@@ -191,7 +193,7 @@ lastfm::Audioscrobbler::onTrackScrobbleReturn()
             int index = 0;
 
             foreach ( const XmlQuery& scrobble, lfm["scrobbles"].children("scrobble") )
-                parseTrack( scrobble, d->m_batch.at( index++ ) );
+                d->parseTrack( scrobble, d->m_batch.at( index++ ) );
 
             emit scrobblesSubmitted( d->m_batch );
 

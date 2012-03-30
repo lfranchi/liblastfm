@@ -27,18 +27,20 @@ namespace lastfm
 {
     class LASTFM_DLLEXPORT Mbid
     {
-        QString id;
-    
     public:
-        explicit Mbid( const QString& p = "" ) : id( p )
-        {}
-    
-        bool isNull() const { return id.isNull() || id.isEmpty(); }
-        operator QString() const { return id; }
+        explicit Mbid( const QString& p = "" );
+        Mbid( const Mbid& that );
+        ~Mbid();
+
+        bool isNull() const;
+        operator QString() const;
+        Mbid& operator=( const Mbid& that );
 
         /** if this is not an mp3 file you will be wasting time, as it won't work
           * but we will do what you say anyway because you are the boss */ 
         static Mbid fromLocalFile( const QString& path );
+    private:
+        class MbidPrivate * const d;
     };
 }
 

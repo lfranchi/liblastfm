@@ -31,11 +31,12 @@ namespace lastfm
     public:
         /** pass in the playlist node! */
         Xspf( const class QDomElement& playlist_node, QObject* parent );
+        ~Xspf();
 
-        QString title() const{ return m_title; }
+        QString title() const;
 
-        bool isEmpty() const { return m_tracks.isEmpty(); }
-        Track takeFirst() { return m_tracks.takeFirst(); }
+        bool isEmpty() const;
+        Track takeFirst();
 
     signals:
         void expired();
@@ -44,8 +45,7 @@ namespace lastfm
         void onExpired();
 
     private:
-        QList<Track> m_tracks;
-        QString m_title;
+        class XspfPrivate * const d;
     };
 }
 

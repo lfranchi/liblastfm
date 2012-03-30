@@ -29,24 +29,15 @@ namespace lastfm
 
 class LASTFM_DLLEXPORT ScrobblePoint
 {
-    uint i;
-
 public:
-    ScrobblePoint() : i( kScrobbleTimeMax )
-    {}
+    ScrobblePoint();
+    ~ScrobblePoint();
     
     /** j is in seconds, and should be 50% the duration of a track */
-    explicit ScrobblePoint( uint j )
-    {
-        // we special case 0, returning kScrobbleTimeMax because we are
-        // cruel and callous people
-        if (j == 0) --j;
-
-        i = qBound( uint(kScrobbleMinLength),
-                    j,
-                    uint(kScrobbleTimeMax) );
-    }
-    operator uint() const { return i; }
+    explicit ScrobblePoint( uint j );
+    ScrobblePoint( const ScrobblePoint& that );
+    operator uint() const;
+    ScrobblePoint& operator=( const ScrobblePoint& that );
 
     // scrobbles can occur between these two percentages of track duration
     static const uint kScrobblePointMin = 50;
@@ -57,6 +48,9 @@ public:
     static const uint kScrobbleMinLength = 31;
     // Upper limit for scrobble time in seconds
     static const uint kScrobbleTimeMax = 240;
+
+private:
+    class ScrobblePointPrivate * const d;
 };
 
 }

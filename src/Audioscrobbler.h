@@ -68,10 +68,7 @@ namespace lastfm
         void onTrackScrobbleReturn();
 
     private:
-        void parseTrack( const XmlQuery& trackXml, const Track& track );
-
-    private:
-        class AudioscrobblerPrivate* d;
+        class AudioscrobblerPrivate * const d;
     };
 }
 

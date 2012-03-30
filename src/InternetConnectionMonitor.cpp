@@ -25,19 +25,42 @@
 #include "NetworkConnectionMonitor.h"
 #include "ws.h"
 
+class lastfm::InternetConnectionMonitorPrivate
+{
+public:
+    bool m_up;
+    NetworkConnectionMonitor* m_networkMonitor;
+};
+
 lastfm::InternetConnectionMonitor::InternetConnectionMonitor( QObject *parent )
                                  : QObject( parent )
-                                 , m_up( true )
+                                 , d( new InternetConnectionMonitorPrivate)
 {
-    m_networkMonitor = createNetworkConnectionMonitor();
+    d->m_up = true;
+    d->m_networkMonitor = createNetworkConnectionMonitor();
 
-    if ( m_networkMonitor )
+    if ( d->m_networkMonitor )
     {
-        connect( m_networkMonitor, SIGNAL( networkUp() ), this, SLOT( onNetworkUp() ) );
-        connect( m_networkMonitor, SIGNAL( networkDown() ), this, SLOT( onNetworkDown() ) );
+        connect( d->m_networkMonitor, SIGNAL( networkUp() ), this, SLOT( onNetworkUp() ) );
+        connect( d->m_networkMonitor, SIGNAL( networkDown() ), this, SLOT( onNetworkDown() ) );
     }
 
-    connect( lastfm::nam(), SIGNAL( finished( QNetworkReply* ) ), this, SLOT( onFinished( QNetworkReply* ) ) );
+    connect( nam(), SIGNAL( finished( QNetworkReply* ) ), this, SLOT( onFinished( QNetworkReply* ) ) );
+}
+
+lastfm::InternetConnectionMonitor::~InternetConnectionMonitor()
+{
+    delete d;
+}
+
+bool lastfm::InternetConnectionMonitor::isDown() const
+{
+    return !d->m_up;
+}
+
+bool lastfm::InternetConnectionMonitor::isUp() const
+{
+    return d->m_up;
 }
 
 void
@@ -48,11 +71,11 @@ lastfm::InternetConnectionMonitor::onFinished( QNetworkReply* reply )
     switch( reply->error() )
     {
         case QNetworkReply::NoError:
-            if ( !m_up )
+            if ( !d->m_up )
             {
-                m_up = true;
+                d->m_up = true;
                 emit up();
-                emit connectivityChanged( m_up );
+                emit connectivityChanged( d->m_up );
                 qDebug() << "Internet connection is reachable :)";
             }
             break;
@@ -63,11 +86,11 @@ lastfm::InternetConnectionMonitor::onFinished( QNetworkReply* reply )
         case QNetworkReply::ProxyNotFoundError:
         case QNetworkReply::ProxyTimeoutError:
         case QNetworkReply::ProxyAuthenticationRequiredError:
-            if ( m_up )
+            if ( d->m_up )
             {
-                m_up = false;
+                d->m_up = false;
                 emit down();
-                emit connectivityChanged( m_up );
+                emit connectivityChanged( d->m_up );
             }
             break;
         default:
@@ -87,7 +110,7 @@ lastfm::InternetConnectionMonitor::onNetworkUp()
     qDebug() << "Internet connection is reachable :)";
 #else
     qDebug() << "Network seems to be up again. Let's try if there's internet connection!";
-    lastfm::nam()->head( QNetworkRequest( QUrl( tr( "http://www.last.fm/" ) ) ) );
+    nam()->head( QNetworkRequest( QUrl( tr( "http://www.last.fm/" ) ) ) );
 #endif
 }
 
@@ -95,9 +118,9 @@ void
 lastfm::InternetConnectionMonitor::onNetworkDown()
 {
     qDebug() << "Internet is unreachable :(";
-    m_up = false;
+    d->m_up = false;
     emit down();
-    emit connectivityChanged( m_up );
+    emit connectivityChanged( d->m_up );
 }
 
 lastfm::NetworkConnectionMonitor*

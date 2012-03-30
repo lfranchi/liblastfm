@@ -7,6 +7,11 @@ lastfm::Tasteometer::Tasteometer()
 }
 
 
+lastfm::Tasteometer::~Tasteometer()
+{
+}
+
+
 QNetworkReply*
 lastfm::Tasteometer::compare( const User& left, const User& right )
 {

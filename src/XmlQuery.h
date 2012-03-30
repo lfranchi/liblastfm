@@ -22,7 +22,6 @@
 
 #include "global.h"
 #include "ws.h"
-#include <QDomDocument>
 #include <QDomElement>
 
 namespace lastfm
@@ -31,10 +30,6 @@ namespace lastfm
       * hack that feels like jQuery */
     class LASTFM_DLLEXPORT XmlQuery
     {
-        QDomDocument domdoc;
-        QDomElement e;
-        lastfm::ws::ParseError m_error;
-
     public:
         /** we assume the bytearray is an XML document, this object will then
           * represent the documentElement of that document, eg. if this is a
@@ -47,36 +42,32 @@ namespace lastfm
           * document-element of the XML document.
           */
         XmlQuery();
+        XmlQuery( const XmlQuery& that );
+        ~XmlQuery();
         bool parse( const QByteArray& data );
-        lastfm::ws::ParseError parseError() const { return m_error; }
+        ws::ParseError parseError() const;
         
-        XmlQuery( const QDomElement& e, const char* name = "" )
-            :e( e ), m_error( lastfm::ws::ParseError( lastfm::ws::NoError, "" ))
-        {
-            if (e.isNull()) qWarning() << "Expected node absent:" << name;
-        }
+        XmlQuery( const QDomElement& e, const char* name = "" );
 
         /** Selects a DIRECT child element, you can specify attributes like so:
           *
           * e["element"]["element attribute=value"].text();
           */
         XmlQuery operator[]( const QString& name ) const;
-        QString text() const { return e.text(); }
-        QString attribute( const QString& name ) const{ return e.attribute( name ); }
+        QString text() const;
+        QString attribute( const QString& name ) const;
         
         /** selects all children with specified name, recursively */
         QList<XmlQuery> children( const QString& named ) const;
 
-        operator QDomElement() const { return e; }
+        operator QDomElement() const;
+        XmlQuery& operator=( const XmlQuery& that );
+
+    private:
+        class XmlQueryPrivate * const d;
     };
 }
 
-inline QDebug operator<<( QDebug d, const lastfm::XmlQuery& xq )
-{
-    QString s;
-    QTextStream t( &s, QIODevice::WriteOnly );
-    QDomElement(xq).save( t, 2 );
-    return d << s;
-}
+LASTFM_DLLEXPORT QDebug operator<<( QDebug d, const lastfm::XmlQuery& xq );
 
 #endif

@@ -34,6 +34,8 @@
 
 namespace lastfm {
 
+class TrackData;
+
 enum LoveStatus
 {
     Unknown = 0,
@@ -55,83 +57,15 @@ public:
 
     TrackContext();
     TrackContext( const QString& type, const QList<QString>& values );
+    TrackContext( const TrackContext& that );
+    ~TrackContext();
 
     Type type() const;
     QList<QString> values() const;
-private:
-    static Type getType( const QString& type );
+    TrackContext& operator=( const TrackContext& that );
 
 private:
-    Type m_type;
-    QList<QString> m_values;
-};
-
-class TrackData : public QObject, public QSharedData
-{
-    Q_OBJECT
-
-    friend class Track;
-    friend class MutableTrack;
-public:
-    TrackData();
-
-public:
-    lastfm::Artist artist;
-    lastfm::Artist albumArtist;
-    QString album;
-    QString title;
-    lastfm::Artist correctedArtist;
-    lastfm::Artist correctedAlbumArtist;
-    QString correctedAlbum;
-    QString correctedTitle;
-    TrackContext context;
-    uint trackNumber;
-    uint duration;
-    short source;
-    short rating;
-    QString mbid; /// musicbrainz id
-    uint fpid;
-    QUrl url;
-    QDateTime time; /// the time the track was started at
-    LoveStatus loved;
-    QMap<lastfm::ImageSize, QUrl> m_images;
-    short scrobbleStatus;
-    short scrobbleError;
-    QString scrobbleErrorText;
-
-    //FIXME I hate this, but is used for radio trackauth etc.
-    QMap<QString,QString> extras;
-
-    struct Observer
-    {
-        QNetworkReply* reply;
-        QPointer<QObject> receiver;
-        const char* method;
-    };
-
-    QList<Observer> observers;
-
-    bool null;
-
-    bool podcast;
-    bool video;
-
-private:
-    void forceLoveToggled( bool love );
-    void forceScrobbleStatusChanged();
-    void forceCorrected( QString correction );
-
-private slots:
-    void onLoveFinished();
-    void onUnloveFinished();
-    void onGotInfo();
-
-signals:
-    void loveToggled( bool love );
-    void loveFinished();
-    void unlovedFinished();
-    void scrobbleStatusChanged();
-    void corrected( QString correction );
+    class TrackContextPrivate * const d;
 };
 
 
@@ -188,6 +122,8 @@ public:
 
     Track();
     explicit Track( const QDomElement& );
+    Track( const Track& that );
+    ~Track();
 
     /** this track and that track point to the same object, so they are the same
       * in fact. This doesn't do a deep data comparison. So even if all the 
@@ -196,6 +132,7 @@ public:
     bool sameObject( const Track& that );
     bool operator==( const Track& that ) const;
     bool operator!=( const Track& that ) const;
+    Track& operator=( const Track& that );
 
     QObject* signalProxy() const;
 
@@ -283,8 +220,6 @@ public:
 protected:
     QExplicitlySharedDataPointer<TrackData> d;
     QMap<QString, QString> params( const QString& method, bool use_mbid = false ) const;
-private:
-    Track( TrackData* that_d );
 };
 
 
