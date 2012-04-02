@@ -764,10 +764,12 @@ lastfm::Track::sameObject( const Track& that )
 bool
 lastfm::Track::operator==( const Track& that ) const
 {
-    return ( this->title() == that.title() &&
-             this->album() == that.album() &&
-             this->artist() == that.artist());
+    return ( title( Corrected ) == that.title( Corrected )
+             // if either album is empty, assume they are the same album
+             && ( album( Corrected ).title().isEmpty() || that.album( Corrected ).title().isEmpty() || album( Corrected ) == that.album( Corrected ))
+             && artist( Corrected ) == that.artist( Corrected ));
 }
+
 bool
 lastfm::Track::operator!=( const Track& that ) const
 {
