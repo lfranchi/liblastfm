@@ -33,6 +33,98 @@ using lastfm::XmlQuery;
 using lastfm::ImageSize;
 
 
+class lastfm::UserListPrivate
+{
+public:
+    UserListPrivate()
+        : total( 0 ), page( 0 ), perPage( 0 ), totalPages( 0 )
+    {}
+    int total;
+    int page;
+    int perPage;
+    int totalPages;
+    QList<lastfm::User> users;
+};
+
+lastfm::UserList::UserList()
+    : d( new UserListPrivate )
+{
+}
+
+lastfm::UserList::UserList( const XmlQuery &lfm )
+    : d( new UserListPrivate )
+{
+    if ( lfm.parseError().enumValue() == lastfm::ws::NoError )
+    {
+        foreach (XmlQuery e, lfm.children( "user" ))
+        {
+            User u( e );
+            d->users.append( u );
+        }
+
+        d->total = lfm["friends"].attribute("total").toInt();
+        d->page = lfm["friends"].attribute("page").toInt();
+        d->perPage = lfm["friends"].attribute("perPage").toInt();
+        d->totalPages = lfm["friends"].attribute("totalPages").toInt();
+    }
+    else
+    {
+        qDebug() << lfm.parseError().message() << lfm.parseError().enumValue();
+    }
+}
+
+lastfm::UserList::~UserList()
+{
+    delete d;
+}
+
+lastfm::UserList::UserList( const UserList& other )
+    : d( new UserListPrivate( *other.d ) )
+{
+}
+
+QList<lastfm::User>
+lastfm::UserList::users()
+{
+    return d->users;
+}
+
+lastfm::UserList&
+lastfm::UserList::operator=( const UserList& other )
+{
+    d->total = other.d->total;
+    d->page = other.d->page;
+    d->perPage = other.d->perPage;
+    d->totalPages = other.d->totalPages;
+    d->users = other.d->users;
+    return *this;
+}
+
+int
+lastfm::UserList::totalUsers()
+{
+    return d->total;
+}
+
+int
+lastfm::UserList::currentPage()
+{
+    return d->page;
+}
+
+int
+lastfm::UserList::usersPerPage()
+{
+    return d->perPage;
+}
+
+int
+lastfm::UserList::totalPages()
+{
+    return d->totalPages;
+}
+
+
 class lastfm::Gender::GenderPrivate
 {
     public:
@@ -399,28 +491,11 @@ User::getPlaylists() const
 UserList //static
 User::list( QNetworkReply* r )
 {
-    UserList users;
 
     XmlQuery lfm;
 
-    if ( lfm.parse( r->readAll() ) )
-    {
-        foreach (XmlQuery e, lfm.children( "user" ))
-        {
-            User u( e );
-            users += u;
-        }
-
-        users.total = lfm["friends"].attribute("total").toInt();
-        users.page = lfm["friends"].attribute("page").toInt();
-        users.perPage = lfm["friends"].attribute("perPage").toInt();
-        users.totalPages = lfm["friends"].attribute("totalPages").toInt();
-    }
-    else
-    {
-        qDebug() << lfm.parseError().message() << lfm.parseError().enumValue();
-    }    
-    return users;
+    lfm.parse( r->readAll() );
+    return UserList( lfm );
 }
 
 

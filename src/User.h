@@ -112,7 +112,7 @@ namespace lastfm
         /** use Tag::list() on the response to get a WeightedStringList */
         QNetworkReply* getTopTags() const;
 
-        /** use User::list() on the response to get a QList<User> */
+        /** use User::list() on the response to get a UserList */
         QNetworkReply* getFriends(  bool recentTracks = false, int limit = 50, int page = 1 ) const;
         QNetworkReply* getFriendsListeningNow( int limit = 50, int page = 1 ) const;
         QNetworkReply* getNeighbours( int limit = 50, int page = 1 ) const;
@@ -151,13 +151,23 @@ namespace lastfm
         UserPrivate * const d;
     };
 
-    class LASTFM_DLLEXPORT UserList : public QList<User>
+    class LASTFM_DLLEXPORT UserList
     {
     public:
-        int total;
-        int page;
-        int perPage;
-        int totalPages;
+        UserList();
+        UserList( const XmlQuery& query );
+        UserList( const UserList& other );
+        ~UserList();
+        UserList& operator=( const UserList& other );
+
+        int totalUsers();
+        int totalPages();
+        int currentPage();
+        int usersPerPage();
+        QList<User> users();
+
+    private:
+        class UserListPrivate * const d;
     };
 }
 
