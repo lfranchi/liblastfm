@@ -148,7 +148,7 @@ lastfm::RadioStation
 lastfm::RadioStation::neighbourhood( const lastfm::User& user )
 {
     RadioStation s( "lastfm://user/" + user + "/neighbours" );
-    s.setTitle( QObject::tr( "%1%2s Neighbours%2 Radio").arg( lastfm::ws::Username, QChar(0x2019) ));
+    s.setTitle( QObject::tr( "%1%2s Neighbourhood Radio").arg( lastfm::ws::Username ));
     return s;
 }
 
@@ -241,10 +241,8 @@ lastfm::RadioStation::setTitle( const QString& s )
         title = QObject::tr("My Friends%1 Radio").arg( QChar( 0x2019 ) );
     else if ( title.compare( QObject::tr("%1%2s Friends Radio").arg( lastfm::ws::Username, QChar(0x2019) ), Qt::CaseInsensitive ) == 0  )
         title = QObject::tr("My Friends%1 Radio").arg( QChar( 0x2019 ) );
-    else if ( title.compare( QObject::tr("%1%2s Neighbours%2 Radio").arg( lastfm::ws::Username, QChar(0x2019) ), Qt::CaseInsensitive ) == 0  )
-        title = QObject::tr("My Neighbours%1 Radio").arg( QChar( 0x2019 ) );
-    else if ( title.compare( QObject::tr("%1%2s Neighbours Radio").arg( lastfm::ws::Username ), Qt::CaseInsensitive ) == 0  )
-        title = QObject::tr("My Neighbours%1 Radio").arg( QChar( 0x2019 ) );
+    else if ( title.compare( QObject::tr("%1%2s Neighbourhood Radio").arg( lastfm::ws::Username, QChar(0x2019) ), Qt::CaseInsensitive ) == 0  )
+        title = QObject::tr("My Neighbourhood Radio");
 
     d->m_title = title;
 }
