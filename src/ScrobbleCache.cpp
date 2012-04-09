@@ -62,7 +62,7 @@ lastfm::ScrobbleCachePrivate::isValid( const lastfm::Track& track, Invalidity* v
             return false; \
         }
 
-    TEST( track.duration() < ScrobblePoint::kScrobbleMinLength, TooShort );
+    TEST( track.duration() < ScrobblePoint::scrobbleTimeMin(), TooShort );
 
     TEST( !track.timestamp().isValid(), NoTimestamp );
 

@@ -20,6 +20,12 @@
 
 #include "ScrobblePoint.h"
 
+#define SCROBBLE_PERCENT_MIN      50
+#define SCROBBLE_PERCENT_MAX     100
+#define DEFAULT_SCROBBLE_PERCENT  50
+#define SCROBBLE_TIME_MIN         31
+#define SCROBBLE_TIME_MAX        240
+
 class lastfm::ScrobblePointPrivate
 {
 public:
@@ -30,20 +36,20 @@ public:
 lastfm::ScrobblePoint::ScrobblePoint()
     : d( new ScrobblePointPrivate )
 {
-    d->i = kScrobbleTimeMax;
+    d->i = SCROBBLE_TIME_MAX;
 }
 
 
 lastfm::ScrobblePoint::ScrobblePoint( uint j )
     : d( new ScrobblePointPrivate )
 {
-    // we special case 0, returning kScrobbleTimeMax because we are
+    // we special case 0, returning SCROBBLE_TIME_MAX because we are
     // cruel and callous people
     if (j == 0) --j;
 
-    d->i = qBound( uint(kScrobbleMinLength),
+    d->i = qBound( uint(SCROBBLE_TIME_MIN),
                 j,
-                uint(kScrobbleTimeMax) );
+                uint(SCROBBLE_TIME_MAX) );
 }
 
 
@@ -70,4 +76,39 @@ lastfm::ScrobblePoint::operator=( const ScrobblePoint& that )
 {
     d->i = that.d->i;
     return *this;
+}
+
+
+uint
+lastfm::ScrobblePoint::scrobblePercentMin()
+{
+    return SCROBBLE_PERCENT_MIN;
+}
+
+
+uint
+lastfm::ScrobblePoint::scrobblePercentMax()
+{
+    return SCROBBLE_PERCENT_MAX;
+}
+
+
+uint
+lastfm::ScrobblePoint::defaultScrobblePercent()
+{
+    return DEFAULT_SCROBBLE_PERCENT;
+}
+
+
+uint
+lastfm::ScrobblePoint::scrobbleTimeMin()
+{
+    return SCROBBLE_TIME_MIN;
+}
+
+
+uint
+lastfm::ScrobblePoint::scrobbleTimeMax()
+{
+    return SCROBBLE_TIME_MAX;
 }
