@@ -49,7 +49,7 @@ namespace lastfm
         LASTFM_DLLEXPORT extern const char* ApiKey;
     
         /** you need to set this for scrobbling to work (for now)
-          * Also the AuthenticatedUser class uses it */
+          * Also the User class uses it */
         LASTFM_DLLEXPORT extern QString Username;
 
         /** Some webservices require authentication. See the following
