@@ -155,7 +155,7 @@ public:
     uint fingerprintId() const;
     bool isLoved() const;
     LoveStatus loveStatus() const;
-    QUrl imageUrl( lastfm::ImageSize size, bool square ) const;
+    QUrl imageUrl( ImageSize size, bool square ) const;
 
     QString durationString() const;
     static QString durationString( int seconds );
@@ -244,7 +244,7 @@ public:
     MutableTrack( const Track& that );
 
     void setFromLfm( const XmlQuery& lfm );
-    void setImageUrl( lastfm::ImageSize size, const QString& url );
+    void setImageUrl( ImageSize size, const QString& url );
     
     void setArtist( QString artist );
     void setAlbumArtist( QString albumArtist );

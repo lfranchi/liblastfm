@@ -128,7 +128,7 @@ public:
     QUrl url;
     QDateTime time; /// the time the track was started at
     lastfm::Track::LoveStatus loved;
-    QMap<lastfm::ImageSize, QUrl> m_images;
+    QMap<AbstractType::ImageSize, QUrl> m_images;
     short scrobbleStatus;
     short scrobbleError;
     QString scrobbleErrorText;
@@ -222,12 +222,12 @@ lastfm::Track::Track( const QDomElement& e )
     d->video = e.namedItem( "video" ).toElement().text().toInt();
 
     for (QDomElement image = e.firstChildElement("image") ; !image.isNull() ; image = image.nextSiblingElement("image"))
-        d->m_images[static_cast<lastfm::ImageSize>(image.attribute("size").toInt())] = image.text();
+        d->m_images[static_cast<ImageSize>(image.attribute("size").toInt())] = image.text();
 
     QDomNode artistNode = e.namedItem("artist");
 
     for (QDomElement artistImage = artistNode.firstChildElement("image") ; !artistImage.isNull() ; artistImage = artistImage.nextSiblingElement("image"))
-        artist().setImageUrl( static_cast<lastfm::ImageSize>(artistImage.attribute("size").toInt()), artistImage.text() );
+        artist().setImageUrl( static_cast<ImageSize>(artistImage.attribute("size").toInt()), artistImage.text() );
 
     QDomNodeList nodes = e.namedItem( "extras" ).childNodes();
     for (int i = 0; i < nodes.count(); ++i)
@@ -291,15 +291,15 @@ lastfm::TrackData::onGotInfo()
         qDebug() << lfm;
 
         QString imageUrl = lfm["track"]["image size=small"].text();
-        if ( !imageUrl.isEmpty() ) m_images[lastfm::Small] = imageUrl;
+        if ( !imageUrl.isEmpty() ) m_images[AbstractType::SmallImage] = imageUrl;
         imageUrl = lfm["track"]["image size=medium"].text();
-        if ( !imageUrl.isEmpty() ) m_images[lastfm::Medium] = imageUrl;
+        if ( !imageUrl.isEmpty() ) m_images[AbstractType::MediumImage] = imageUrl;
         imageUrl = lfm["track"]["image size=large"].text();
-        if ( !imageUrl.isEmpty() ) m_images[lastfm::Large] = imageUrl;
+        if ( !imageUrl.isEmpty() ) m_images[AbstractType::LargeImage] = imageUrl;
         imageUrl = lfm["track"]["image size=extralarge"].text();
-        if ( !imageUrl.isEmpty() ) m_images[lastfm::ExtraLarge] = imageUrl;
+        if ( !imageUrl.isEmpty() ) m_images[AbstractType::ExtraLargeImage] = imageUrl;
         imageUrl = lfm["track"]["image size=mega"].text();
-        if ( !imageUrl.isEmpty() ) m_images[lastfm::Mega] = imageUrl;
+        if ( !imageUrl.isEmpty() ) m_images[AbstractType::MegaImage] = imageUrl;
 
         if ( lfm["track"]["userloved"].text().length() > 0 )
             loved = lfm["track"]["userloved"].text() == "0" ? Track::Unloved : Track::Loved;
@@ -386,7 +386,7 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
     makeElement( "video", QString::number( isVideo() ) );
 
     // put the images urls in the dom
-    QMapIterator<lastfm::ImageSize, QUrl> imageIter( d->m_images );
+    QMapIterator<ImageSize, QUrl> imageIter( d->m_images );
     while (imageIter.hasNext()) {
         QDomElement e = xml.createElement( "image" );
         e.appendChild( xml.createTextNode( imageIter.next().value().toString() ) );
@@ -396,14 +396,14 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
 
     QDomElement artistElement = xml.createElement( "artist" );
 
-    for ( int size = lastfm::Small ; size <= lastfm::Mega ; ++size )
+    for ( int size = SmallImage ; size <= MegaImage ; ++size )
     {
-        QString imageUrl = d->artist.imageUrl( static_cast<lastfm::ImageSize>(size) ).toString();
+        QString imageUrl = d->artist.imageUrl( static_cast<ImageSize>(size) ).toString();
 
         if ( !imageUrl.isEmpty() )
         {
             QDomElement e = xml.createElement( "image" );
-            e.appendChild( xml.createTextNode( d->artist.imageUrl( static_cast<lastfm::ImageSize>(size) ).toString() ) );
+            e.appendChild( xml.createTextNode( d->artist.imageUrl( static_cast<ImageSize>(size) ).toString() ) );
             e.setAttribute( "size", size );
             artistElement.appendChild( e );
         }
@@ -479,7 +479,7 @@ lastfm::Track::title( Corrections corrected ) const
 
 
 QUrl
-lastfm::Track::imageUrl( lastfm::ImageSize size, bool square ) const
+lastfm::Track::imageUrl( ImageSize size, bool square ) const
 {
     if( !square ) return d->m_images.value( size );
 
@@ -532,15 +532,15 @@ void
 lastfm::MutableTrack::setFromLfm( const XmlQuery& lfm )
 {
     QString imageUrl = lfm["track"]["image size=small"].text();
-    if ( !imageUrl.isEmpty() ) d->m_images[lastfm::Small] = imageUrl;
+    if ( !imageUrl.isEmpty() ) d->m_images[SmallImage] = imageUrl;
     imageUrl = lfm["track"]["image size=medium"].text();
-    if ( !imageUrl.isEmpty() ) d->m_images[lastfm::Medium] = imageUrl;
+    if ( !imageUrl.isEmpty() ) d->m_images[MediumImage] = imageUrl;
     imageUrl = lfm["track"]["image size=large"].text();
-    if ( !imageUrl.isEmpty() ) d->m_images[lastfm::Large] = imageUrl;
+    if ( !imageUrl.isEmpty() ) d->m_images[LargeImage] = imageUrl;
     imageUrl = lfm["track"]["image size=extralarge"].text();
-    if ( !imageUrl.isEmpty() ) d->m_images[lastfm::ExtraLarge] = imageUrl;
+    if ( !imageUrl.isEmpty() ) d->m_images[ExtraLargeImage] = imageUrl;
     imageUrl = lfm["track"]["image size=mega"].text();
-    if ( !imageUrl.isEmpty() ) d->m_images[lastfm::Mega] = imageUrl;
+    if ( !imageUrl.isEmpty() ) d->m_images[MegaImage] = imageUrl;
 
     if ( lfm["track"]["userloved"].text().length() > 0)
         d->loved = lfm["track"]["userloved"].text() == "0" ? Unloved : Loved;
@@ -549,7 +549,7 @@ lastfm::MutableTrack::setFromLfm( const XmlQuery& lfm )
 }
 
 void
-lastfm::MutableTrack::setImageUrl( lastfm::ImageSize size, const QString& url )
+lastfm::MutableTrack::setImageUrl( ImageSize size, const QString& url )
 {
     if ( !url.isEmpty() )
         d->m_images[size] = url;

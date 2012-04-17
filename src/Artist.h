@@ -44,8 +44,8 @@ namespace lastfm
         Artist( const Artist& artist );
 
         /** will be QUrl() unless you got this back from a getInfo or something call */
-        QUrl imageUrl( ImageSize size = Large, bool square = false ) const;
-        void setImageUrl( lastfm::ImageSize size, const QString& url );
+        QUrl imageUrl( ImageSize size = LargeImage, bool square = false ) const;
+        void setImageUrl( ImageSize size, const QString& url );
 
         bool isNull() const;
         

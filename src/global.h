@@ -74,16 +74,6 @@ namespace lastfm
     }
 
 
-    enum ImageSize
-    {
-        Small,
-        Medium,
-        Large, /** seemingly 174x174 */
-        ExtraLarge,
-        Mega
-    };
-    
-    
     //convenience
     class Album;
     class Artist;

@@ -29,7 +29,6 @@ using lastfm::Gender;
 using lastfm::User;
 using lastfm::UserList;
 using lastfm::XmlQuery;
-using lastfm::ImageSize;
 
 
 class lastfm::UserListPrivate

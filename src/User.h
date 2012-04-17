@@ -101,7 +101,7 @@ namespace lastfm
         QString realName() const;
         void setRealName( const QString& realName );
 
-        QUrl imageUrl( ImageSize size = Large, bool square = false ) const;
+        QUrl imageUrl( ImageSize size = LargeImage, bool square = false ) const;
         void setImages( const QList<QUrl>& images );
 
         void setAge( unsigned short age );

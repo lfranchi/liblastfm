@@ -30,7 +30,6 @@
 using lastfm::Artist;
 using lastfm::ArtistData;
 using lastfm::User;
-using lastfm::ImageSize;
 using lastfm::XmlQuery;
 
 
@@ -40,7 +39,7 @@ public:
     ArtistData() {}
     ~ArtistData() {}
     QString name;
-    QMap<lastfm::ImageSize, QUrl> images;
+    QMap<AbstractType::ImageSize, QUrl> images;
 };
 
 
@@ -63,11 +62,11 @@ Artist::Artist( const XmlQuery& xml )
     d = new ArtistData;
 
     d->name = xml["name"].text();
-    setImageUrl( lastfm::Small, xml["image size=small"].text() );
-    setImageUrl( lastfm::Medium, xml["image size=medium"].text() );
-    setImageUrl( lastfm::Large, xml["image size=large"].text() );
-    setImageUrl( lastfm::ExtraLarge, xml["image size=extralarge"].text() );
-    setImageUrl( lastfm::Mega, xml["image size=mega"].text() );
+    setImageUrl( SmallImage, xml["image size=small"].text() );
+    setImageUrl( MediumImage, xml["image size=medium"].text() );
+    setImageUrl( LargeImage, xml["image size=large"].text() );
+    setImageUrl( ExtraLargeImage, xml["image size=extralarge"].text() );
+    setImageUrl( MegaImage, xml["image size=mega"].text() );
 }
 
 Artist::Artist( const Artist& artist )
@@ -90,7 +89,7 @@ Artist::imageUrl( ImageSize size, bool square ) const
 }
 
 void
-Artist::setImageUrl( lastfm::ImageSize size, const QString& url )
+Artist::setImageUrl( ImageSize size, const QString& url )
 {
     if ( !url.isEmpty() )
         d->images[size] = url;

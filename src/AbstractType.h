@@ -32,6 +32,15 @@ namespace lastfm
     class LASTFM_DLLEXPORT AbstractType
     {
     public:
+        enum ImageSize
+        {
+            SmallImage,
+            MediumImage,
+            LargeImage, /** seemingly 174x174 */
+            ExtraLargeImage,
+            MegaImage
+        };
+
         virtual QString toString() const = 0;
         virtual QDomElement toDomElement( QDomDocument& ) const = 0;
         virtual QUrl www() const = 0;
