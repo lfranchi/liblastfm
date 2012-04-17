@@ -18,14 +18,15 @@
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QRegExp>
-#include <QStringList>
-
 #include "Artist.h"
 #include "User.h"
 #include "UrlBuilder.h"
 #include "XmlQuery.h"
 #include "ws.h"
+
+#include <QDebug>
+#include <QRegExp>
+#include <QStringList>
 
 using lastfm::Artist;
 using lastfm::ArtistData;

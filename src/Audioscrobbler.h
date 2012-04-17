@@ -21,14 +21,13 @@
 #define LASTFM_AUDIOSCROBBLER_H
 
 #include "global.h"
-#include <QByteArray>
 #include <QList>
-#include <QString>
 #include <QObject>
-#include <QVariant>
 
 namespace lastfm
 {
+    class Track;
+
     /** @author Max Howell <max@last.fm>
       * An implementation of the Audioscrobbler Realtime Submissions Protocol 
       * version 1.2.1 for a single Last.fm user

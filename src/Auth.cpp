@@ -18,9 +18,9 @@
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "Auth.h"
 #include "ws.h"
 
-#include "Auth.h"
 
 lastfm::Auth::Auth()
 {

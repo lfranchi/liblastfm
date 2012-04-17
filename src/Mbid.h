@@ -21,7 +21,6 @@
 #define LASTFM_MBID_H
 
 #include "global.h"
-#include <QString>
 
 namespace lastfm
 {

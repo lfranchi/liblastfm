@@ -18,15 +18,16 @@
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QFileInfo>
-#include <QStringList>
-#include <QAbstractNetworkCache>
-
 #include "Track.h"
 #include "User.h"
 #include "UrlBuilder.h"
 #include "XmlQuery.h"
 #include "ws.h"
+
+#include <QFileInfo>
+#include <QStringList>
+#include <QAbstractNetworkCache>
+#include <QDebug>
 
 
 class lastfm::TrackContextPrivate

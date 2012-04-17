@@ -22,7 +22,6 @@
 #define LASTFM_ABSTRACTTYPE_H
 
 #include <QDomElement>
-#include <QString>
 #include <QUrl>
 
 #include "global.h"

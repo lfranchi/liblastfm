@@ -22,8 +22,6 @@
 
 #include "Artist.h"
 #include "Mbid.h"
-#include <QString>
-#include <QUrl>
 
 namespace lastfm
 {

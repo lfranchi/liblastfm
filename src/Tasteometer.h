@@ -23,8 +23,12 @@
 
 #include "global.h"
 
+class QNetworkReply;
+
 namespace lastfm
 {
+    class User;
+
     class LASTFM_DLLEXPORT Tasteometer
     {
     public:

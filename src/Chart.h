@@ -22,6 +22,8 @@
 
 #include "global.h"
 
+class QNetworkReply;
+
 namespace lastfm
 {
     class LASTFM_DLLEXPORT Chart
@@ -30,13 +32,13 @@ namespace lastfm
         Chart();
 
     public:
-        static class QNetworkReply* getHypedArtists( int limit = -1, int page = -1 );
-        static class QNetworkReply* getHypedTracks( int limit = -1, int page = -1 );
-        static class QNetworkReply* getLovedTracks( int limit = -1, int page = -1 );
-        static class QNetworkReply* getTopArtists( int limit = -1, int page = -1 );
-        static class QNetworkReply* getTopDownloads( int limit = -1, int page = -1 );
-        static class QNetworkReply* getTopTags( int limit = -1, int page = -1 );
-        static class QNetworkReply* getTopTracks( int limit = -1, int page = -1 );
+        static QNetworkReply* getHypedArtists( int limit = -1, int page = -1 );
+        static QNetworkReply* getHypedTracks( int limit = -1, int page = -1 );
+        static QNetworkReply* getLovedTracks( int limit = -1, int page = -1 );
+        static QNetworkReply* getTopArtists( int limit = -1, int page = -1 );
+        static QNetworkReply* getTopDownloads( int limit = -1, int page = -1 );
+        static QNetworkReply* getTopTags( int limit = -1, int page = -1 );
+        static QNetworkReply* getTopTracks( int limit = -1, int page = -1 );
     };
 }
 

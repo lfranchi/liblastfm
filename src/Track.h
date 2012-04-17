@@ -21,16 +21,10 @@
 #define LASTFM_TRACK_H
 
 #include <QDateTime>
-#include <QDomElement>
 #include <QExplicitlySharedDataPointer>
-#include <QString>
-#include <QMap>
-#include <QUrl>
 #include <QPointer>
 
-#include "AbstractType.h"
 #include "Album.h"
-#include "Mbid.h"
 
 namespace lastfm {
 

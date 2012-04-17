@@ -25,6 +25,7 @@
 #include <QNetworkRequest>
 #include <QNetworkProxy>
 
+class QNetworkReply;
 
 namespace lastfm {
 

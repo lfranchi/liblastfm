@@ -20,6 +20,7 @@
 #include "XmlQuery.h"
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <QDomDocument>
 #include <QStringList>
 

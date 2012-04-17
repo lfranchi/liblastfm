@@ -24,6 +24,7 @@
 #include <QDBusConnection>
 #include <QDBusInterface>
 #include <QDBusReply>
+#include <QDebug>
 
 #define NM_DBUS_SERVICE   "org.freedesktop.NetworkManager"
 #define NM_DBUS_PATH      "/org/freedesktop/NetworkManager"

@@ -21,7 +21,6 @@
 #define LASTFM_SCROBBLE_POINT_H
 
 #include "global.h"
-#include <QtAlgorithms>
 
 
 namespace lastfm

@@ -21,9 +21,10 @@
 #include "Track.h"
 #include "UrlBuilder.h"
 #include "XmlQuery.h"
+
 #include <QStringList>
-#include "User.h"
 #include <QAbstractNetworkCache>
+#include <QDebug>
 
 using lastfm::Gender;
 using lastfm::User;

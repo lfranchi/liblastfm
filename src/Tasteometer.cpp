@@ -19,7 +19,6 @@
 */
 
 #include "Tasteometer.h"
-
 #include "User.h"
 
 lastfm::Tasteometer::Tasteometer()

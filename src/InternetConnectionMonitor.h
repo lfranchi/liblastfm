@@ -24,6 +24,8 @@
 #include "global.h"
 #include <QObject>
 
+class QNetworkReply;
+
 namespace lastfm {
 
 class NetworkConnectionMonitor;

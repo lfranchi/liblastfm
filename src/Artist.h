@@ -20,14 +20,12 @@
 #ifndef LASTFM_ARTIST_H
 #define LASTFM_ARTIST_H
 
-#include <QMap>
-#include <QString>
-#include <QUrl>
-#include <QSharedData>
-
 #include "AbstractType.h"
-#include "global.h"
 
+#include <QMap>
+#include <QSharedDataPointer>
+
+class QNetworkReply;
 
 namespace lastfm
 {

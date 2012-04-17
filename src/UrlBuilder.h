@@ -22,7 +22,6 @@
 
 #include "global.h"
 #include <QLocale>
-#include <QString>
 #include <QUrl>
   
 

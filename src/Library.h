@@ -21,8 +21,6 @@
 #define LASTFM_LIBRARY_H
 
 #include "Track.h"
-#include "Artist.h"
-#include "Album.h"
 
 namespace lastfm
 {
@@ -32,20 +30,20 @@ namespace lastfm
         Library();
 
     public:
-        static class QNetworkReply* addAlbum( const QList<lastfm::Album>& albums );
-        static class QNetworkReply* addArtist( const QList<lastfm::Artist>& artists );
-        static class QNetworkReply* addTrack( const lastfm::Track& tracks );
+        static QNetworkReply* addAlbum( const QList<lastfm::Album>& albums );
+        static QNetworkReply* addArtist( const QList<lastfm::Artist>& artists );
+        static QNetworkReply* addTrack( const lastfm::Track& tracks );
 
-        static class QNetworkReply* getAlbums( const QString& user, const lastfm::Artist& artist = lastfm::Artist(), int limit = -1, int page = -1 );
-        static class QNetworkReply* getArtists( const QString& user, int limit = -1, int page = -1 );
-        static class QNetworkReply* getTracks( const QString& user, const lastfm::Artist& artist = lastfm::Artist(), int limit = -1, int page = -1 );
-        static class QNetworkReply* getTracks( const QString& user, const lastfm::Album& album = lastfm::Album(), int limit = -1, int page = -1 );
+        static QNetworkReply* getAlbums( const QString& user, const lastfm::Artist& artist = lastfm::Artist(), int limit = -1, int page = -1 );
+        static QNetworkReply* getArtists( const QString& user, int limit = -1, int page = -1 );
+        static QNetworkReply* getTracks( const QString& user, const lastfm::Artist& artist = lastfm::Artist(), int limit = -1, int page = -1 );
+        static QNetworkReply* getTracks( const QString& user, const lastfm::Album& album = lastfm::Album(), int limit = -1, int page = -1 );
 
-        static class QNetworkReply* removeAlbum( const lastfm::Album& album );
-        static class QNetworkReply* removeArtist( const lastfm::Artist& artist );
-        static class QNetworkReply* removeTrack( const lastfm::Track& track );
+        static QNetworkReply* removeAlbum( const lastfm::Album& album );
+        static QNetworkReply* removeArtist( const lastfm::Artist& artist );
+        static QNetworkReply* removeTrack( const lastfm::Track& track );
 
-        static class QNetworkReply* removeScrobble( const lastfm::Track& track );
+        static QNetworkReply* removeScrobble( const lastfm::Track& track );
     };
 }
 

@@ -21,9 +21,7 @@
 #define LASTFM_MISC_H
 
 #include "global.h"
-#include <QCryptographicHash>
 #include <QDir>
-#include <QString>
 
 #ifdef Q_WS_MAC
 typedef const struct __CFString* CFStringRef;

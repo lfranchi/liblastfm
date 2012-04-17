@@ -20,11 +20,15 @@
 #ifndef LASTFM_TUNER_H
 #define LASTFM_TUNER_H
 
+#include "Track.h"
 #include "ws.h"
+
 #include <QObject>
 
 namespace lastfm
 {
+    class RadioStation;
+
     /** With regard to error handling. We handle Ws::TryAgain up to 5 times,
       * don't try again after that! Just tell the user to try again later. 
       */

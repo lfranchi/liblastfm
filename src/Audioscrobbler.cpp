@@ -18,15 +18,15 @@
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QPointer>
-
 #include "Audioscrobbler.h"
 #include "ScrobbleCache.h"
-
-#include "User.h"
 #include "Track.h"
+#include "User.h"
 #include "ws.h"
 #include "XmlQuery.h"
+
+#include <QDebug>
+#include <QPointer>
 
 
 namespace lastfm

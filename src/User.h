@@ -20,9 +20,7 @@
 #ifndef LASTFM_USER_H
 #define LASTFM_USER_H
 
-#include <QString>
 #include <QStringList>
-#include <QUrl>
 
 #include "AbstractType.h"
 #include "ws.h"
@@ -30,6 +28,7 @@
 namespace lastfm
 {
     class UserList;
+    class XmlQuery;
 
     class LASTFM_DLLEXPORT Gender
     {
@@ -67,7 +66,7 @@ namespace lastfm
     public:
         User();
         User( const QString& name );
-        User( const class XmlQuery& xml );
+        User( const XmlQuery& xml );
         User( const User& user );
         ~User();
 

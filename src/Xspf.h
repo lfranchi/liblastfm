@@ -30,7 +30,7 @@ namespace lastfm
         Q_OBJECT
     public:
         /** pass in the playlist node! */
-        Xspf( const class QDomElement& playlist_node, QObject* parent );
+        Xspf( const QDomElement& playlist_node, QObject* parent );
         ~Xspf();
 
         QString title() const;

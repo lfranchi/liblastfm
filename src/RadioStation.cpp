@@ -17,11 +17,12 @@
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QRegExp>
-#include <QStringList>
-
 #include "RadioStation.h"
 #include "XmlQuery.h"
+
+#include <QDebug>
+#include <QRegExp>
+#include <QStringList>
 
 
 const float k_defaultRep(0.5);

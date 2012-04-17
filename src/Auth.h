@@ -23,6 +23,8 @@
 
 #include "global.h"
 
+class QNetworkReply;
+
 namespace lastfm
 {
     class LASTFM_DLLEXPORT Auth

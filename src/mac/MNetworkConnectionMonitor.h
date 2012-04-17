@@ -22,8 +22,6 @@
 #define MNETWORK_CONNECTION_MONITOR_H
 
 #include "../NetworkConnectionMonitor.h"
-#include "../global.h"
-#include <QObject>
 
 #ifdef Q_WS_MAC
 #include <SystemConfiguration/SCNetwork.h> //TODO remove

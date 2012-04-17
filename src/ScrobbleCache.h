@@ -22,7 +22,6 @@
 
 #include "Track.h"
 #include <QList>
-#include <QString>
 
 namespace lastfm {
 

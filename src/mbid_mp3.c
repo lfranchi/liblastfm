@@ -36,6 +36,8 @@
 
 #define MBID_BUFFER_SIZE 37
 
+#include <stdio.h>
+
 // -----------------------------------------------------------------------------
 
 void mfile(size_t length, char ret[], FILE *fp, int *s) {

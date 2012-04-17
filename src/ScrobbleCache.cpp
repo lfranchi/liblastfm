@@ -21,6 +21,7 @@
 #include "ScrobblePoint.h"
 #include "misc.h"
 #include <QCoreApplication>
+#include <QDebug>
 #include <QFile>
 #include <QDomElement>
 #include <QDomDocument>

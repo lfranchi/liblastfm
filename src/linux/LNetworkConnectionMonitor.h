@@ -24,7 +24,6 @@
 
 #include "../NetworkConnectionMonitor.h"
 #include "../global.h"
-#include <QObject>
 
 class QDBusConnection;
 class QDBusInterface;
