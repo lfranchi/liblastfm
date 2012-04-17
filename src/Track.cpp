@@ -40,7 +40,7 @@ class lastfm::TrackContextPrivate
 lastfm::TrackContext::Type
 lastfm::TrackContextPrivate::getType( const QString& typeString )
 {
-    lastfm::TrackContext::Type type = lastfm::TrackContext::Unknown;
+    lastfm::TrackContext::Type type = lastfm::TrackContext::UnknownType;
 
     if ( typeString == "artist" )
         type = lastfm::TrackContext::Artist;
@@ -58,7 +58,7 @@ lastfm::TrackContextPrivate::getType( const QString& typeString )
 lastfm::TrackContext::TrackContext()
     :d( new TrackContextPrivate )
 {
-    d->m_type = Unknown;
+    d->m_type = UnknownType;
 }
 
 lastfm::TrackContext::TrackContext( const QString& type, const QList<QString>& values )
@@ -127,7 +127,7 @@ public:
     uint fpid;
     QUrl url;
     QDateTime time; /// the time the track was started at
-    LoveStatus loved;
+    lastfm::Track::LoveStatus loved;
     QMap<lastfm::ImageSize, QUrl> m_images;
     short scrobbleStatus;
     short scrobbleError;
@@ -170,10 +170,10 @@ signals:
 lastfm::TrackData::TrackData()
              : trackNumber( 0 ),
                duration( 0 ),
-               source( Track::Unknown ),
+               source( Track::UnknownSource ),
                rating( 0 ),
                fpid( -1 ),
-               loved( Unknown ),
+               loved( Track::UnknownLoveStatus ),
                scrobbleStatus( Track::Null ),
                scrobbleError( Track::None ),
                null( false ),
@@ -212,7 +212,7 @@ lastfm::Track::Track( const QDomElement& e )
     d->duration = e.namedItem( "duration" ).toElement().text().toInt();
     d->url = e.namedItem( "url" ).toElement().text();
     d->rating = e.namedItem( "rating" ).toElement().text().toUInt();
-    d->source = e.namedItem( "source" ).toElement().text().toInt(); //defaults to 0, or lastfm::Track::Unknown
+    d->source = e.namedItem( "source" ).toElement().text().toInt(); //defaults to 0, or lastfm::Track::UnknownSource
     d->time = QDateTime::fromTime_t( e.namedItem( "timestamp" ).toElement().text().toUInt() );
     d->loved = static_cast<LoveStatus>(e.namedItem( "loved" ).toElement().text().toInt());
     d->scrobbleStatus = e.namedItem( "scrobbleStatus" ).toElement().text().toInt();
@@ -246,11 +246,11 @@ lastfm::TrackData::onLoveFinished()
     if ( lfm.parse( static_cast<QNetworkReply*>(sender())->readAll() ) )
     {
         if ( lfm.attribute( "status" ) == "ok")
-            loved = Loved;
+            loved = Track::Loved;
 
     }
 
-    emit loveToggled( loved == Loved );
+    emit loveToggled( loved == Track::Loved );
 }
 
 
@@ -262,10 +262,10 @@ lastfm::TrackData::onUnloveFinished()
     if ( lfm.parse( static_cast<QNetworkReply*>(sender())->readAll() ) )
     {
         if ( lfm.attribute( "status" ) == "ok")
-            loved = Unloved;
+            loved = Track::Unloved;
     }
 
-    emit loveToggled( loved == Loved );
+    emit loveToggled( loved == Track::Loved );
 }
 
 void
@@ -302,13 +302,13 @@ lastfm::TrackData::onGotInfo()
         if ( !imageUrl.isEmpty() ) m_images[lastfm::Mega] = imageUrl;
 
         if ( lfm["track"]["userloved"].text().length() > 0 )
-            loved = lfm["track"]["userloved"].text() == "0" ? Unloved : Loved;
+            loved = lfm["track"]["userloved"].text() == "0" ? Track::Unloved : Track::Loved;
 
         if ( observer.receiver )
             if ( !QMetaObject::invokeMethod( observer.receiver, observer.method, Q_ARG(QByteArray, data) ) )
                 QMetaObject::invokeMethod( observer.receiver, observer.method );
 
-        emit loveToggled( loved == Loved );
+        emit loveToggled( loved == Track::Loved );
     }
     else
     {
@@ -830,7 +830,7 @@ lastfm::Track::isLoved() const
     return d->loved == Loved;
 }
 
-lastfm::LoveStatus
+lastfm::Track::LoveStatus
 lastfm::Track::loveStatus() const
 {
     return d->loved;

@@ -36,19 +36,12 @@ namespace lastfm {
 
 class TrackData;
 
-enum LoveStatus
-{
-    Unknown = 0,
-    Loved,
-    Unloved
-};
-
 class LASTFM_DLLEXPORT TrackContext
 {
 public:
     enum Type
     {
-        Unknown,
+        UnknownType,
         User,
         Friend,
         Neighbour,
@@ -87,12 +80,19 @@ public:
         // DO NOT UNDER ANY CIRCUMSTANCES CHANGE THE ORDER OR VALUES OF THIS ENUM!
         // you will cause broken settings and b0rked scrobbler cache submissions
 
-        Unknown = 0,
+        UnknownSource = 0,
         LastFmRadio,
         Player,
         MediaDevice,
         NonPersonalisedBroadcast, // eg Shoutcast, BBC Radio 1, etc.
         PersonalisedRecommendation // eg Pandora, but not Last.fm
+    };
+
+    enum LoveStatus
+    {
+        UnknownLoveStatus = 0,
+        Loved,
+        Unloved
     };
 
     enum ScrobbleStatus
