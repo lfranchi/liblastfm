@@ -22,6 +22,9 @@
 #include "UrlBuilder.h"
 #include "XmlQuery.h"
 #include "ws.h"
+
+#include <QDebug>
+
 using lastfm::Tag;
 using lastfm::User;
 

@@ -72,71 +72,12 @@ namespace lastfm
         }
         return QString("Unknown enum value for \"%1\": %2").arg( enum_name ).arg( enum_value );
     }
-
-
-    enum ImageSize
-    {
-        Small,
-        Medium,
-        Large, /** seemingly 174x174 */
-        ExtraLarge,
-        Mega
-    };
-    
-    
-    //convenience
-    class Album;
-    class Artist;
-    class Audioscrobbler;
-    class AuthenticatedUser;
-    class Chart;
-    class Fingerprint;
-    class FingerprintableSource;
-    class FingerprintId;
-    class Mbid;
-    class MutableTrack;
-    class NetworkAccessManager;
-    class Playlist;
-    class User;
-    class RadioStation;
-    class Tag;
-    class Track;
-    class ScrobbleCache;
-    class ScrobblePoint;
-    class XmlQuery;
-    class Xspf;
 }
 
 
 #ifdef LASTFM_COLLAPSE_NAMESPACE
-using lastfm::Album;
-using lastfm::Artist;
-using lastfm::Audioscrobbler;
-using lastfm::AuthenticatedUser;
-using lastfm::Chart;
-using lastfm::Fingerprint;
-using lastfm::FingerprintId;
-using lastfm::Mbid;
-using lastfm::MutableTrack;
-using lastfm::Playlist;
-using lastfm::User;
-using lastfm::RadioStation;
-using lastfm::Tag;
-using lastfm::Track;
-using lastfm::ScrobbleCache;
-using lastfm::ScrobblePoint;
-using lastfm::XmlQuery;
-using lastfm::Xspf;
+using namespace ::lastfm;
 #endif
 
-
-//convenience
-class QDomDocument;
-class QNetworkAccessManager;
-class QNetworkReply;
-
-
-//convenience for development
-#include <QDebug>
 
 #endif //LASTFM_GLOBAL_H

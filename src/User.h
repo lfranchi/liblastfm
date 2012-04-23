@@ -20,9 +20,7 @@
 #ifndef LASTFM_USER_H
 #define LASTFM_USER_H
 
-#include <QString>
 #include <QStringList>
-#include <QUrl>
 
 #include "AbstractType.h"
 #include "ws.h"
@@ -30,6 +28,7 @@
 namespace lastfm
 {
     class UserList;
+    class XmlQuery;
 
     class LASTFM_DLLEXPORT Gender
     {
@@ -67,7 +66,7 @@ namespace lastfm
     public:
         User();
         User( const QString& name );
-        User( const class XmlQuery& xml );
+        User( const XmlQuery& xml );
         User( const User& user );
         ~User();
 
@@ -101,7 +100,7 @@ namespace lastfm
         QString realName() const;
         void setRealName( const QString& realName );
 
-        QUrl imageUrl( ImageSize size = Large, bool square = false ) const;
+        QUrl imageUrl( ImageSize size = LargeImage, bool square = false ) const;
         void setImages( const QList<QUrl>& images );
 
         void setAge( unsigned short age );
@@ -112,7 +111,7 @@ namespace lastfm
         /** use Tag::list() on the response to get a WeightedStringList */
         QNetworkReply* getTopTags() const;
 
-        /** use User::list() on the response to get a QList<User> */
+        /** use User::list() on the response to get a UserList */
         QNetworkReply* getFriends(  bool recentTracks = false, int limit = 50, int page = 1 ) const;
         QNetworkReply* getFriendsListeningNow( int limit = 50, int page = 1 ) const;
         QNetworkReply* getNeighbours( int limit = 50, int page = 1 ) const;
@@ -151,13 +150,23 @@ namespace lastfm
         UserPrivate * const d;
     };
 
-    class LASTFM_DLLEXPORT UserList : public QList<User>
+    class LASTFM_DLLEXPORT UserList
     {
     public:
-        int total;
-        int page;
-        int perPage;
-        int totalPages;
+        UserList();
+        UserList( const XmlQuery& query );
+        UserList( const UserList& other );
+        ~UserList();
+        UserList& operator=( const UserList& other );
+
+        int totalUsers();
+        int totalPages();
+        int currentPage();
+        int usersPerPage();
+        QList<User> users();
+
+    private:
+        class UserListPrivate * const d;
     };
 }
 

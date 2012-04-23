@@ -20,7 +20,6 @@
 #ifndef LASTFM_XMLQUERY_H
 #define LASTFM_XMLQUERY_H
 
-#include "global.h"
 #include "ws.h"
 #include <QDomElement>
 

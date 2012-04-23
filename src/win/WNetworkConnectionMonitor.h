@@ -22,8 +22,6 @@
 #define WNETWORK_CONNECTION_MONITOR_H
 
 #include "../NetworkConnectionMonitor.h"
-#include "../global.h"
-#include <QObject>
 
 namespace lastfm {
 

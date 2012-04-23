@@ -20,9 +20,6 @@
 #ifndef LASTFM_RADIO_STATION_H
 #define LASTFM_RADIO_STATION_H
 
-#include <QSharedData>
-#include <QSharedDataPointer>
-
 #include "User.h"
 #include "Tag.h"
 #include "Artist.h"

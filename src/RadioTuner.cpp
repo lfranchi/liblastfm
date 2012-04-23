@@ -18,13 +18,14 @@
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QTimer>
-
-#include "RadioStation.h"
 #include "RadioTuner.h"
+#include "RadioStation.h"
 #include "XmlQuery.h"
 #include "Xspf.h"
 #include "ws.h"
+
+#include <QDebug>
+#include <QTimer>
 
 using namespace lastfm;
 

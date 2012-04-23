@@ -25,6 +25,8 @@
 #include "NetworkConnectionMonitor.h"
 #include "ws.h"
 
+#include <QDebug>
+
 class lastfm::InternetConnectionMonitorPrivate
 {
 public:

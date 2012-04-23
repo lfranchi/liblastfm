@@ -20,12 +20,15 @@
 #include "ws.h"
 #include "misc.h"
 #include "NetworkAccessManager.h"
+
 #include <QCoreApplication>
 #include <QDomDocument>
 #include <QDomElement>
 #include <QLocale>
 #include <QStringList>
 #include <QUrl>
+
+
 static QNetworkAccessManager* nam = 0;
 
 class lastfm::ws::ParseErrorPrivate

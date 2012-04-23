@@ -21,26 +21,41 @@
 #include "ScrobblePoint.h"
 #include "misc.h"
 #include <QCoreApplication>
+#include <QDebug>
 #include <QFile>
 #include <QDomElement>
 #include <QDomDocument>
 
 using lastfm::ScrobbleCache;
 
-ScrobbleCache::ScrobbleCache( const QString& username )
+
+class lastfm::ScrobbleCachePrivate
 {
-    Q_ASSERT( username.length() );
+    public:
+    enum Invalidity
+    {
+        TooShort,
+        ArtistNameMissing,
+        TrackNameMissing,
+        ArtistInvalid,
+        NoTimestamp,
+        FromTheFuture,
+        FromTheDistantPast
+    };
 
-    m_path = lastfm::dir::runtimeData().filePath( username + "_subs_cache.xml" );
-    m_username = username;
+    QString m_username;
+    QString m_path;
+    QList<Track> m_tracks;
 
-    QDomDocument xml;
-    read( xml );
-}
+    bool isValid( const Track& track, Invalidity* = 0 );
+    void write(); /// writes m_tracks to m_path
+    void read( QDomDocument& xml );  /// reads from m_path into m_tracks   
+    
+};
 
 
 bool
-ScrobbleCache::isValid( const lastfm::Track& track, Invalidity* v )
+lastfm::ScrobbleCachePrivate::isValid( const lastfm::Track& track, Invalidity* v )
 {
     #define TEST( test, x ) \
         if (test) { \
@@ -48,7 +63,7 @@ ScrobbleCache::isValid( const lastfm::Track& track, Invalidity* v )
             return false; \
         }
 
-    TEST( track.duration() < ScrobblePoint::kScrobbleMinLength, TooShort );
+    TEST( track.duration() < ScrobblePoint::scrobbleTimeMin(), TooShort );
 
     TEST( !track.timestamp().isValid(), NoTimestamp );
 
@@ -73,8 +88,43 @@ ScrobbleCache::isValid( const lastfm::Track& track, Invalidity* v )
 }
 
 
+ScrobbleCache::ScrobbleCache( const QString& username )
+    : d( new ScrobbleCachePrivate )
+{
+    Q_ASSERT( username.length() );
+
+    d->m_path = lastfm::dir::runtimeData().filePath( username + "_subs_cache.xml" );
+    d->m_username = username;
+
+    QDomDocument xml;
+    d->read( xml );
+}
+
+
+ScrobbleCache::ScrobbleCache( const ScrobbleCache& that )
+    : d ( new ScrobbleCachePrivate( *that.d ) )
+{
+}
+
+
+ScrobbleCache&
+ScrobbleCache::operator=( const ScrobbleCache& that )
+{
+    d->m_username = that.d->m_username;
+    d->m_path = that.d->m_path;
+    d->m_tracks = that.d->m_tracks;
+    return *this;
+}
+
+
+ScrobbleCache::~ScrobbleCache()
+{
+    delete d;
+}
+
+
 void
-ScrobbleCache::read( QDomDocument& xml )
+lastfm::ScrobbleCachePrivate::read( QDomDocument& xml )
 {
     m_tracks.clear();
 
@@ -92,7 +142,7 @@ ScrobbleCache::read( QDomDocument& xml )
 
 
 void
-ScrobbleCache::write()
+lastfm::ScrobbleCachePrivate::write()
 {
     if (m_tracks.isEmpty())
     {
@@ -126,26 +176,26 @@ ScrobbleCache::add( const QList<lastfm::Track>& tracks )
 {
     foreach (const Track& track, tracks)
     {
-        ScrobbleCache::Invalidity invalidity;
+        ScrobbleCachePrivate::Invalidity invalidity;
         
-        if ( !isValid( track, &invalidity ) )
+        if ( !d->isValid( track, &invalidity ) )
         {
             qWarning() << invalidity;
         }
         else if (track.isNull()) 
             qDebug() << "Will not cache an empty track";
         else 
-            m_tracks += track;
+            d->m_tracks += track;
     }
 
-    write();
+    d->write();
 }
 
 
 int
 ScrobbleCache::remove( const QList<lastfm::Track>& toremove )
 {
-    QMutableListIterator<Track> i( m_tracks );
+    QMutableListIterator<Track> i( d->m_tracks );
     while (i.hasNext()) {
         Track t = i.next();
         for (int x = 0; x < toremove.count(); ++x)
@@ -153,9 +203,30 @@ ScrobbleCache::remove( const QList<lastfm::Track>& toremove )
                 i.remove();
     }
 
-    write();
+    d->write();
 
     // yes we return # remaining, rather # removed, but this is an internal 
     // function and the behaviour is documented so it's alright imo --mxcl
-    return m_tracks.count();
+    return d->m_tracks.count();
+}
+
+
+QList<lastfm::Track>
+ScrobbleCache::tracks() const
+{
+    return d->m_tracks;
+}
+
+
+QString
+ScrobbleCache::path() const
+{
+    return d->m_path;
+}
+
+
+QString
+ScrobbleCache::username() const
+{
+    return d->m_username;
 }

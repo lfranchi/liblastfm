@@ -21,34 +21,21 @@
 #define LASTFM_TRACK_H
 
 #include <QDateTime>
-#include <QDomElement>
 #include <QExplicitlySharedDataPointer>
-#include <QString>
-#include <QMap>
-#include <QUrl>
 #include <QPointer>
 
-#include "AbstractType.h"
 #include "Album.h"
-#include "Mbid.h"
 
 namespace lastfm {
 
 class TrackData;
-
-enum LoveStatus
-{
-    Unknown = 0,
-    Loved,
-    Unloved
-};
 
 class LASTFM_DLLEXPORT TrackContext
 {
 public:
     enum Type
     {
-        Unknown,
+        UnknownType,
         User,
         Friend,
         Neighbour,
@@ -87,12 +74,19 @@ public:
         // DO NOT UNDER ANY CIRCUMSTANCES CHANGE THE ORDER OR VALUES OF THIS ENUM!
         // you will cause broken settings and b0rked scrobbler cache submissions
 
-        Unknown = 0,
+        UnknownSource = 0,
         LastFmRadio,
         Player,
         MediaDevice,
         NonPersonalisedBroadcast, // eg Shoutcast, BBC Radio 1, etc.
         PersonalisedRecommendation // eg Pandora, but not Last.fm
+    };
+
+    enum LoveStatus
+    {
+        UnknownLoveStatus = 0,
+        Loved,
+        Unloved
     };
 
     enum ScrobbleStatus
@@ -155,7 +149,7 @@ public:
     uint fingerprintId() const;
     bool isLoved() const;
     LoveStatus loveStatus() const;
-    QUrl imageUrl( lastfm::ImageSize size, bool square ) const;
+    QUrl imageUrl( ImageSize size, bool square ) const;
 
     QString durationString() const;
     static QString durationString( int seconds );
@@ -244,7 +238,7 @@ public:
     MutableTrack( const Track& that );
 
     void setFromLfm( const XmlQuery& lfm );
-    void setImageUrl( lastfm::ImageSize size, const QString& url );
+    void setImageUrl( ImageSize size, const QString& url );
     
     void setArtist( QString artist );
     void setAlbumArtist( QString albumArtist );

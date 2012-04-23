@@ -21,7 +21,6 @@
 #define LASTFM_SCROBBLE_POINT_H
 
 #include "global.h"
-#include <QtAlgorithms>
 
 
 namespace lastfm
@@ -40,14 +39,14 @@ public:
     ScrobblePoint& operator=( const ScrobblePoint& that );
 
     // scrobbles can occur between these two percentages of track duration
-    static const uint kScrobblePointMin = 50;
-    static const uint kScrobblePointMax = 100;
-    static const uint kDefaultScrobblePoint = 50;
+    static uint scrobblePercentMin();      //  50
+    static uint scrobblePercentMax();      // 100
+    static uint defaultScrobblePercent();  //  50
 
     // Shortest track length allowed to scrobble in seconds
-    static const uint kScrobbleMinLength = 31;
+    static uint scrobbleTimeMin();         //  31
     // Upper limit for scrobble time in seconds
-    static const uint kScrobbleTimeMax = 240;
+    static uint scrobbleTimeMax();         // 240
 
 private:
     class ScrobblePointPrivate * const d;

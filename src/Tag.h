@@ -22,11 +22,14 @@
 
 #include "global.h"
 #include <QMap>
-#include <QString>
 #include <QUrl>
+
+class QNetworkReply;
 
 namespace lastfm
 {
+    class User;
+
     class LASTFM_DLLEXPORT Tag
     {
     public:
@@ -43,12 +46,12 @@ namespace lastfm
         /** the global tag page at www.last.fm */
         QUrl www() const;
         /** the tag page for user @p user at www.last.fm */
-        QUrl www( const class User& user ) const;
+        QUrl www( const User& user ) const;
         /** pass the finished QNetworkReply to Tag::list() */
-        class QNetworkReply* search() const;
+        QNetworkReply* search() const;
 
         /** the top global tags on Last.fm, sorted by popularity (number of times used) */
-        static class QNetworkReply* getTopTags();
+        static QNetworkReply* getTopTags();
     
         /** the integer is the weighting, not all list type return requests
           * have a weighting, so the int may just be zero, if you don't care

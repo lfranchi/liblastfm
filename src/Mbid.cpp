@@ -19,6 +19,7 @@
 */
 #include "Mbid.h"
 #include "mbid_mp3.c"
+
 #include <QFile>
 
 namespace lastfm

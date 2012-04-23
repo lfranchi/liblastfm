@@ -18,6 +18,8 @@
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "misc.h"
+
+#include <QCryptographicHash>
 #include <QDir>
 #ifdef WIN32
     #include <shlobj.h>

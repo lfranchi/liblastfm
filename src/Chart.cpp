@@ -17,11 +17,11 @@
    You should have received a copy of the GNU General Public License
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <QNetworkReply>
-
+#include "Chart.h"
 #include "ws.h"
 
-#include "Chart.h"
+#include <QNetworkReply>
+
 
 lastfm::Chart::Chart()
 {

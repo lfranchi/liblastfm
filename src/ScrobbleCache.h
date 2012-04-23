@@ -22,28 +22,16 @@
 
 #include "Track.h"
 #include <QList>
-#include <QString>
 
 namespace lastfm {
 
 /** absolutely not thread-safe */
 class LASTFM_DLLEXPORT ScrobbleCache
 {
-    QString m_username;
-
-    void write(); /// writes m_tracks to m_path
-
-protected:
-    ScrobbleCache()
-    {}
-
-    QString m_path;
-    QList<Track> m_tracks;
-    
-    void read( QDomDocument& xml );  /// reads from m_path into m_tracks   
-    
 public:
     explicit ScrobbleCache( const QString& username );
+    ScrobbleCache( const ScrobbleCache& that );
+    ~ScrobbleCache();
 
     /** note this is unique for Track::sameAs() and equal timestamps 
       * obviously playcounts will not be increased for the same timestamp */
@@ -52,25 +40,15 @@ public:
     /** returns the number of tracks left in the queue */
     int remove( const QList<Track>& );
 
-    QList<Track> tracks() const { return m_tracks; }
-    QString path() const { return m_path; }
-    QString username() const { return m_username; }
+    ScrobbleCache& operator=( const ScrobbleCache& that );
+
+    QList<Track> tracks() const;
+    QString path() const;
+    QString username() const;
 
 private:
     bool operator==( const ScrobbleCache& ); //undefined
-
-    enum Invalidity
-    {
-        TooShort,
-        ArtistNameMissing,
-        TrackNameMissing,
-        ArtistInvalid,
-        NoTimestamp,
-        FromTheFuture,
-        FromTheDistantPast
-    };
-
-    bool isValid( const Track& track, Invalidity* = 0 );
+    class ScrobbleCachePrivate * const d;
 };
 
 }

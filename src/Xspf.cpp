@@ -18,12 +18,11 @@
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QTimer>
-#include <QUrl>
-
+#include "Xspf.h"
 #include "XmlQuery.h"
 
-#include "Xspf.h"
+#include <QTimer>
+#include <QUrl>
 
 
 class lastfm::XspfPrivate

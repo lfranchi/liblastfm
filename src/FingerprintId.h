@@ -21,7 +21,6 @@
 #define LASTFM_FINGERPRINT_ID_H
 
 #include "Track.h"
-#include <QMap>
  
 namespace lastfm
 {
