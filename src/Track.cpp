@@ -20,7 +20,6 @@
 
 #include <QFileInfo>
 #include <QStringList>
-#include <QAbstractNetworkCache>
 
 #include "Track.h"
 #include "User.h"
