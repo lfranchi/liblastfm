@@ -21,6 +21,7 @@
 
 #include <QCryptographicHash>
 #include <QDir>
+#include <QDebug>
 #ifdef WIN32
     #include <shlobj.h>
 #endif
