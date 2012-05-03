@@ -67,8 +67,6 @@ private:
 class LASTFM_DLLEXPORT Track : public AbstractType
 {
 public:
-    friend class TrackSignalProxy;
-
     enum Source
     {
         // DO NOT UNDER ANY CIRCUMSTANCES CHANGE THE ORDER OR VALUES OF THIS ENUM!
@@ -128,7 +126,17 @@ public:
     bool operator!=( const Track& that ) const;
     Track& operator=( const Track& that );
 
-    QObject* signalProxy() const;
+    /**
+     * Track's private class emits three signals that may be useful for
+     * applications:
+     *
+     *   loveToggled( bool love )
+     *   scrobbleStatusChanged( short scrobbleStatus )
+     *   corrected( QString correction )
+     *
+     * signalProxy() lets applications connect to them.
+     * */
+    const QObject* signalProxy() const;
 
     /** only a Track() is null */
     bool isNull() const;

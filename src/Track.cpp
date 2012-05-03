@@ -777,7 +777,7 @@ lastfm::Track::operator!=( const Track& that ) const
     return !operator==( that );
 }
 
-QObject*
+const QObject*
 lastfm::Track::signalProxy() const
 {
     return d.data();
