@@ -23,8 +23,11 @@
 #endif
 
 #include <objbase.h>
-#include <atlbase.h>
-#include <atlcom.h>
+
+#ifndef __MINGW32__
+    #include <atlbase.h>
+    #include <atlcom.h>
+#endif
 
 
 /** @brief WsConnectionMonitor needs Com to work as early as possible so we do this
