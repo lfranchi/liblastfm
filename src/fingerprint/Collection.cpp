@@ -19,7 +19,9 @@
 */
 
 #include "Collection.h"
-#include "../core/misc.h"
+
+#include "misc.h"
+
 #include <QCoreApplication>
 #include <QFileInfo>
 #include <QMutexLocker>
@@ -27,6 +29,7 @@
 #include <QSqlError>
 #include <QStringList>
 #include <QVariant>
+#include <QDebug>
 
 static const int k_collectionDbVersion = 1;
 

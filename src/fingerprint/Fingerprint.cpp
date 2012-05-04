@@ -23,7 +23,7 @@
 #include "Collection.h"
 #include "Sha256.h"
 #include "fplib/FingerprintExtractor.h"
-#include "../ws/ws.h"
+#include "ws.h"
 #include <QFileInfo>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>

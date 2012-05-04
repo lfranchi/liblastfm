@@ -1,5 +1,5 @@
 
-add_definitions(${QT_DEFINITIONS}
+add_definitions(${QT_DEFINITIONS})
 include_directories(${QT_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR})
 set(liblastfm_LIBRARIES
     ${QT_QTCORE_LIBRARY}
@@ -84,8 +84,8 @@ endif()
 add_library(lastfm SHARED ${liblastfm_SOURCES})
 target_link_libraries(lastfm ${liblastfm_LIBRARIES})
 set_target_properties(lastfm PROPERTIES
-    VERSION 1.0.0
-    SOVERSION 1.0
+    VERSION ${LASTFM_VERSION}
+    SOVERSION ${LASTFM_SOVERSION}
     COMPILE_DEFINITIONS LASTFM_LIB
 )
 
