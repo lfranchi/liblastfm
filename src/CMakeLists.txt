@@ -55,16 +55,17 @@ if(WIN32)
 endif()
 
 if(APPLE)
-    #FIXME
-    #     QMAKE_PKGINFO_TYPEINFO = last
-    #     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.4
+    #FIXME: enable this when deploying
+    #set(CMAKE_OSX_ARCHITECTURES "i386;ppc")
+    #set(CMAKE_OSX_DEPLOYMENT_TARGET 10.5)
+    #set(CMAKE_OSX_SYSROOT "/Developer/SDKs/MacOSX${CMAKE_OSX_DEPLOYMENT_TARGET}.sdk")
 
     list(APPEND liblastfm_SOURCES
-        mac/MNetworkConnectionMonitor_mac.cpp
+        src/mac/MNetworkConnectionMonitor_mac.cpp
     )
+
     find_library(SYSTEMCONFIGURATION_LIBRARY SystemConfiguration)
     find_library(COREFOUNDATION_LIBRARY CoreFoundation)
-
     list(APPEND liblastfm_LIBRARIES
         ${COREFOUNDATION_LIBRARY}
         ${SYSTEMCONFIGURATION_LIBRARY}
