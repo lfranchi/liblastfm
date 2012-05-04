@@ -28,26 +28,21 @@
 #define LASTFM_PATCH_VERSION 0
 
 
-#include <QtGlobal>
-
-#ifdef Q_CC_MSVC
+#ifndef LASTFM_LIB_STATIC
     #ifdef LASTFM_LIB
-        #define LASTFM_DLLEXPORT __declspec(dllexport)
+        #define LASTFM_DLLEXPORT Q_DECL_EXPORT
     #else
-        #define LASTFM_DLLEXPORT __declspec(dllimport)
+        #define LASTFM_DLLEXPORT Q_DECL_IMPORT
     #endif
-	#ifdef LASTFM_FINGERPRINT_LIB
-        #define LASTFM_FINGERPRINT_DLLEXPORT __declspec(dllexport)
+    #ifdef LASTFM_FINGERPRINT_LIB
+        #define LASTFM_FINGERPRINT_DLLEXPORT Q_DECL_EXPORT
     #else
-        #define LASTFM_FINGERPRINT_DLLEXPORT __declspec(dllimport)
+        #define LASTFM_FINGERPRINT_DLLEXPORT Q_DECL_IMPORT
     #endif
-#elif __GNUC__ >= 4
-    #define LASTFM_DLLEXPORT __attribute__ ((visibility("default")))
-	#define LASTFM_FINGERPRINT_DLLEXPORT __attribute__ ((visibility("default")))
-#else
+#else // LASTFM_LIB_STATIC
     #define LASTFM_DLLEXPORT
-	#define LASTFM_FINGERPRINT_DLLEXPORT
-#endif
+    #define LASTFM_FINGERPRINT_DLLEXPORT
+#endif // LASTFM_LIB_STATIC
 
 
 
