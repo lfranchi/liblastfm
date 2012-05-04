@@ -3,10 +3,14 @@
    support, and with no warranty, express or implied, as to its usefulness for 
    any purpose.
 */
-#include <lastfm.h>
+
+#include "Audioscrobbler.h"
+#include "ws.h"
+#include "Track.h"
+
+
 #include <QtCore>
 #include <QtNetwork>
-#include "src/_version.h"
 
 
 struct MyCoreApp : QCoreApplication
@@ -29,12 +33,11 @@ int main( int argc, char** argv )
 {
     // all 6 of these lines are REQUIRED in order to scrobble
     // this demo requires you to fill in the blanks as well...
-    lastfm::ws::Username = 
-    lastfm::ws::ApiKey =
-    lastfm::ws::SharedSecret =
-    lastfm::ws::SessionKey = // you need to auth to get this... try demo2
+    lastfm::ws::Username = "";
+    lastfm::ws::ApiKey = "";
+    lastfm::ws::SharedSecret = "";
+    lastfm::ws::SessionKey = ""; // you need to auth to get this... try demo2
     QCoreApplication::setApplicationName( "liblastfm" );
-    QCoreApplication::setApplicationVersion( VERSION );
 
     MyCoreApp app( argc, argv );
     

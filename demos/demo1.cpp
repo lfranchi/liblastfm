@@ -3,11 +3,17 @@
    support, and with no warranty, express or implied, as to its usefulness for 
    any purpose.
 */
-#include <lastfm.h> // this includes everything in liblastfm, you may prefer 
-#include <QtCore>   // to just include what you need with your project. Still
-#include <QtGui>    // we've given you the option.
+
+
+#include "Artist.h"
+#include "ws.h"
+
+#include <QtCore>
+#include <QtGui>
 #include <QPointer>
 #include <QNetworkReply>
+
+#include <stdexcept>
 
 class ArtistList : public QListWidget
 {

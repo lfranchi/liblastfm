@@ -3,7 +3,12 @@
    support, and with no warranty, express or implied, as to its usefulness for 
    any purpose.
 */
-#include <lastfm.h>
+
+#include "ws.h"
+#include "misc.h"
+#include "XmlQuery.h"
+#include "Artist.h"
+
 #include <QtCore>
 
 
@@ -34,10 +39,11 @@ int main( int argc, char** argv )
     app.setApplicationName( "liblastfm" );
     
 ////// you'll need to fill these in for this demo to work
-    lastfm::ws::Username = 
-    lastfm::ws::ApiKey = 
-    lastfm::ws::SharedSecret = 
-    QString password = 
+#warning credentials need to be filled in
+    lastfm::ws::Username = "";
+    lastfm::ws::ApiKey = "";
+    lastfm::ws::SharedSecret = "";
+    QString password = "";
 
 ////// Usually you never have to construct an Last.fm WS API call manually
     // eg. Track.getTopTags() just returns a QNetworkReply* but authentication is
@@ -74,8 +80,10 @@ int main( int argc, char** argv )
         // </lfm>
         //
         // If status is not "ok" then this function throws
-        lastfm::XmlQuery const lfm = lastfm::ws::parse( reply );
-        
+        lastfm::XmlQuery const lfm;
+#warning this code needs to be ported to new api, executable is most likely broken
+        //= lastfm::ws::parse( reply );
+
         // replace username; because eg. perhaps the user typed their
         // username with the wrong case
         lastfm::ws::Username = lfm["session"]["name"].text();
@@ -91,8 +99,9 @@ int main( int argc, char** argv )
         
     ////// because the SessionKey is now set, the AuthenticatedUser class will
         // work. And we can call authenticated calls
-        QNetworkReply* reply = lastfm::AuthenticatedUser().getRecommendedArtists();
-
+        QNetworkReply* reply;
+#warning this code needs to be ported to new api, executable is most likely broken
+        //= lastfm::AuthenticatedUser().getRecommendedArtists();
         // again, you shouldn't do this.. ;)
         QEventLoop loop;
         loop.connect( reply, SIGNAL(finished()), SLOT(quit()) );
