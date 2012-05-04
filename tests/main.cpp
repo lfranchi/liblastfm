@@ -6,7 +6,11 @@
 #include <QtCore>
 #include <QtTest>
 #include "TestTrack.h"
+#include "moc_TestTrack.cpp"
+
 #include "TestUrlBuilder.h"
+#include "moc_TestUrlBuilder.cpp"
+
 
 int main( int argc, char** argv)
 {

@@ -8,6 +8,8 @@ set(LASTFM_SOVERSION 1.0)
 # options
 option(BUILD_FINGERPRINT "Build the lastfm-fingerprint library" OFF)
 option(BUILD_DEMOS "Build the lastfm example programs" OFF)
+option(BUILD_TESTS "Build liblastfm tests" ON)
+
 
 # installation dirs
 include(GNUInstallDirs)
@@ -35,4 +37,10 @@ endif()
 # demos
 if(BUILD_DEMOS)
     add_subdirectory(demos)
+endif()
+
+# tests
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
 endif()
