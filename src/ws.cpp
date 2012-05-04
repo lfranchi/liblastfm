@@ -27,9 +27,13 @@
 #include <QLocale>
 #include <QStringList>
 #include <QUrl>
+#include <QThread>
+#include <QMutex>
 
 
-static QNetworkAccessManager* nam = 0;
+static QMap< QThread*, QNetworkAccessManager* > threadNamHash;
+static QSet< QThread* > ourNamSet;
+static QMutex namAccessMutex;
 
 class lastfm::ws::ParseErrorPrivate
 {
@@ -174,18 +178,45 @@ lastfm::ws::post( QMap<QString, QString> params, bool sk )
 
 QNetworkAccessManager*
 lastfm::nam()
-{    
-    if (!::nam) ::nam = new NetworkAccessManager( qApp );
-    return ::nam;
+{
+    QMutexLocker l( &namAccessMutex );
+    QThread* thread = QThread::currentThread();
+    if ( !threadNamHash.contains( thread ) )
+    {
+        NetworkAccessManager* newNam = new NetworkAccessManager();
+        threadNamHash[thread] = newNam;
+        ourNamSet.insert( thread );
+        return newNam;
+    }
+    return threadNamHash[thread];
 }
 
 
 void
 lastfm::setNetworkAccessManager( QNetworkAccessManager* nam )
 {
-    delete ::nam;
-    ::nam = nam;
-    nam->setParent( qApp ); // ensure it isn't deleted out from under us
+    if ( !nam )
+        return;
+
+    QMutexLocker l( &namAccessMutex );
+    QThread* thread = QThread::currentThread();
+    QNetworkAccessManager* oldNam = 0;
+    if ( threadNamHash.contains( thread ) && ourNamSet.contains( thread ) )
+        oldNam = threadNamHash[thread];
+
+    if ( oldNam == nam )
+    {
+        // If we're being passed back our own NAM, assume they want to
+        // ensure that we don't delete it out from under them
+        ourNamSet.remove( thread );
+        return;
+    }
+
+    threadNamHash[thread] = nam;
+    ourNamSet.remove( thread );
+
+    if ( oldNam )
+        delete oldNam;
 }
 
 
