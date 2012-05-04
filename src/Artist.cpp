@@ -154,7 +154,14 @@ Artist::getTopTags() const
 }
 
 
-QNetworkReply* 
+QNetworkReply*
+Artist::getTopTracks() const
+{
+    return ws::get( params("getTopTracks") );
+}
+
+
+QNetworkReply*
 Artist::getSimilar( int limit ) const
 {
     QMap<QString, QString> map = params("getSimilar");
@@ -195,6 +202,26 @@ Artist::getSimilar( QNetworkReply* r )
     return artists;
 }
 
+
+QStringList /* static */
+Artist::getTopTracks( QNetworkReply* r )
+{
+    QStringList tracks;
+    try
+    {
+        XmlQuery lfm;
+        lfm.parse( r->readAll() );
+        foreach (XmlQuery e, lfm.children( "track" ))
+        {
+            tracks << e["name"].text();
+        }
+    }
+    catch (ws::ParseError& e)
+    {
+        qWarning() << e.message();
+    }
+    return tracks;
+}
 
 
 QList<Artist> /* static */
