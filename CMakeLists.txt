@@ -7,6 +7,7 @@ set(LASTFM_SOVERSION 1.0)
 
 # options
 option(BUILD_FINGERPRINT "Build the lastfm-fingerprint library" OFF)
+option(BUILD_DEMOS "Build the lastfm example programs" OFF)
 
 # installation dirs
 include(GNUInstallDirs)
@@ -29,4 +30,9 @@ add_subdirectory(src)
 # libfingerprint
 if(BUILD_FINGERPRINT)
     add_subdirectory(src/fingerprint)
+endif()
+
+# demos
+if(BUILD_DEMOS)
+    add_subdirectory(demos)
 endif()
