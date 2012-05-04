@@ -23,9 +23,9 @@
 #include "misc.h"
 #include <QCoreApplication>
 #include <QNetworkRequest>
-#ifdef WIN32
-#include "win/IeSettings.h"
-#include "win/Pac.h"
+#if defined WIN32 && ! defined __MINGW32__
+    #include "win/IeSettings.h"
+    #include "win/Pac.h"
 #endif
 #ifdef __APPLE__
 #include "mac/ProxyDict.h"
@@ -43,7 +43,7 @@ static struct NetworkAccessManagerInit
 
     NetworkAccessManagerInit()
     {
-    #ifdef WIN32
+    #if defined WIN32 && ! defined __MINGW32__
         IeSettings s;
         // if it's autodetect, we determine the proxy everytime in proxy()
         // we don't really want to do a PAC lookup here, as it times out
@@ -80,7 +80,7 @@ namespace lastfm
 
 lastfm::NetworkAccessManager::NetworkAccessManager( QObject* parent )
                : QNetworkAccessManager( parent )
-            #ifdef WIN32
+            #if defined WIN32 && ! defined __MINGW32__
                , m_pac( 0 )
                , m_monitor( 0 )
             #endif
@@ -98,7 +98,7 @@ lastfm::NetworkAccessManager::NetworkAccessManager( QObject* parent )
 
 lastfm::NetworkAccessManager::~NetworkAccessManager()
 {
-#ifdef WIN32
+#if defined WIN32 && ! defined __MINGW32__
     delete m_pac;
 #endif
 }
@@ -108,8 +108,8 @@ QNetworkProxy
 lastfm::NetworkAccessManager::proxy( const QNetworkRequest& request )
 {   
     Q_UNUSED( request );
-    
-#ifdef WIN32
+
+#if defined WIN32 && ! defined __MINGW32__
     IeSettings s;
     if (s.fAutoDetect) 
     {
@@ -155,8 +155,8 @@ void
 lastfm::NetworkAccessManager::onConnectivityChanged( bool up )
 {
     Q_UNUSED( up );
-    
-#ifdef WIN32
+
+#if defined WIN32 && ! defined __MINGW32__
     if (up && m_pac) m_pac->resetFailedState();
 #endif
 }

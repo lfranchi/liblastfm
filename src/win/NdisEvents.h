@@ -21,8 +21,11 @@
 #define NDIS_EVENTS_H
 
 #include <windows.h>
+
+#ifndef __MINGW32__
 #include <atlbase.h>
 #include <WbemCli.h>
+#endif
 
 class NdisEvents
 {
