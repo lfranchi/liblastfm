@@ -24,7 +24,9 @@ set(CMAKE_AUTOMOC TRUE)
 if(CMAKE_COMPILER_IS_GNUCXX)
     add_definitions("-fno-operator-names -fvisibility-inlines-hidden -fvisibility=hidden")
 endif()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--no-undefined")
+if(NOT APPLE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--no-undefined")
+endif()
 
 # main library
 add_subdirectory(src)

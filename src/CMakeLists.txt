@@ -61,7 +61,7 @@ if(APPLE)
     #set(CMAKE_OSX_SYSROOT "/Developer/SDKs/MacOSX${CMAKE_OSX_DEPLOYMENT_TARGET}.sdk")
 
     list(APPEND liblastfm_SOURCES
-        src/mac/MNetworkConnectionMonitor_mac.cpp
+        mac/MNetworkConnectionMonitor_mac.cpp
     )
 
     find_library(SYSTEMCONFIGURATION_LIBRARY SystemConfiguration)

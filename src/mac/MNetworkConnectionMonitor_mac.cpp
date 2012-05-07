@@ -19,6 +19,7 @@
 */
 
 #include "MNetworkConnectionMonitor.h"
+#include "moc_MNetworkConnectionMonitor.cpp"
 #include "../ws.h"
 
 #include <QPointer>
