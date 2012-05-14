@@ -3,11 +3,17 @@
    support, and with no warranty, express or implied, as to its usefulness for 
    any purpose.
 */
+
+#ifndef LASTFM_TESTURLBUILDER_H
+#define LASTFM_TESTURLBUILDER_H
+
+#include <UrlBuilder.h>
+#include <global.h>
+
 #include <QtTest>
 #include <QtNetwork>
 #include <QEventLoop>
-#include <lastfm/UrlBuilder>
-#include <lastfm/global.h>
+
 
 static inline int getResponseCode( const QUrl& url )
 {
@@ -72,9 +78,11 @@ private slots:
         NEW_ROW( "Above & Beyond", "World On Fire (Maor Levi Remix)" );
         #undef NEW_ROW
     }
-    
+
     void test404() /** @author <max@last.fm> */
     {
         QCOMPARE( getResponseCode( QUrl("http://www.last.fm/404") ), 404 );
     }
 };
+
+#endif

@@ -3,8 +3,14 @@
    support, and with no warranty, express or implied, as to its usefulness for 
    any purpose.
 */
+
+#ifndef LASTFM_TESTTRACK_H
+#define LASTFM_TESTTRACK_H
+
+#include "Track.h"
+
 #include <QtTest>
-#include <lastfm/Track>
+
 using lastfm::Track;
 
 class TestTrack : public QObject
@@ -33,3 +39,5 @@ private slots:
         #undef TEST
     }
 };
+
+#endif

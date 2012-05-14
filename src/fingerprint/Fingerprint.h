@@ -20,9 +20,10 @@
 #ifndef LASTFM_FINGERPRINT_H
 #define LASTFM_FINGERPRINT_H
 
-#include <lastfm/FingerprintId>
-#include <lastfm/Track>
-
+#include "global.h"
+#include "Track.h"
+#include "FingerprintId.h"
+#include "FingerprintableSource.h"
 
 namespace lastfm
 {
