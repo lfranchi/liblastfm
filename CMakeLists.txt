@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 2.8.6)
 project(liblastfm)
 
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
+
 # general settings
 set(LASTFM_VERSION 1.0.0)
-set(LASTFM_SOVERSION 1.0)
+set(LASTFM_SOVERSION 1)
 
 # options
 option(BUILD_FINGERPRINT "Build the lastfm-fingerprint library" OFF)
@@ -31,7 +33,7 @@ endif()
 # main library
 add_subdirectory(src)
 
-# libfingerprint
+# liblastfm-fingerprint
 if(BUILD_FINGERPRINT)
     add_subdirectory(src/fingerprint)
 endif()
