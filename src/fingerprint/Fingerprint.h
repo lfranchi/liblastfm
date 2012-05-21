@@ -25,6 +25,8 @@
 #include "FingerprintId.h"
 #include "FingerprintableSource.h"
 
+#include <QDebug>
+
 namespace lastfm
 {
     class LASTFM_FINGERPRINT_DLLEXPORT Fingerprint
