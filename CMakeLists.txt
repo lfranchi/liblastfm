@@ -3,7 +3,7 @@ project(liblastfm)
 
 # general settings
 set(LASTFM_VERSION 1.0.0)
-set(LASTFM_SOVERSION 1.0)
+set(LASTFM_SOVERSION 1)
 
 # options
 option(BUILD_FINGERPRINT "Build the lastfm-fingerprint library" OFF)
