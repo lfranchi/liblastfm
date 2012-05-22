@@ -19,6 +19,7 @@
 */
 
 #include "WNetworkConnectionMonitor.h"
+#include "moc_WNetworkConnectionMonitor.cpp"
 
 // WsAccessManager needs special init (on Windows), and it needs to be done
 // early, so be careful about moving this

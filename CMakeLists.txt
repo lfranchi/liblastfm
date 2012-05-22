@@ -10,7 +10,6 @@ option(BUILD_FINGERPRINT "Build the lastfm-fingerprint library" OFF)
 option(BUILD_DEMOS "Build the lastfm example programs" OFF)
 option(BUILD_TESTS "Build liblastfm tests" ON)
 
-
 # installation dirs
 include(GNUInstallDirs)
 
@@ -24,9 +23,13 @@ set(CMAKE_AUTOMOC TRUE)
 if(CMAKE_COMPILER_IS_GNUCXX)
     add_definitions("-fno-operator-names -fvisibility-inlines-hidden -fvisibility=hidden")
 endif()
-if(NOT APPLE)
+if(UNIX AND NOT APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--no-undefined")
 endif()
+
+if(MSVC)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:wchar_t-")
+endif(MSVC)
 
 # main library
 add_subdirectory(src)

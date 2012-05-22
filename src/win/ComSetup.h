@@ -18,8 +18,9 @@
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef _WIN32_WINNT
+// This means we are targetting Windows XP onwards
 // bring in CoInitializeSecurity from objbase.h
-#define _WIN32_WINNT 0x0400
+#define _WIN32_WINNT 0x0501
 #endif
 
 #include <objbase.h>

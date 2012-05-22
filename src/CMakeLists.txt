@@ -75,7 +75,6 @@ endif()
 if(UNIX AND NOT APPLE)
     list(APPEND liblastfm_SOURCES
         linux/LNetworkConnectionMonitor_linux.cpp
-        linux/LNetworkConnectionMonitor.h
     )
 
     find_package(Qt4 COMPONENTS QtDbus REQUIRED)
@@ -97,4 +96,4 @@ install(TARGETS lastfm
 )
 
 file(GLOB liblastfm_HEADERS ${CMAKE_CURRENT_LIST_DIR}/*.h)
-install(FILES ${liblastfm_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/liblastfm/)
+install(FILES ${liblastfm_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/lastfm/)
