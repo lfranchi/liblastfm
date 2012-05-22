@@ -20,22 +20,17 @@
 #ifndef LASTFM_FINGERPRINT_H
 #define LASTFM_FINGERPRINT_H
 
-#include "global.h"
-#include "Track.h"
 #include "FingerprintId.h"
-#include "FingerprintableSource.h"
 
 namespace lastfm
 {
+    class FingerprintableSource;
+    class Track;
+
     class LASTFM_FINGERPRINT_DLLEXPORT Fingerprint
     {
-        lastfm::Track m_track;
-        QByteArray m_data;
-        int m_id;
-        int m_duration;
-
     protected:
-        bool m_complete;
+        class FingerprintPrivate * const d;
 
     public:
         /** represents a partial fingerprint of 20 seconds of music, this is 
@@ -43,13 +38,14 @@ namespace lastfm
           * it is much quicker than a complete fingerprint, still though, you
           * should do the generate step in a thread. */
         Fingerprint( const lastfm::Track& );
+        ~Fingerprint();
     
         /** if the id isNull(), then you'll need to do generate, submit and decode */
-        FingerprintId id() const { return m_id; }
+        FingerprintId id() const;
 
         /** The actual data that is the fingerprint, this is about 70kB or so,
           * there isn't anything in it until you call generate. */
-        QByteArray data() const { return m_data; }
+        QByteArray data() const;
 
         enum Error
         {
@@ -90,28 +86,12 @@ namespace lastfm
 
     class CompleteFingerprint : public Fingerprint
     {
-    public:
-        CompleteFingerprint( const lastfm::Track& t ) : Fingerprint( t )
-        {
-            m_complete = true;
-        }
+        CompleteFingerprint( const lastfm::Track& t );
+        ~CompleteFingerprint();
     };
 }
 
 
-inline QDebug operator<<( QDebug d, lastfm::Fingerprint::Error e )
-{
-    #define CASE(x) case lastfm::Fingerprint::x: return d << #x;
-    switch (e)
-    {
-        CASE(ReadError)
-        CASE(HeadersError)
-        CASE(DecodeError)
-        CASE(TrackTooShortError)
-        CASE(BadResponseError)
-        CASE(InternalError)
-    }
-    #undef CASE
-}
+QDebug operator<<( QDebug d, lastfm::Fingerprint::Error e );
 
 #endif
