@@ -9,10 +9,15 @@
 #  LIBSAMPLERATE_LIBRARY        The libsamplerate librarys
 #  LIBSAMPLERATE_INCLUDE_DIR    The libsamplerate include directory
 
+find_package(PkgConfig)
+pkg_check_modules(PC_LIBSAMPLERATE QUIET libsamplerate)
+set(LIBSAMPLERATE_DEFINITIONS ${PC_LIBSAMPLERATE_CFLAGS_OTHER})
 
-find_library(LIBSAMPLERATE_LIBRARY NAMES samplerate libsamplerate-0 samplerate-0)
+find_library(LIBSAMPLERATE_LIBRARY NAMES samplerate libsamplerate-0 samplerate-0
+				HINTS ${PC_LIBSAMPLERATE_LIBDIR} ${PC_LIBSAMPLERATE_LIBRARY_DIRS})
 
-find_path(LIBSAMPLERATE_INCLUDE_DIR samplerate.h)
+find_path(LIBSAMPLERATE_INCLUDE_DIR samplerate.h
+			HINTS ${PC_LIBSAMPLERATE_INCLUDEDIR} ${PC_LIBSAMPLERATE_INCLUDE_DIRS})
 
 if(LIBSAMPLERATE_LIBRARY AND LIBSAMPLERATE_INCLUDE_DIR)
     set(LIBSAMPLERATE_FOUND TRUE)
