@@ -113,11 +113,11 @@ public:
 public:
     lastfm::Artist artist;
     lastfm::Artist albumArtist;
-    QString album;
+    lastfm::Album album;
     QString title;
     lastfm::Artist correctedArtist;
     lastfm::Artist correctedAlbumArtist;
-    QString correctedAlbum;
+    lastfm::Album correctedAlbum;
     QString correctedTitle;
     TrackContext context;
     uint trackNumber;
@@ -224,10 +224,10 @@ lastfm::Track::Track( const QDomElement& e )
         d->title = trackTitle.toElement().text();
 
     d->albumArtist = e.namedItem( "albumArtist" ).toElement().text();
-    d->album =  e.namedItem( "album" ).toElement().text();
+    d->album =  Album( d->artist, e.namedItem( "album" ).toElement().text() );
     d->correctedArtist = e.namedItem( "correctedArtist" ).toElement().text();
     d->correctedAlbumArtist = e.namedItem( "correctedAlbumArtist" ).toElement().text();
-    d->correctedAlbum =  e.namedItem( "correctedAlbum" ).toElement().text();
+    d->correctedAlbum =  Album( d->correctedArtist, e.namedItem( "correctedAlbum" ).toElement().text() );
     d->correctedTitle = e.namedItem( "correctedTrack" ).toElement().text();
     d->trackNumber = 0;
     d->duration = e.namedItem( "duration" ).toElement().text().toInt();
@@ -249,6 +249,12 @@ lastfm::Track::Track( const QDomElement& e )
 
     for (QDomElement artistImage = artistNode.firstChildElement("image") ; !artistImage.isNull() ; artistImage = artistImage.nextSiblingElement("image"))
         artist().setImageUrl( static_cast<ImageSize>(artistImage.attribute("size").toInt()), artistImage.text() );
+
+    QDomNode albumNode = e.namedItem("album");
+
+    for (QDomElement albumImage = albumNode.firstChildElement("image") ; !albumImage.isNull() ; albumImage = albumImage.nextSiblingElement("image"))
+        album().setImageUrl( static_cast<ImageSize>(albumImage.attribute("size").toInt()), albumImage.text() );
+
 
     QDomNodeList nodes = e.namedItem( "extras" ).childNodes();
     for (int i = 0; i < nodes.count(); ++i)
@@ -433,6 +439,24 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
     if ( artistElement.childNodes().count() != 0 )
         item.appendChild( artistElement );
 
+    QDomElement albumElement = xml.createElement( "album" );
+
+    for ( int size = SmallImage ; size <= MegaImage ; ++size )
+    {
+        QString imageUrl = d->album.imageUrl( static_cast<ImageSize>(size) ).toString();
+
+        if ( !imageUrl.isEmpty() )
+        {
+            QDomElement e = xml.createElement( "image" );
+            e.appendChild( xml.createTextNode( d->artist.imageUrl( static_cast<ImageSize>(size) ).toString() ) );
+            e.setAttribute( "size", size );
+            artistElement.appendChild( e );
+        }
+    }
+
+    if ( albumElement.childNodes().count() != 0 )
+        item.appendChild( albumElement );
+
     // add the extras to the dom
     QDomElement extras = xml.createElement( "extras" );
     QMapIterator<QString, QString> extrasIter( d->extras );
@@ -453,7 +477,7 @@ lastfm::Track::corrected() const
     // If any of the corrected string have been set and they are different
     // from the initial strings then this track has been corrected.
     return ( (!d->correctedTitle.isEmpty() && (d->correctedTitle != d->title))
-            || (!d->correctedAlbum.isEmpty() && (d->correctedAlbum != d->album))
+            || (!d->correctedAlbum.toString().isEmpty() && (d->correctedAlbum.toString() != d->album.toString()))
             || (!d->correctedArtist.isNull() && (d->correctedArtist.name() != d->artist.name()))
             || (!d->correctedAlbumArtist.isNull() && (d->correctedAlbumArtist.name() != d->albumArtist.name())));
 }
@@ -479,7 +503,7 @@ lastfm::Track::albumArtist( Corrections corrected ) const
 lastfm::Album
 lastfm::Track::album( Corrections corrected ) const
 {
-    if ( corrected == Corrected && !d->correctedAlbum.isEmpty() )
+    if ( corrected == Corrected && !d->correctedAlbum.title().isEmpty() )
         return Album( artist( corrected ), d->correctedAlbum );
 
     return Album( artist( corrected ), d->album );
@@ -728,7 +752,7 @@ lastfm::Track::scrobble() const
     map["timestamp"] = QString::number( d->time.toTime_t() );
     map["context"] = extra("playerId");
     map["albumArtist"] = d->albumArtist;
-    if ( !d->album.isEmpty() ) map["album"] = d->album;
+    if ( !d->album.title().isEmpty() ) map["album"] = d->album.title();
     map["chosenByUser"] = source() == Track::LastFmRadio ? "0" : "1";
 
     qDebug() << map;
@@ -934,8 +958,8 @@ void
 lastfm::MutableTrack::setCorrections( QString title, QString album, QString artist, QString albumArtist )
 {
     d->correctedTitle = title;
-    d->correctedAlbum = album;
     d->correctedArtist = artist;
+    d->correctedAlbum = Album( artist, album );
     d->correctedAlbumArtist = albumArtist;
 
     d->forceCorrected( toString() );

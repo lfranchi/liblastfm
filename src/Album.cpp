@@ -36,6 +36,7 @@ class lastfm::AlbumPrivate {
         Mbid mbid;
         Artist artist;
         QString title;
+        QMap<AbstractType::ImageSize, QUrl> images;
 };
 
 
@@ -67,6 +68,29 @@ Album::~Album()
     delete d;
 }
 
+QDomElement
+Album::toDomElement( QDomDocument& ) const
+{
+    return QDomElement();
+}
+
+QUrl
+Album::imageUrl( ImageSize size, bool square ) const
+{
+    if( !square ) return d->images.value( size );
+
+    QUrl url = d->images.value( size );
+    QRegExp re( "/serve/(\\d*)s?/" );
+    return QUrl( url.toString().replace( re, "/serve/\\1s/" ));
+}
+
+void
+Album::setImageUrl( ImageSize size, const QString& url )
+{
+    if ( !url.isEmpty() )
+        d->images[size] = url;
+}
+
 bool
 Album::operator==( const Album& that ) const
 {
@@ -88,9 +112,15 @@ Album::operator=( const Album& that )
     return *this;
 }
 
-Album::operator QString() const
+QString
+Album::toString() const
 {
     return title();
+}
+
+Album::operator QString() const
+{
+    return toString();
 }
 
 QString

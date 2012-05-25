@@ -20,12 +20,14 @@
 #ifndef LASTFM_ALBUM_H
 #define LASTFM_ALBUM_H
 
+#include "AbstractType.h"
+
 #include "Artist.h"
 #include "Mbid.h"
 
 namespace lastfm
 {
-    class LASTFM_DLLEXPORT Album
+    class LASTFM_DLLEXPORT Album : public AbstractType
     {
     public:
         Album();
@@ -34,10 +36,16 @@ namespace lastfm
         Album( const Album& album );
         ~Album();
 
+        QDomElement toDomElement( QDomDocument& ) const;
+
+        virtual QUrl imageUrl( ImageSize size, bool square = false ) const;
+        void setImageUrl( ImageSize size, const QString& url );
+
         bool operator==( const Album& that ) const;
         bool operator!=( const Album& that ) const;
         Album& operator=( const Album& that );
     
+        QString toString() const;
         operator QString() const;
         QString title() const;
         Artist artist() const;
