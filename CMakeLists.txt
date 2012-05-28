@@ -5,7 +5,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 # general settings
 set(LASTFM_VERSION 1.0.0)
-set(LASTFM_SOVERSION 1.0)
+set(LASTFM_SOVERSION 1)
 
 # options
 option(BUILD_FINGERPRINT "Build the lastfm-fingerprint library" OFF)
@@ -37,7 +37,7 @@ endif(MSVC)
 # main library
 add_subdirectory(src)
 
-# libfingerprint
+# lastfm_fingerprint library
 if(BUILD_FINGERPRINT)
     add_subdirectory(src/fingerprint)
 endif()
