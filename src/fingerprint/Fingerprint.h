@@ -84,7 +84,7 @@ namespace lastfm
     };
 
 
-    class CompleteFingerprint : public Fingerprint
+    class LASTFM_FINGERPRINT_DLLEXPORT CompleteFingerprint : public Fingerprint
     {
         CompleteFingerprint( const lastfm::Track& t );
         ~CompleteFingerprint();

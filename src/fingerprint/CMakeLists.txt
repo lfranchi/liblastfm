@@ -18,6 +18,11 @@ set(lastfm_fingerprint_SOURCES
   fplib/OptFFT.cpp
 )
 
+set(lastfm_fingerprint_HEADERS
+    Fingerprint.h
+    FingerprintableSource.h
+)
+
 add_library(lastfm_fingerprint SHARED ${lastfm_fingerprint_SOURCES})
 
 target_link_libraries(lastfm_fingerprint
@@ -34,4 +39,10 @@ set_target_properties(lastfm_fingerprint PROPERTIES
     SOVERSION ${LASTFM_SOVERSION}
 )
 
-#FIXME: install something somewhere?!
+install(TARGETS lastfm_fingerprint
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+install(FILES ${lastfm_fingerprint_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/lastfm/)
