@@ -88,3 +88,5 @@ lastfm::LNetworkConnectionMonitor::onStateChange( uint newState )
        setConnected( true );
     }
 }
+
+#include "moc_LNetworkConnectionMonitor.cpp"
