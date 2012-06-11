@@ -23,7 +23,7 @@
 #include "AbstractType.h"
 
 #include <QMap>
-#include <QSharedDataPointer>
+#include <QExplicitlySharedDataPointer>
 
 class QNetworkReply;
 
@@ -32,7 +32,7 @@ namespace lastfm
     class LASTFM_DLLEXPORT Artist : public AbstractType
     {
     private:
-        QSharedDataPointer<class ArtistData> d;
+        QExplicitlySharedDataPointer<class ArtistData> d;
 
     public:
         Artist();

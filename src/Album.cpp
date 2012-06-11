@@ -31,41 +31,45 @@ using lastfm::Album;
 using lastfm::Artist;
 using lastfm::Mbid;
 
-class lastfm::AlbumPrivate {
-    public:
-        Mbid mbid;
-        Artist artist;
-        QString title;
-        QMap<AbstractType::ImageSize, QUrl> images;
-};
+namespace lastfm
+{
+    class AlbumPrivate : public QSharedData
+    {
+        public:
+            AlbumPrivate() {}
 
+            Mbid mbid;
+            Artist artist;
+            QString title;
+            QMap<AbstractType::ImageSize, QUrl> images;
+    };
+}
 
 Album::Album()
-    : d( new lastfm::AlbumPrivate )
+    :AbstractType(), d( new lastfm::AlbumPrivate )
 {
 }
 
 Album::Album( Mbid mbid )
-    : d( new AlbumPrivate )
+    :AbstractType(), d( new lastfm::AlbumPrivate )
 {
     d->mbid = mbid;
 }
 
 Album::Album( Artist artist, QString title )
-    : d( new AlbumPrivate )
+    :AbstractType(), d( new lastfm::AlbumPrivate )
 {
     d->artist = artist;
     d->title = title;
 }
 
 Album::Album( const Album& other )
-    : d( new AlbumPrivate( *other.d ) )
+    : d( other.d )
 {
 }
 
 Album::~Album()
 {
-    delete d;
 }
 
 QDomElement
@@ -106,9 +110,7 @@ Album::operator!=( const Album& that ) const
 Album&
 Album::operator=( const Album& that )
 {
-    d->mbid = that.d->mbid;
-    d->artist = that.d->artist;
-    d->title = that.d->title;
+    d = that.d;
     return *this;
 }
 

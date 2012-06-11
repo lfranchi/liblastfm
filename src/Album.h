@@ -69,7 +69,7 @@ namespace lastfm
         QUrl www() const;
 
     private:
-        class AlbumPrivate * const d;
+        QExplicitlySharedDataPointer<class AlbumPrivate> d;
     };
 }
 

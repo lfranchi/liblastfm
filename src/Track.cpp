@@ -245,12 +245,12 @@ lastfm::Track::Track( const QDomElement& e )
     for (QDomElement image = e.firstChildElement("image") ; !image.isNull() ; image = image.nextSiblingElement("image"))
         d->m_images[static_cast<ImageSize>(image.attribute("size").toInt())] = image.text();
 
-    QDomNode artistNode = e.namedItem("artist");
+    QDomNode artistNode = e.namedItem("artistImages");
 
     for (QDomElement artistImage = artistNode.firstChildElement("image") ; !artistImage.isNull() ; artistImage = artistImage.nextSiblingElement("image"))
         artist().setImageUrl( static_cast<ImageSize>(artistImage.attribute("size").toInt()), artistImage.text() );
 
-    QDomNode albumNode = e.namedItem("album");
+    QDomNode albumNode = e.namedItem("albumImages");
 
     for (QDomElement albumImage = albumNode.firstChildElement("image") ; !albumImage.isNull() ; albumImage = albumImage.nextSiblingElement("image"))
         album().setImageUrl( static_cast<ImageSize>(albumImage.attribute("size").toInt()), albumImage.text() );
@@ -421,7 +421,7 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
         item.appendChild( e );
     }
 
-    QDomElement artistElement = xml.createElement( "artist" );
+    QDomElement artistElement = xml.createElement( "artistImages" );
 
     for ( int size = SmallImage ; size <= MegaImage ; ++size )
     {
@@ -439,7 +439,7 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
     if ( artistElement.childNodes().count() != 0 )
         item.appendChild( artistElement );
 
-    QDomElement albumElement = xml.createElement( "album" );
+    QDomElement albumElement = xml.createElement( "albumImages" );
 
     for ( int size = SmallImage ; size <= MegaImage ; ++size )
     {
@@ -448,9 +448,9 @@ lastfm::Track::toDomElement( QDomDocument& xml ) const
         if ( !imageUrl.isEmpty() )
         {
             QDomElement e = xml.createElement( "image" );
-            e.appendChild( xml.createTextNode( d->artist.imageUrl( static_cast<ImageSize>(size) ).toString() ) );
+            e.appendChild( xml.createTextNode( d->album.imageUrl( static_cast<ImageSize>(size) ).toString() ) );
             e.setAttribute( "size", size );
-            artistElement.appendChild( e );
+            albumElement.appendChild( e );
         }
     }
 
@@ -504,9 +504,9 @@ lastfm::Album
 lastfm::Track::album( Corrections corrected ) const
 {
     if ( corrected == Corrected && !d->correctedAlbum.title().isEmpty() )
-        return Album( artist( corrected ), d->correctedAlbum );
+        return d->correctedAlbum;
 
-    return Album( artist( corrected ), d->album );
+    return d->album;
 }
 
 QString
@@ -992,7 +992,7 @@ lastfm::MutableTrack::setAlbumArtist( QString albumArtist )
 void
 lastfm::MutableTrack::setAlbum( QString album )
 {
-    d->album = album.trimmed();
+    d->album = Album( d->artist.name(), album.trimmed() );
 }
 
 void
