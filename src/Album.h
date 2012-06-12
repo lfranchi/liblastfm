@@ -41,6 +41,8 @@ namespace lastfm
         virtual QUrl imageUrl( ImageSize size, bool square = false ) const;
         void setImageUrl( ImageSize size, const QString& url );
 
+        void setArtist( const QString& artist );
+
         bool operator==( const Album& that ) const;
         bool operator!=( const Album& that ) const;
         Album& operator=( const Album& that );

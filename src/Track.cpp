@@ -981,6 +981,8 @@ void
 lastfm::MutableTrack::setArtist( QString artist )
 {
     d->artist.setName( artist.trimmed() );
+    d->album.setArtist( artist.trimmed() );
+    d->correctedAlbum.setArtist( artist.trimmed() );
 }
 
 void

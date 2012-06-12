@@ -131,6 +131,12 @@ Album::title() const
     return d->title;
 }
 
+void
+Album::setArtist( const QString& artist )
+{
+    return d->artist.setName( artist );
+}
+
 Artist
 Album::artist() const
 {
